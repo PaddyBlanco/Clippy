@@ -1,7 +1,7 @@
-# Startet am Gerät: zeichnet den Desktop und hält die Uhr aktuell.
+# Startet am Gerät: zeichnet den Desktop, hält Uhr und Akkustand aktuell und lässt die Klammer leben.
 import time
 import M5
-from lib import win98
+from lib import pet, win98
 
 # Bis die Apps aus dem Manifest kommen, stehen hier zwei Platzhalter.
 APPS = (
@@ -35,13 +35,16 @@ def main():
         pass  # am PC (Vorschau) gibt es diese Funktion nicht
     d = M5.Display
     draw_desktop(d)
+    clippy = pet.Pet(d)
+    clippy.say("Schaut aus, ois dadst grod an Desktop anschaun. Brauchst a Hüf dabei?")
     shown = status()
     while True:
         M5.update()
         if status() != shown:
             shown = status()
             win98.tray(d, *shown)
-        time.sleep_ms(200)
+        clippy.step()
+        time.sleep_ms(60)
 
 
 main()

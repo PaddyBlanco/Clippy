@@ -205,10 +205,13 @@ def main():
     m5.Speaker = m5.Mic = Quiet()
     sys.modules["M5"] = m5
 
-    # MicroPython-Zeitfunktionen, die es am PC nicht gibt
-    time.sleep_ms = lambda ms: None
-    time.ticks_ms = lambda: int(time.time() * 1000)
+    # MicroPython-Zeitfunktionen. Die Uhr ist gespielt: sleep_ms stellt sie vor, so vergeht in der Vorschau
+    # genau so viel Zeit, wie das Skript am Gerät warten würde.
+    clock = [0]
+    time.sleep_ms = lambda ms: clock.__setitem__(0, clock[0] + ms)
+    time.ticks_ms = lambda: clock[0]
     time.ticks_diff = lambda a, b: a - b
+    time.ticks_add = lambda a, b: a + b
 
     # Dateien am Gerät (/flash/...) auf den Projektordner umlenken
     real_open, real_stat = builtins.open, os.stat

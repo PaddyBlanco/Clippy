@@ -30,7 +30,7 @@ dokumentiert sind; lies die genannte Datei oder frag nach.
 | Mit dem Gerät verbinden, flashen, retten, Hardware-Fakten | [docs/device.md](docs/device.md) |
 | Pins, I2C-Adressen, Chips, Hersteller-Quellen | [docs/hardware.md](docs/hardware.md) |
 | Neue App bauen | `docs/build-an-app.md` (folgt) |
-| Klammer: Stimmungen, Sensoren, Sprüche | `docs/pet.md` (folgt) |
+| Klammer: Zeichnung, Haltungen, Bewegungen, Sprechblase | [docs/pet.md](docs/pet.md) |
 | Claude Code / Codex mit der Klammer verbinden | `docs/agent-hooks.md` (folgt) |
 | Überblick, Bildschirmaufteilung, Zeichnen, Schrift, Vorschau am PC | [docs/architecture.md](docs/architecture.md) |
 | Ideen für weitere Apps | `docs/ideas.md` (folgt) |
