@@ -1,6 +1,6 @@
 # Aufbau
 
-Stand: Desktop und Klammer laufen. Apps, Abruf und Agent-Anbindung folgen und werden hier ergänzt.
+Stand: Desktop, Klammer, Startmenü und Apps im Fenster laufen. Abruf und Agent-Anbindung folgen.
 
 ## Dateien
 
@@ -9,8 +9,11 @@ Der Ordner `device/` ist ein Abbild dessen, was am Gerät unter `/flash/` liegt.
 | Datei | Aufgabe |
 |---|---|
 | `device/main.py` | Start am Gerät, ruft nur `desktop.run()` |
-| `device/clippy/desktop.py` | Desktop zeichnen, Hauptschleife, Uhr und Akkustand aktuell halten |
-| `device/clippy/win98.py` | Farben und Zeichenfunktionen im Windows-98-Stil; sonst zeichnet niemand Knöpfe oder Leisten selbst |
+| `device/clippy/desktop.py` | Hauptschleife: lädt die App-Liste, verteilt Tipper an Symbole, Startmenü und Klammer |
+| `device/clippy/shell.py` | Taskleiste, Symbole und Startmenü zeichnen; sagt, was unter dem Finger liegt |
+| `device/clippy/launcher.py` | Startet eine App im Fenster, fängt Fehler ab (Bluescreen); Handbuch- und Abschiedsbild |
+| `device/clippy/win98.py` | Farben, Schrift und Grundformen: Text, Knopf, 3D-Kante, Fenster, Bluescreen |
+| `device/clippy/config.py` | Einstellungen an einer Stelle: Adresse des Handbuchs, Ablageort der Apps |
 | `device/clippy/pet/` | Die Klammer, siehe [pet.md](pet.md) |
 | `device/res/` | Schriften |
 | `tools/preview.py` | Zeichnet ein Geräte-Skript am PC in ein PNG, ohne Gerät |
@@ -23,7 +26,7 @@ Importiert wird immer vom Paket aus, z. B. `from clippy import win98` oder `from
 
 ```
  0 ┌──────────────────────────────────────┐
-   │ [Symbol]                             │   Symbole: Spalte links, je 64×60, von oben nach unten
+   │ [Symbol]                             │   Symbole: Spalte links, je 68×50, höchstens vier
    │ [Symbol]                 ┌─────────┐ │
    │                          │ Klammer │ │   Feld der Klammer: 110×150 bei x=205, y=58
    │                          │         │ │
@@ -33,7 +36,18 @@ Importiert wird immer vom Paket aus, z. B. `from clippy import win98` oder `from
 ```
 
 Tippflächen sind mindestens 40 Pixel hoch: Der Start-Knopf reagiert schon ab y=200, auch wenn er kleiner
-gezeichnet ist.
+gezeichnet ist. Das X eines Fensters reagiert in der ganzen Ecke rechts oben (48×40).
+
+## Wer bekommt den Tipper?
+
+Am Desktop: Symbol-Spalte und Start-Knopf gehören `desktop.py`, das Feld der Klammer gehört ihren Sinnen
+(`pet/senses.py`). In einer App liest nur `ctx.update()` die Berührung. Startmenü und Meldungsfenster
+warten mit `launcher.wait_tap()` auf den nächsten Tipper; solange ruht die Klammer.
+
+## Startmenü
+
+Einträge stehen in `desktop.MENU`, ausgeführt werden sie in `desktop.start_menu`. „Handbuch“ zeigt die Adresse
+aus `config.MANUAL_URL` als QR-Code. „Beenden“ schaltet nur das Display aus, bis man es antippt.
 
 ## Zeichnen
 

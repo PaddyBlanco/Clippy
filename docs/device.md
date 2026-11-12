@@ -69,6 +69,25 @@ Prüfskripte: `checks/hello.py` (Text am Display), `checks/inventory.py` (listet
   andersherum als bei der üblichen POSIX-Schreibweise**: `"GMT+1"` ist UTC+1. Mitteleuropa mit automatischer
   Sommerzeit: `time.timezone("CET+1CEST,M3.5.0,M10.5.0/3")` (am Gerät geprüft: Januar +1, Juli +2).
 
+## Installieren und aktualisieren
+
+```
+.\tools\install.ps1
+```
+
+Das kopiert `device/` nach `/flash/` und `apps/` nach `/flash/apps/` (unveränderte Dateien werden übersprungen)
+und startet das Gerät neu. Danach läuft Clippy von selbst, auch ohne PC.
+
+- `device/boot.py` ersetzt die Start-Datei der Firmware und ist absichtlich leer. **Nicht mit `resume run` über
+  die laufende Firmware-Oberfläche starten:** Die Firmware fährt sonst beim Start ihre eigene Oberfläche samt
+  Netzwerk-Diensten hoch, beide Programme greifen dann gleichzeitig auf Display und Sensoren zu, und das Gerät
+  stürzt nach einigen Minuten ab oder friert ein.
+- Lebenszeichen: Etwa alle halbe Minute schreibt das Gerät eine Zeile auf die USB-Konsole
+  (`clippy läuft seit ... s, frei ...`). Mitlesen geht mit jedem seriellen Monitor (115200 Baud); solange man
+  nichts sendet, läuft das Programm ungestört weiter.
+- Fehler im Desktop selbst landen als Bluescreen am Display und als Fehlermeldung auf der Konsole.
+- Die Originale der Firmware (`boot.py`, `main.py`) lassen sich jederzeit durch Neu-Flashen zurückholen.
+
 ## Wenn das Gerät nicht mehr antwortet
 
 Meldet `mpremote` „could not enter raw repl“ (passiert z. B., wenn ein Lauf mit `mount` hart abgebrochen wurde):
@@ -84,7 +103,7 @@ türkis. So macht man eines aus einem beliebigen Bild (schneidet auf 4:3 zu, nim
 ```
 
 Mit `-Saturation 1` bleiben die Farben wie im Original, kleinere Werte machen es blasser. Ein JPG dieser Größe
-zeichnet das Gerät in etwa 60 ms. Wie es aufs Gerät kommt, steht bei der Installation (folgt).
+zeichnet das Gerät in etwa 60 ms. `tools/install.ps1` kopiert `local/bg/bg.jpg` mit aufs Gerät, wenn die Datei da ist.
 
 ## Retten
 
@@ -99,7 +118,7 @@ python -m esptool --port COM5 --baud 921600 write-flash 0x0 local/firmware/uiflo
 Firmware-Datei (nicht im Repo):
 <https://github.com/m5stack/uiflow-micropython/releases/download/2.5.4/uiflow-e437118-esp32s3-spiram-16mb-cores3-v2.5.4-20261030.bin>
 
-Das löscht alle Dateien am Gerät. Danach den Kern neu installieren (Anleitung folgt mit `tools/install.ps1`).
+Das löscht alle Dateien am Gerät. Danach mit `tools/install.ps1` neu installieren.
 
 ## Tabu
 

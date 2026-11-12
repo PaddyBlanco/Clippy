@@ -25,10 +25,11 @@ SHOULDER, ELBOW, FOREARM = (83, 118), (83, 98), 24
 EYES = ((29, 47), (71, 55))
 EYE_RX, EYE_RY = 17, 14
 BROWS = ((14, 33, 26, 24), (26, 24, 43, 23), (62, 30, 78, 31), (78, 31, 91, 42))
+ANGRY_BROWS = ((12, 22, 44, 36), (58, 40, 92, 26))  # böser Blick: gerade Striche, außen hoch, innen tief
 FOOT = (14, 147)  # um diesen Punkt links unten kippt sie
 FOOT_RIGHT = (90, 147)
 
-REST = {"look": (0, 0), "lid": 0.0, "brow": 0, "bob": 0, "dx": 0, "stretch": 0, "lean": 0, "arm": 0, "red": False,
+REST = {"look": (0, 0), "lid": 0.0, "brow": 0, "frown": False, "bob": 0, "dx": 0, "stretch": 0, "lean": 0, "arm": 0, "red": False,
         "weight": False, "stick": False, "drum": False, "spark": False, "zzz": 0, "snot": 0}
 
 
@@ -114,7 +115,7 @@ def draw(g, pose, ox=0):
         if gap > 7:
             g.fillCircle(x + lx, y + ly, 8, BLACK)
             g.fillCircle(x + lx - 3, y + ly - 3, 2, WHITE)
-    for x0, y0, x1, y1 in BROWS:  # brow > 0 hebt die Brauen
+    for x0, y0, x1, y1 in ANGRY_BROWS if pose["frown"] else BROWS:  # brow > 0 hebt die Brauen
         p, q = at(x0, y0 - pose["brow"]), at(x1, y1 - pose["brow"])
         _stick(g, p[0], p[1], q[0], q[1], 4, BLACK)
 

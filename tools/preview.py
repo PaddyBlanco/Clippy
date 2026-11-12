@@ -1,6 +1,7 @@
 """Zeichnet ein Geräte-Skript am PC in ein PNG, ohne Gerät.
 
     python tools/preview.py device/main.py local/preview.png [durchlaeufe]
+    python tools/preview.py apps/hello/app.py local/preview.png      (eine App in ihrem Fenster)
 
 Ersetzt das Modul M5 durch eine Nachbildung mit Pillow. Text in den Projekt-Schriften (device/res/*.vlw) wird
 aus denselben Dateien gezeichnet wie am Gerät; nur die eingebauten Firmware-Schriften sind eine Näherung.
@@ -143,7 +144,7 @@ class Surface:
         return self.vlw.height if self.vlw else int(self.size * self.scale * 1.33)
 
     def drawString(self, s, x, y):
-        if self.bg != self.fg:
+        if self.bg != self.fg and s:
             self.fillRect(x, y, self.textWidth(s), self.fontHeight(), self.bg)
         if self.vlw:
             self.vlw.draw(self.img, s, x, y, rgb(self.fg))
@@ -174,6 +175,10 @@ class Surface:
 
     def setBrightness(self, value):
         pass
+
+    def drawQR(self, text, x, y, size, version=1):  # nur ein Platzhalter in passender Größe
+        self.dr.rectangle([x, y, x + size - 1, y + size - 1], fill=(0, 0, 0))
+        self.dr.text((x + 6, y + size // 2 - 6), "QR-Code", font=self._ttf(), fill=(255, 255, 255))
 
     def __getattr__(self, name):
         raise AttributeError("Die Vorschau kennt '%s' nicht. In tools/preview.py ergänzen." % name)
@@ -223,9 +228,15 @@ def main():
     builtins.open = lambda p, *a, **k: real_open(pc_path(p), *a, **k)
     os.stat = lambda p, *a, **k: real_stat(pc_path(p), *a, **k)
 
+    sys.path.insert(0, os.path.join(ROOT, "device"))
     sys.path.insert(0, os.path.dirname(os.path.abspath(script)))
     try:
-        runpy.run_path(script, run_name="__main__")
+        scope = runpy.run_path(script, run_name="__main__")
+        if "run" in scope:  # eine App: im Fenster starten, wie es der Launcher am Gerät tut
+            from clippy import launcher
+            ctx = launcher.Ctx(display, os.path.basename(os.path.dirname(os.path.abspath(script))))
+            ctx._down = False
+            scope["run"](ctx)
     except SystemExit:
         pass
     os.makedirs(os.path.dirname(os.path.abspath(out)), exist_ok=True)

@@ -57,6 +57,13 @@ class Pet:
             self.work.push(FIELD_X, FIELD_Y)
         self.was_wide = wide
 
+    def refresh(self):
+        """Nach einer App: Der Desktop wurde neu gezeichnet, also auch sich selbst, und die Blase ist weg."""
+        self.bubble.box = None
+        self.was_wide = False
+        self.awake_since = time.ticks_ms()
+        self.show()
+
     def play(self, move):
         """Startet eine Bewegung sofort, z. B. clippy.play(moves.curl)."""
         self.move = move()

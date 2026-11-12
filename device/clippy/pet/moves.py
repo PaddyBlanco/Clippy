@@ -104,13 +104,13 @@ def flinch():
 def grump():
     # grantig: sie läuft rot an, zieht die Brauen zusammen und bebt
     for i in range(22):
-        yield dict(REST, red=True, brow=-5, lid=0.35, bob=i % 2, stretch=-2 + i % 3)
+        yield dict(REST, red=True, brow=0, frown=True, lid=0.35, bob=i % 2, stretch=-2 + i % 3)
 
 
 def threaten():
     # richtig grantig: rot angelaufen droht sie mit dem Drahtende
     for i in range(32):
-        yield dict(REST, red=True, brow=-5, lid=0.3, arm=(15, 40, 62, 40)[i % 4], bob=i % 2, look=(0, 2))
+        yield dict(REST, red=True, brow=0, frown=True, lid=0.3, arm=(15, 40, 62, 40)[i % 4], bob=i % 2, look=(0, 2))
 
 
 def enjoy():

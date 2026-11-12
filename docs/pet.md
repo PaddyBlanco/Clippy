@@ -25,6 +25,7 @@ Eine **Haltung** (`pose`) ist ein Dictionary; `draw.REST` ist die Ruhehaltung.
 | `look` | Blickrichtung als (x, y) in Pixeln, etwa −5 bis 5 | (0, 0) |
 | `lid` | Augenlid: 0 = offen, 1 = zu | 0 |
 | `brow` | Brauen: positiv = gehoben, negativ = gesenkt | 0 |
+| `frown` | böser Blick: Brauen als schräge Striche, außen hoch, innen tief | False |
 | `bob` | ganze Figur nach unten versetzt, in Pixeln; negativ = Sprung nach oben (bis etwa −20) | 0 |
 | `stretch` | positiv = sie streckt sich nach oben, negativ = sie staucht sich, in Pixeln | 0 |
 | `red` | Draht läuft rot an | False |

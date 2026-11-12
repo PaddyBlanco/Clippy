@@ -1,4 +1,4 @@
-# Windows-98-Bausteine: Farben und Zeichenfunktionen.
+# Windows-98-Bausteine: Farben, Schrift und die Grundformen, aus denen alles andere gebaut ist.
 # g ist immer das Ziel: M5.Display oder ein Canvas.
 import os
 
@@ -8,10 +8,10 @@ LIGHT = 0xFFFFFF
 SHADOW = 0x808080
 DARK = 0x000000
 NAVY = 0x000080
+BLUE = 0x0000AA  # Bluescreen
 
 W, H = 320, 240
-TASKBAR_H = 28
-TASKBAR_Y = H - TASKBAR_H
+TITLE_H = 22     # Titelleiste eines Fensters
 BG_PATH = "/flash/bg.jpg"
 FONT = "/flash/res/font12.vlw"
 FONT_BOLD = "/flash/res/font12b.vlw"
@@ -39,6 +39,22 @@ def text(g, s, x, y, color, back, bold=False, align="left"):
     _use_font(g, bold)
     g.setTextColor(color, back)
     {"left": g.drawString, "center": g.drawCenterString, "right": g.drawRightString}[align](s, x, y)
+
+
+def wrap(s, width, measure):
+    """Bricht s in Zeilen um, die laut measure(zeile) höchstens width breit sind. Zeilenwechsel in s bleiben."""
+    lines = []
+    for part in s.split("\n"):
+        line = ""
+        for word in part.split():
+            trial = (line + " " + word).strip()
+            if line and measure(trial) > width:
+                lines.append(line)
+                line = word
+            else:
+                line = trial
+        lines.append(line)
+    return lines
 
 
 def backdrop(c, x, y):
@@ -75,40 +91,29 @@ def bevel(g, x, y, w, h, raised=True):
         g.drawLine(x + w - 2, y + 1, x + w - 2, y + h - 2, SHADOW)
 
 
-def tray(g, hhmm, battery, charging):
-    # Versenktes Feld rechts: Akku-Symbol, Prozent, Uhr
-    w = 104
-    x, y = W - 3 - w, TASKBAR_Y + 4
-    bevel(g, x, y, w, 21, raised=False)
-    bx, by = x + 5, y + 5
-    g.drawRect(bx, by, 17, 10, DARK)
-    g.fillRect(bx + 17, by + 3, 2, 4, DARK)
-    g.fillRect(bx + 2, by + 2, max(1, battery * 13 // 100), 6, 0xC00000 if battery < 20 else 0x008000)
-    if charging:  # kleiner Blitz
-        g.drawLine(bx + 10, by + 1, bx + 6, by + 5, 0xFFE000)
-        g.drawLine(bx + 6, by + 5, bx + 10, by + 5, 0xFFE000)
-        g.drawLine(bx + 10, by + 5, bx + 6, by + 9, 0xFFE000)
-    text(g, "%d%%" % battery, x + 26, y + 3, DARK, FACE)
-    text(g, hhmm, x + w - 5, y + 3, DARK, FACE, align="right")
+def button(g, x, y, w, h, caption, bold=False):
+    bevel(g, x, y, w, h)
+    text(g, caption, x + w // 2, y + (h - FONT_H) // 2, DARK, FACE, bold=bold, align="center")
 
 
-def taskbar(g, hhmm, battery, charging):
-    g.fillRect(0, TASKBAR_Y, W, TASKBAR_H, FACE)
-    g.drawLine(0, TASKBAR_Y + 1, W, TASKBAR_Y + 1, LIGHT)
-    bevel(g, 2, TASKBAR_Y + 4, 22 + text_width(g, "Start", bold=True) + 6, 22)  # Breite folgt der Schrift
-    # Fähnchen aus vier Farbfeldern
-    for dx, dy, c in ((0, 0, 0xE02020), (7, 0, 0x20A020), (0, 7, 0x2040E0), (7, 7, 0xE0C000)):
-        g.fillRect(7 + dx, TASKBAR_Y + 9 + dy, 6, 6, c)
-    text(g, "Start", 24, TASKBAR_Y + 8, DARK, FACE, bold=True)
-    tray(g, hhmm, battery, charging)
+def window(g, title):
+    # Bildschirmfüllendes Fenster: blaue Titelleiste mit X, darunter graue Fläche
+    g.fillRect(0, 0, W, TITLE_H, NAVY)
+    text(g, title, 6, 3, LIGHT, NAVY, bold=True)
+    bevel(g, W - 21, 3, 17, 16)
+    g.drawLine(W - 16, 7, W - 10, 13, DARK)
+    g.drawLine(W - 15, 7, W - 9, 13, DARK)
+    g.drawLine(W - 10, 7, W - 16, 13, DARK)
+    g.drawLine(W - 9, 7, W - 15, 13, DARK)
+    g.fillRect(0, TITLE_H, W, H - TITLE_H, FACE)
 
 
-def icon(g, x, y, name, color, letters):
-    # Zelle 64 breit: Symbol 32×32 mittig, darunter der Name
-    ix = x + 16
-    g.fillRect(ix, y, 32, 32, color)
-    g.drawRect(ix, y, 32, 32, DARK)
-    g.drawLine(ix + 1, y + 1, ix + 30, y + 1, LIGHT)
-    g.drawLine(ix + 1, y + 1, ix + 1, y + 30, LIGHT)
-    text(g, letters, x + 32, y + 9, LIGHT, color, bold=True, align="center")
-    label(g, name, x + 32, y + 36)
+def bluescreen(g, app_name, error_text):
+    g.fillScreen(BLUE)
+    g.fillRect(126, 14, 68, FONT_H + 4, FACE)
+    text(g, "Clippy", 160, 16, BLUE, FACE, bold=True, align="center")
+    lines = ["Ein schwerer Ausnahmefehler ist in der App", "„%s“ aufgetreten. Die App wurde beendet." % app_name, ""]
+    lines += wrap(error_text, W - 20, lambda t: text_width(g, t))[-7:]  # die letzten Zeilen nennen den Fehler
+    for i, line in enumerate(lines):
+        text(g, line, 10, 44 + i * (FONT_H + 1), LIGHT, BLUE)
+    text(g, "Tippen, um zum Desktop zurückzukehren", 160, H - 22, LIGHT, BLUE, align="center")

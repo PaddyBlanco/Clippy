@@ -9,19 +9,6 @@ BLACK = 0x000000
 LINE_H = win98.FONT_H + 1
 
 
-def wrap(s, width, measure):
-    """Bricht s in Zeilen um, die laut measure(zeile) höchstens width breit sind."""
-    lines, line = [], ""
-    for word in s.split():
-        trial = (line + " " + word).strip()
-        if line and measure(trial) > width:
-            lines.append(line)
-            line = word
-        else:
-            line = trial
-    return lines + [line]
-
-
 class Bubble:
     def __init__(self, display):
         self.d = display
@@ -30,7 +17,7 @@ class Bubble:
     def say(self, s, seconds=6):
         self.hush()
         d = self.d
-        lines = wrap(s, W - 14, lambda t: win98.text_width(d, t))
+        lines = win98.wrap(s, W - 14, lambda t: win98.text_width(d, t))
         h = len(lines) * LINE_H + 10
         y = BOTTOM - h
         d.fillRoundRect(X, y, W, h, 6, PAPER)

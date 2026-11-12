@@ -35,6 +35,15 @@ class Senses:
         self.charging = M5.Power.isCharging()
         self.hungry_since = None
 
+    def pause(self):
+        """Für Apps: Mikrofon aus, Lautsprecher an. Beide teilen sich die Leitung."""
+        M5.Mic.end()
+        M5.Speaker.begin()
+
+    def resume(self):
+        M5.Speaker.end()
+        M5.Mic.begin()
+
     def poll(self):
         """Schnelle Sinne, jeden Schleifendurchlauf. Liefert eine Liste von Ereignissen."""
         events = []
