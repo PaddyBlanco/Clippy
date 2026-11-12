@@ -1,0 +1,45 @@
+# Clippy: Hinweise für Coding-Agents
+
+Ein M5Stack CoreS3 (320×240, nur Touch) mit MicroPython (UIFlow2-Firmware). Die Oberfläche sieht aus wie
+Windows 98; am Desktop sitzt eine Büroklammer, die auf Sensoren und auf Coding-Agents am PC reagiert.
+
+**Stand: im Aufbau.** Einträge mit „folgt“ gibt es noch nicht. Erfinde keine Schnittstellen, die hier nicht
+dokumentiert sind; lies die genannte Datei oder frag nach.
+
+## Feste Regeln
+
+1. **Doku zuerst.** Erst die passende Datei in `docs/` anpassen, dann den Code.
+2. **So einfach wie möglich.** Kleine Dateien mit je einer Aufgabe, keine Abstraktion auf Vorrat.
+3. **Tabu am Gerät:** keine eFuses, kein `M5.Power.setCharge*`, `setExtOutput`, `setUsbOutput`.
+   Begründung in [docs/device.md](docs/device.md).
+4. **Keine Secrets und keine Binärdateien im Repo.** Lokales (WLAN-Daten, Bilder, Firmware) liegt in `local/`
+   oder ist per `.gitignore` ausgeschlossen.
+5. **Sprache:** Doku Deutsch, Code und Dateinamen Englisch, Texte am Gerät oberösterreichisch.
+6. **Testen am Gerät** mit `mpremote ... resume run <datei>` (läuft nur im Arbeitsspeicher).
+   Nichts dauerhaft aufs Gerät kopieren, ohne dass der Mensch es will.
+
+7. **Saubere Git-Historie.** Ein Commit je abgeschlossenem, getestetem Schritt; Doku und Code dazu im selben
+   Commit. Betreff auf Deutsch, höchstens 60 Zeichen, sagt was sich für den Nutzer ändert
+   (z. B. „Klammer blinzelt und spricht“). Keine „fix“- oder „wip“-Commits; Korrekturen vor dem Hochladen
+   in den passenden Commit einarbeiten. Nach dem Hochladen wird nichts mehr umgeschrieben.
+
+## Aufgabe → lies diese Datei
+
+| Aufgabe | Datei |
+|---|---|
+| Mit dem Gerät verbinden, flashen, retten, Hardware-Fakten | [docs/device.md](docs/device.md) |
+| Neue App bauen | `docs/build-an-app.md` (folgt) |
+| Klammer: Stimmungen, Sensoren, Sprüche | `docs/pet.md` (folgt) |
+| Claude Code / Codex mit der Klammer verbinden | `docs/agent-hooks.md` (folgt) |
+| Überblick, wie alles zusammenhängt | `docs/architecture.md` (folgt) |
+| Ideen für weitere Apps | `docs/ideas.md` (folgt) |
+
+## Ordner
+
+| Ordner | Inhalt |
+|---|---|
+| `apps/` | Apps und Sprüche; das Gerät holt sie sich selbst (folgt) |
+| `device/` | Kern: Desktop, Klammer, Abruf; wird per USB installiert (folgt) |
+| `tools/` | Skripte für den PC (folgt) |
+| `firmware/` | Prüfskripte für das Gerät, Flash-Hinweise |
+| `docs/` | Doku, je Aufgabe eine Datei |
