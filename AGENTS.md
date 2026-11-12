@@ -13,7 +13,7 @@ dokumentiert sind; lies die genannte Datei oder frag nach.
 3. **Tabu am Gerät:** keine eFuses, kein `M5.Power.setCharge*`, `setExtOutput`, `setUsbOutput`.
    Begründung in [docs/device.md](docs/device.md).
 4. **Keine Secrets und keine Binärdateien im Repo.** Lokales (WLAN-Daten, Bilder, Firmware) liegt in `local/`
-   oder ist per `.gitignore` ausgeschlossen.
+   oder ist per `.gitignore` ausgeschlossen. Einzige Ausnahme: die Geräte-Schriften in `device/res/`.
 5. **Sprache:** Doku Deutsch, Code und Dateinamen Englisch, Texte am Gerät oberösterreichisch.
 6. **Testen am Gerät** mit `mpremote ... resume run <datei>` (läuft nur im Arbeitsspeicher).
    Nichts dauerhaft aufs Gerät kopieren, ohne dass der Mensch es will.
@@ -32,7 +32,7 @@ dokumentiert sind; lies die genannte Datei oder frag nach.
 | Neue App bauen | `docs/build-an-app.md` (folgt) |
 | Klammer: Stimmungen, Sensoren, Sprüche | `docs/pet.md` (folgt) |
 | Claude Code / Codex mit der Klammer verbinden | `docs/agent-hooks.md` (folgt) |
-| Überblick, wie alles zusammenhängt | `docs/architecture.md` (folgt) |
+| Überblick, Bildschirmaufteilung, Zeichnen, Schrift, Vorschau am PC | [docs/architecture.md](docs/architecture.md) |
 | Ideen für weitere Apps | `docs/ideas.md` (folgt) |
 
 ## Ordner
@@ -40,7 +40,7 @@ dokumentiert sind; lies die genannte Datei oder frag nach.
 | Ordner | Inhalt |
 |---|---|
 | `apps/` | Apps und Sprüche; das Gerät holt sie sich selbst (folgt) |
-| `device/` | Kern: Desktop, Klammer, Abruf; wird per USB installiert (folgt) |
-| `tools/` | Skripte für den PC (folgt) |
+| `device/` | Kern, wird per USB installiert: bisher der Desktop; Klammer und Abruf folgen |
+| `tools/` | Skripte für den PC: Vorschau ohne Gerät, Hintergrundbild und Schrift erzeugen |
 | `firmware/` | Prüfskripte für das Gerät, Flash-Hinweise |
 | `docs/` | Doku, je Aufgabe eine Datei |

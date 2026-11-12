@@ -65,7 +65,14 @@ Prüfskripte: `firmware/hello.py` (Text am Display), `firmware/inventory.py` (li
 - Änderungserkennung: GitHub liefert einen `ETag`. Schickt man ihn als `If-None-Match` mit, kommt `304` ohne
   Inhalt zurück, solange die Datei gleich ist.
 - Uhr: `ntptime.settime()` stellt sie. `time.gmtime()` ist dann richtig (UTC). `time.localtime()` rechnet mit der
-  voreingestellten Zeitzone der Firmware (UTC+8); umstellen mit `time.timezone("GMT-1")` (= UTC+1).
+  voreingestellten Zeitzone der Firmware (UTC+8). Umstellen mit `time.timezone(...)`; **das Vorzeichen ist
+  andersherum als bei der üblichen POSIX-Schreibweise**: `"GMT+1"` ist UTC+1. Mitteleuropa mit automatischer
+  Sommerzeit: `time.timezone("CET+1CEST,M3.5.0,M10.5.0/3")` (am Gerät geprüft: Januar +1, Juli +2).
+
+## Wenn das Gerät nicht mehr antwortet
+
+Meldet `mpremote` „could not enter raw repl“ (passiert z. B., wenn ein Lauf mit `mount` hart abgebrochen wurde):
+Reset-Taste unten kurz drücken, ein paar Sekunden warten, nochmal versuchen. Es geht dabei nichts verloren.
 
 ## Hintergrundbild
 
