@@ -10,15 +10,31 @@ Alles hier wurde am echten Gerät geprüft, außer wo „ungetestet“ steht.
 | Touch | `M5.Touch` (`getCount`, `getX`, `getY`, `getDetail`) | geprüft |
 | Bewegung, Kompass | `M5.Imu` (`getAccel`, `getGyro`, `getMag`) | geprüft |
 | Lautsprecher | `M5.Speaker` (`tone`, `playWav`, `playWavFile`) | geprüft |
-| Mikrofon | `M5.Mic` (`record`, `recordWavFile`) | ungetestet |
-| Licht, Annäherung | `M5.Als` (`getLightSensorData`, `getProximitySensorData`) | ungetestet |
-| Akku, Strom | `M5.Power` (`getBatteryLevel`, `isCharging`, `lightSleep`, ...) | Akku-Wert unklar |
+| Mikrofon | `M5.Mic` (`record`, `recordWavFile`); vorher `M5.Speaker.end()`, beide teilen sich die Leitung | geprüft |
+| Annäherung | `M5.Als.getProximitySensorData()`, in der Schleife `M5.update()` aufrufen. Sitzt im Streifen unter dem Display | geprüft: frei 0–6, Finger drauf ca. 300 |
+| Licht | `M5.Als.getLightSensorData()` | liefert bei Abendlicht nur 0–5; bei Tageslicht ungetestet |
+| Akku, Strom | `M5.Power` (`getBatteryLevel`, `getBatteryVoltage`, `isCharging`, `lightSleep`, ...) | geprüft; direkt nach dem Flashen kamen falsche Werte (0 %), nach Ab- und Anstecken des Kabels stimmten sie |
 | Kamera | Modul `camera` | ungetestet |
 | WLAN | Modul `network`, nur 2,4 GHz | Scan geprüft |
-| Uhr | nicht als `M5.Rtc` vorhanden | ungetestet |
+| Uhr | `machine.RTC()` oder `time.localtime()`; nicht als `M5.Rtc` vorhanden | läuft, steht aber auf 1999, bis sie gestellt wird |
 
 Firmware: UIFlow2 v2.5.4, MicroPython 1.27. Frei: ca. 8 MB Arbeitsspeicher, ca. 4,6 MB Dateisystem (`/flash`).
 Schriften: `M5.Display.FONTS` enthält u. a. `DejaVu9` bis `DejaVu72` und `Montserrat12` bis `Montserrat48`.
+
+**Nicht `import hardware` verwenden:** Der Aufruf blieb auf diesem Gerät hängen.
+
+Pins, Adressen und Quellen: [hardware.md](hardware.md).
+
+## Zeichengeschwindigkeit (gemessen mit `firmware/bench.py`)
+
+| Was | Zeit je Bild | Bilder pro Sekunde |
+|---|---|---|
+| Figur (ca. 110×150) über ein kleines Canvas (`newCanvas` + `push`) | 11 ms | ca. 90 |
+| Figur direkt aufs Display (flackert) | 13 ms | ca. 78 |
+| Ganzen Bildschirm neu schieben (320×240) | 31 ms | ca. 32 |
+
+Folgerung: Bewegtes in einem kleinen Feld über ein Canvas zeichnen. Den ganzen Bildschirm nur neu zeichnen,
+wenn sich wirklich alles ändert.
 
 ## Verbinden (Windows)
 
@@ -40,7 +56,8 @@ Prüfskripte: `firmware/hello.py` (Text am Display), `firmware/inventory.py` (li
 ## Retten
 
 Der Start-Lader sitzt fest im Chip und wird beim Flashen nicht überschrieben. Die Firmware lässt sich deshalb
-jederzeit neu aufspielen, egal was auf dem Gerät liegt:
+jederzeit neu aufspielen, egal was auf dem Gerät liegt. Findet `esptool` das Gerät nicht: Reset-Taste (unten)
+gedrückt halten, bis innen die grüne LED leuchtet, dann loslassen.
 
 ```
 python -m esptool --port COM5 --baud 921600 write-flash 0x0 firmware/uiflow-cores3-v2.5.4.bin

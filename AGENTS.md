@@ -28,6 +28,7 @@ dokumentiert sind; lies die genannte Datei oder frag nach.
 | Aufgabe | Datei |
 |---|---|
 | Mit dem Gerät verbinden, flashen, retten, Hardware-Fakten | [docs/device.md](docs/device.md) |
+| Pins, I2C-Adressen, Chips, Hersteller-Quellen | [docs/hardware.md](docs/hardware.md) |
 | Neue App bauen | `docs/build-an-app.md` (folgt) |
 | Klammer: Stimmungen, Sensoren, Sprüche | `docs/pet.md` (folgt) |
 | Claude Code / Codex mit der Klammer verbinden | `docs/agent-hooks.md` (folgt) |
