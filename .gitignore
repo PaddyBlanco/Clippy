@@ -1,7 +1,3 @@
-# Lokales: WLAN-Daten, Hintergrundbilder, Sicherungen vom Gerät
+# Alles Lokale: WLAN-Daten, Bilder, Vorlagen, Firmware-Abbild, Unterlagen
 local/
-# Firmware-Abbild (16 MB), Download-Adresse steht in docs/device.md
-firmware/*.bin
 __pycache__/
-# Vorlagen-Bilder (gehören Microsoft, nur zum Vergleichen)
-Assets/

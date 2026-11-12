@@ -1,5 +1,5 @@
 # Sensortest zum Mitmachen: wartet auf einen Tipp, dann Annäherung/Licht, dann Mikrofon.
-# python -m mpremote connect COM6 resume run firmware/sensortest.py
+# python -m mpremote connect COM6 resume run checks/sensortest.py
 import M5, time, struct
 
 M5.begin()

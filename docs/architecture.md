@@ -1,14 +1,23 @@
 # Aufbau
 
-Stand: Der Desktop wird gezeichnet. Klammer, Apps, Abruf und Agent-Anbindung folgen und werden hier ergänzt.
+Stand: Desktop und Klammer laufen. Apps, Abruf und Agent-Anbindung folgen und werden hier ergänzt.
 
 ## Dateien
 
+Der Ordner `device/` ist ein Abbild dessen, was am Gerät unter `/flash/` liegt.
+
 | Datei | Aufgabe |
 |---|---|
-| `device/main.py` | Startet am Gerät, zeichnet den Desktop, hält die Uhr aktuell |
-| `device/lib/win98.py` | Farben und Zeichenfunktionen im Windows-98-Stil; sonst zeichnet niemand Knöpfe oder Leisten selbst |
+| `device/main.py` | Start am Gerät, ruft nur `desktop.run()` |
+| `device/clippy/desktop.py` | Desktop zeichnen, Hauptschleife, Uhr und Akkustand aktuell halten |
+| `device/clippy/win98.py` | Farben und Zeichenfunktionen im Windows-98-Stil; sonst zeichnet niemand Knöpfe oder Leisten selbst |
+| `device/clippy/pet/` | Die Klammer, siehe [pet.md](pet.md) |
+| `device/res/` | Schriften |
 | `tools/preview.py` | Zeichnet ein Geräte-Skript am PC in ein PNG, ohne Gerät |
+| `checks/` | Prüfskripte, die einzeln am Gerät laufen (Sensoren, Netz, Zeichentempo) |
+| `tests/` | Selbsttests am PC: `python tests/test_<name>.py` |
+
+Importiert wird immer vom Paket aus, z. B. `from clippy import win98` oder `from clippy.pet import moves`.
 
 ## Bildschirm (320×240)
 
@@ -45,7 +54,7 @@ mit: `device/res/font12.vlw` (normal) und `font12b.vlw` (fett), beide DejaVu San
   kleines Canvas, schreibt weiß mit Schatten darauf und schiebt es zurück; so bleiben die Kanten sauber.
 - `win98.backdrop(canvas, x, y)` füllt ein Canvas mit dem Desktop-Ausschnitt an dieser Stelle. Alles, was über
   dem Foto liegt und sich bewegt, beginnt damit.
-- Andere Schrift oder Größe: `python tools/make-font.py <schrift.ttf> <pixel> device/res/<name>.vlw`.
+- Andere Schrift oder Größe: `python tools/make_font.py <schrift.ttf> <pixel> device/res/<name>.vlw`.
   Die Schrift muss frei weitergegeben werden dürfen. Diese beiden Dateien sind die einzigen Binärdateien im Repo.
 
 ## Vorschau am PC

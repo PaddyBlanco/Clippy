@@ -1,5 +1,5 @@
 # Misst Zeichengeschwindigkeit und fragt ungetestete Sensoren ab.
-# python -m mpremote connect COM6 resume run firmware/bench.py
+# python -m mpremote connect COM6 resume run checks/bench.py
 import M5, time, struct
 
 M5.begin()

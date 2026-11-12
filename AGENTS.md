@@ -9,7 +9,9 @@ dokumentiert sind; lies die genannte Datei oder frag nach.
 ## Feste Regeln
 
 1. **Doku zuerst.** Erst die passende Datei in `docs/` anpassen, dann den Code.
-2. **So einfach wie möglich.** Kleine Dateien mit je einer Aufgabe, keine Abstraktion auf Vorrat.
+2. **So einfach wie möglich, kleine Dateien.** Eine Datei hat eine Aufgabe und bleibt unter etwa 150 Zeilen;
+   wird sie größer oder bekommt eine zweite Aufgabe, wird sie geteilt. Keine Abstraktion auf Vorrat.
+   Namen: Ordner und Dateien klein, Python mit Unterstrich (`make_font.py`), Doku mit Bindestrich, keine Abkürzungen.
 3. **Tabu am Gerät:** keine eFuses, kein `M5.Power.setCharge*`, `setExtOutput`, `setUsbOutput`.
    Begründung in [docs/device.md](docs/device.md).
 4. **Keine Secrets und keine Binärdateien im Repo.** Lokales (WLAN-Daten, Bilder, Firmware) liegt in `local/`
@@ -39,8 +41,10 @@ dokumentiert sind; lies die genannte Datei oder frag nach.
 
 | Ordner | Inhalt |
 |---|---|
-| `apps/` | Apps und Sprüche; das Gerät holt sie sich selbst (folgt) |
-| `device/` | Kern, wird per USB installiert: bisher der Desktop; Klammer und Abruf folgen |
+| `apps/` | Je App ein Ordner (`apps/<id>/app.py`); das Gerät holt sie sich selbst (folgt) |
+| `device/` | Abbild des Geräts: `main.py`, Paket `clippy/` (Desktop, Windows-98-Bausteine, Klammer), `res/` |
 | `tools/` | Skripte für den PC: Vorschau ohne Gerät, Hintergrundbild und Schrift erzeugen |
-| `firmware/` | Prüfskripte für das Gerät, Flash-Hinweise |
+| `checks/` | Prüfskripte, die einzeln am Gerät laufen |
+| `tests/` | Selbsttests am PC |
+| `local/` | Nicht im Repo: WLAN-Daten, Bilder, Firmware-Abbild, heruntergeladene Unterlagen |
 | `docs/` | Doku, je Aufgabe eine Datei |

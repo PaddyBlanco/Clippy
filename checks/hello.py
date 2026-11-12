@@ -1,4 +1,4 @@
-# Hello World: python -m mpremote connect COM6 resume run firmware/hello.py
+# Hello World: python -m mpremote connect COM6 resume run checks/hello.py
 import M5, sys, os, gc
 
 M5.begin()

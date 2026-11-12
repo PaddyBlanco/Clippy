@@ -25,7 +25,7 @@ Schriften: `M5.Display.FONTS` enthält u. a. `DejaVu9` bis `DejaVu72` und `Monts
 
 Pins, Adressen und Quellen: [hardware.md](hardware.md).
 
-## Zeichengeschwindigkeit (gemessen mit `firmware/bench.py`)
+## Zeichengeschwindigkeit (gemessen mit `checks/bench.py`)
 
 | Was | Zeit je Bild | Bilder pro Sekunde |
 |---|---|---|
@@ -42,7 +42,7 @@ Einmalig: Python installieren, dann `python -m pip install esptool mpremote`.
 
 ```
 python -m mpremote connect list
-python -m mpremote connect COM6 resume run firmware/hello.py
+python -m mpremote connect COM6 resume run checks/hello.py
 ```
 
 - Der Port heißt im Normalbetrieb anders als im Flash-Modus (hier: COM6 bzw. COM5). `connect list` zeigt ihn.
@@ -51,9 +51,9 @@ python -m mpremote connect COM6 resume run firmware/hello.py
   Anführungszeichen. Code in eine Datei schreiben und mit `run` starten.
 - `run` lädt die Datei nur in den Arbeitsspeicher. Nach einem Neustart ist das Gerät wie vorher.
 
-Prüfskripte: `firmware/hello.py` (Text am Display), `firmware/inventory.py` (listet Module und fragt Sensoren ab).
+Prüfskripte: `checks/hello.py` (Text am Display), `checks/inventory.py` (listet Module und fragt Sensoren ab).
 
-## Netz (gemessen mit `firmware/nettest.py`)
+## Netz (gemessen mit `checks/nettest.py`)
 
 - Verbinden mit `network.WLAN(network.STA_IF)`; vorher `network.hostname("clippy")` setzen. Das Gerät ist dann
   vom PC aus unter **`clippy.local`** erreichbar, im Test sogar aus einem anderen Netzabschnitt des Routers.
@@ -80,7 +80,7 @@ Der Desktop zeigt ein Bild mit 320×240 Pixeln. Es liegt nur am Gerät, nicht im
 türkis. So macht man eines aus einem beliebigen Bild (schneidet auf 4:3 zu, nimmt etwas Farbe heraus):
 
 ```
-.\tools\make-background.ps1 -Source mein-bild.jpg -Out local\bg\bg.jpg
+.\tools\make_background.ps1 -Source mein-bild.jpg -Out local\bg\bg.jpg
 ```
 
 Mit `-Saturation 1` bleiben die Farben wie im Original, kleinere Werte machen es blasser. Ein JPG dieser Größe
@@ -93,7 +93,7 @@ jederzeit neu aufspielen, egal was auf dem Gerät liegt. Findet `esptool` das Ge
 gedrückt halten, bis innen die grüne LED leuchtet, dann loslassen.
 
 ```
-python -m esptool --port COM5 --baud 921600 write-flash 0x0 firmware/uiflow-cores3-v2.5.4.bin
+python -m esptool --port COM5 --baud 921600 write-flash 0x0 local/firmware/uiflow-cores3-v2.5.4.bin
 ```
 
 Firmware-Datei (nicht im Repo):

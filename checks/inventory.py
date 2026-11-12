@@ -1,4 +1,4 @@
-# Bestandsaufnahme: python -m mpremote connect COM6 resume run firmware/inventory.py
+# Bestandsaufnahme: python -m mpremote connect COM6 resume run checks/inventory.py
 import M5, time
 
 M5.begin()

@@ -1,6 +1,6 @@
 # WLAN-Test: verbinden, Uhr stellen, Datei von GitHub holen und per ETag prüfen, ob sie sich geändert hat.
 # Liest die Zugangsdaten vom PC (local/wifi.json), speichert nichts am Gerät.
-# python -m mpremote connect COM6 resume mount local run firmware/nettest.py
+# python -m mpremote connect COM6 resume mount local run checks/nettest.py
 import M5, network, time, json
 
 M5.begin()

@@ -1,6 +1,6 @@
 """Macht aus einer TTF-Schrift eine geglättete Geräte-Schrift (VLW-Format, lesbar mit Display.loadFont).
 
-    python tools/make-font.py local/fonts/dejavu/DejaVuSans.ttf 12 device/res/font12.vlw
+    python tools/make_font.py local/fonts/dejavu/DejaVuSans.ttf 12 device/res/font12.vlw
 
 Enthält ASCII, deutsche Umlaute und ein paar Satzzeichen. Die Schrift muss frei weitergegeben werden dürfen.
 """

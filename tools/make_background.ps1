@@ -1,6 +1,6 @@
 # Makes a 320x240 desktop background for the device from any picture.
 # Crops to 4:3 around the centre, then tones the colours down.
-#   .\tools\make-background.ps1 -Source Assets\desktop-background.jpg -Out local\bg\bg.jpg
+#   .\tools\make_background.ps1 -Source local\assets\desktop-background.jpg -Out local\bg\bg.jpg
 # Saturation: 1 = original colours, 0 = grey.  Contrast: 1 = original, lower = flatter.
 # Lift: 0 = unchanged, higher = brighter and more washed out.
 param(
