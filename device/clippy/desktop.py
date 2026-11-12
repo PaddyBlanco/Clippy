@@ -4,7 +4,9 @@ import time
 import M5
 
 from clippy import win98
+from clippy.pet import phrases
 from clippy.pet.pet import Pet
+from clippy.pet.senses import Senses
 
 # Bis die Apps aus dem Manifest kommen, stehen hier zwei Platzhalter.
 APPS = (
@@ -34,12 +36,14 @@ def run():
         pass  # am PC (Vorschau) gibt es diese Funktion nicht
     d = M5.Display
     draw(d)
-    clippy = Pet(d)
-    clippy.say("Schaut aus, ois dadst grod an Desktop anschaun. Brauchst a Hüf dabei?")
+    clippy = Pet(d, Senses())
+    clippy.say(phrases.pick("start"))
     shown = status()
+    turn = 0
     while True:
         M5.update()
-        if status() != shown:
+        turn += 1
+        if turn % 16 == 0 and status() != shown:  # etwa einmal je Sekunde nachsehen
             shown = status()
             win98.tray(d, *shown)
         clippy.step()

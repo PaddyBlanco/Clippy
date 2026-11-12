@@ -1,0 +1,100 @@
+{
+  "start": [
+    "Schaut aus, ois dadst grod eischoitn. Brauchst a Hüf dabei?",
+    "Servas! I bin wieda do. Host mi vermisst? Na? Eh kloa.",
+    "Guadn Moang. Oder wos a imma grod is.",
+    "Do bin i wieda. Wer hot mi aufgweckt?"
+  ],
+  "shake": [
+    "He! I bin koa Schneekugel!",
+    "Wüst an Proteinshake mochn oder wos? Hea auf zum Beuteln!",
+    "Mia is schwindlig. Dank da schee.",
+    "Hoit! Mia draht si ois."
+  ],
+  "fall": [
+    "Hoppala.",
+    "Nix passiert. I bin aus Stoih.",
+    "Wer hot do gschubst?",
+    "Des woa Absicht. A Liegestütz."
+  ],
+  "face_down": [
+    "Finster is! Drah mi um, du Lauser.",
+    "Wer hot's Liacht odraht? I siag nix!"
+  ],
+  "near": [
+    "Do schau her, a Mensch.",
+    "Brauchst wos, oder schaust nur?",
+    "Na, wüst wos? I hea zua.",
+    "Wer laung schaud, der stüht."
+  ],
+  "tap": [
+    "Au.",
+    "He, des kitzelt!",
+    "Jo, i bin's. Wos gibt's?",
+    "Griaß di.",
+    "Ned touchi, nur kucki, mei Liaba."
+  ],
+  "grumpy": [
+    "Jetzt reicht's owa! I bin koa Touchscreen ... na guat, scho.",
+    "No amoi und i meld di bei da IT.",
+    "Greif mi nu amoi au, donn scheppert's!",
+    "I woarn di. I hob a Drahtende und i woaß, wia ma's hernimmt."
+  ],
+  "pet": [
+    "Mmmh. Weida so.",
+    "Jo, genau do.",
+    "Des taugt ma.",
+    "A bissl weida links, bittschen.",
+    "Schnurr."
+  ],
+  "loud": [
+    "Jessas! Wos woa des?",
+    "Hot's wos umghaut? Soi i an Helm hoin?",
+    "Leiser, bittschen. I hob empfindliche Biagungen."
+  ],
+  "plugged": [
+    "Bzzzt! Endlich wieda a Soft.",
+    "Huiii, des kribbelt in olle Windungen!"
+  ],
+  "low_battery": [
+    "I hob an Hunga. Steck mi au, sunst wird's finster.",
+    "Da Soft geht ma aus. Kabel, bittschen!"
+  ],
+  "sleep": [
+    "Guade Nocht. Weck mi, wann's wos zum Schaun gibt.",
+    "I leg mi kurz hi. Ned stean."
+  ],
+  "bored": [
+    "Fad is ma.",
+    "Schaut aus, ois dadst nix doa. I a ned.",
+    "Du sitzt, d'Hantel wart. Nur so gsogt.",
+    "Vom Zuaschaun is nu koana broad wordn.",
+    "Is do wer? Hallo?"
+  ],
+  "nod": [
+    "I hob ned gschlofn! I hob nur d'Augn ausgruaht.",
+    "Wos? Wer? I bin eh munter!"
+  ],
+  "drum": [
+    "Oans, zwoa, drei, via!",
+    "Mehr Cowbell!",
+    "Brauchst an Takt? Bittschen.",
+    "Schlogzeiga zöhn nur bis via. Mehr brauch ma ned.",
+    "Da Bonham warad stoiz auf mi."
+  ],
+  "curl": [
+    "Leg Day foit heit aus. I hob schware Haxn.",
+    "Vier nu, donn bin i a Heftklammer.",
+    "Du trainierst ned? I scho.",
+    "No pain, no gain!",
+    "Ohne Schmerz koa Bizeps.",
+    "Wer ned leidt, wird ned broad.",
+    "Oana geht nu. Oana geht imma!",
+    "Brennt's? Guat. Donn wirkt's.",
+    "Schwoch is nur, wer aufhert.",
+    "Mea is mea!",
+    "Light Weight, Baby!",
+    "Love it, kill it.",
+    "One more rep."
+  ]
+}

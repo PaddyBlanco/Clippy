@@ -1,5 +1,6 @@
-# Bewegungen der Klammer: jede liefert Bild für Bild eine Haltung.
-# Neue Bewegung = neue Funktion dieser Art; eintragen in pet.py bei IDLE, wenn sie von selbst kommen soll.
+# Bewegungen der Klammer: jede liefert Bild für Bild eine Haltung (siehe draw.REST).
+# Neue Bewegung = neue Funktion dieser Art; in habits.py bei IDLE (von selbst) oder REACT (auf ein Ereignis) eintragen.
+import math
 import random
 
 from clippy.pet.draw import REST
@@ -16,6 +17,22 @@ def glance():
         yield dict(REST, look=(side, 1), brow=1)
 
 
+def bored():
+    # Langeweile: Augen verdrehen, einmal im Kreis
+    for look in ((0, -4), (3, -4), (5, -2), (5, 0), (3, 2), (0, 3), (-3, 2), (-5, 0), (-3, -3), (0, -4)):
+        yield dict(REST, look=look, lid=0.3, brow=-1)
+        yield dict(REST, look=look, lid=0.3, brow=-1)
+
+
+def nod():
+    # Sekundenschlaf: Lider fallen zu, sie sackt ab und schreckt hoch
+    for lid, bob in ((0.3, 0), (0.5, 1), (0.7, 2), (0.9, 3), (1.0, 4), (1.0, 5), (1.0, 6), (1.0, 6), (1.0, 6)):
+        yield dict(REST, lid=lid, bob=bob)
+        yield dict(REST, lid=lid, bob=bob)
+    for bob in (-4, -3, -1, 0):
+        yield dict(REST, bob=bob, brow=4)
+
+
 def curl():
     # Hantel greifen, viermal heben, weglegen
     for arm in (30, 60, 90, 105):
@@ -27,3 +44,74 @@ def curl():
             yield dict(REST, arm=arm, weight=True, brow=1)
     for arm in (90, 60, 30):
         yield dict(REST, arm=arm)
+
+
+def hit():
+    # ein einzelner Schlag auf die Trommel, wenn jemand mittrommelt
+    for arm in (78, 78, 50):
+        yield dict(REST, arm=arm, stick=True, drum=True, bob=1 if arm == 78 else 0, brow=2, look=(4, 3))
+
+
+def fall():
+    # umfallen: kippt über den linken Fuß, bleibt liegen, rappelt sich auf
+    for lean in (6, 16, 32, 54, 78, 88, 84, 88):
+        yield dict(REST, lean=lean, brow=4, look=(-3, 1))
+    for _ in range(16):
+        yield dict(REST, lean=88, lid=1.0)
+    for lean in (74, 56, 36, 18, 6):
+        yield dict(REST, lean=lean, brow=2)
+
+
+def dizzy():
+    # geschüttelt: Augen kreisen, sie schwankt
+    for i in range(24):
+        yield dict(REST, look=(int(5 * math.cos(i * 0.8)), int(4 * math.sin(i * 0.8))), bob=i % 4 - 1, brow=2)
+
+
+def startle():
+    # Schreck: sie springt hoch und streckt sich, landet gestaucht und federt nach
+    for bob, stretch in ((-6, 6), (-14, 10), (-17, 8), (-14, 4), (-6, 0), (0, -7), (0, -4), (0, 3), (0, 0), (0, 0)):
+        yield dict(REST, bob=bob, stretch=stretch, brow=5)
+
+
+def flinch():
+    # angetippt: sie duckt sich mit zugekniffenen Augen und schüttelt dann den Kopf
+    for stretch in (-5, -8, -8, -4):
+        yield dict(REST, lid=1.0, stretch=stretch, brow=-2)
+    for side in (-5, 5, -5, 5, 0):
+        yield dict(REST, look=(side, 0), brow=3, stretch=2)
+
+
+def grump():
+    # grantig: sie läuft rot an, zieht die Brauen zusammen und bebt
+    for i in range(22):
+        yield dict(REST, red=True, brow=-5, lid=0.35, bob=i % 2, stretch=-2 + i % 3)
+
+
+def threaten():
+    # richtig grantig: rot angelaufen droht sie mit dem Drahtende
+    for i in range(32):
+        yield dict(REST, red=True, brow=-5, lid=0.3, arm=(15, 40, 62, 40)[i % 4], bob=i % 2, look=(0, 2))
+
+
+def enjoy():
+    # gestreichelt: Augen zu, sie wiegt sich wohlig
+    for bob in (0, 1, 2, 2, 1, 0):
+        yield dict(REST, lid=1.0, brow=3, bob=bob, stretch=-1)
+
+
+def perk():
+    # aufmerken: Brauen hoch, sie reckt sich
+    for _ in range(10):
+        yield dict(REST, brow=3, bob=-1)
+
+
+def yawn():
+    for lid in (0.3, 0.5, 0.7, 0.9, 0.9, 0.9, 0.6, 0.4):
+        yield dict(REST, lid=lid, brow=2)
+
+
+def zap():
+    # unter Strom: sie zittert, Blitze zucken
+    for i in range(16):
+        yield dict(REST, bob=(i % 2) * 3 - 1, brow=4, look=(i % 3 - 1, 0), spark=True)

@@ -32,7 +32,8 @@ dokumentiert sind; lies die genannte Datei oder frag nach.
 | Mit dem Gerät verbinden, flashen, retten, Hardware-Fakten | [docs/device.md](docs/device.md) |
 | Pins, I2C-Adressen, Chips, Hersteller-Quellen | [docs/hardware.md](docs/hardware.md) |
 | Neue App bauen | `docs/build-an-app.md` (folgt) |
-| Klammer: Zeichnung, Haltungen, Bewegungen, Sprechblase | [docs/pet.md](docs/pet.md) |
+| Klammer: Zeichnung, Bewegungen, Sinne und Reaktionen, Sprüche | [docs/pet.md](docs/pet.md) |
+| Klammer am Gerät durchtesten | [docs/pet-checklist.md](docs/pet-checklist.md) |
 | Claude Code / Codex mit der Klammer verbinden | `docs/agent-hooks.md` (folgt) |
 | Überblick, Bildschirmaufteilung, Zeichnen, Schrift, Vorschau am PC | [docs/architecture.md](docs/architecture.md) |
 | Ideen für weitere Apps | `docs/ideas.md` (folgt) |
@@ -41,7 +42,7 @@ dokumentiert sind; lies die genannte Datei oder frag nach.
 
 | Ordner | Inhalt |
 |---|---|
-| `apps/` | Je App ein Ordner (`apps/<id>/app.py`); das Gerät holt sie sich selbst (folgt) |
+| `apps/` | `phrases.json` (Sprüche der Klammer) und je App ein Ordner (`apps/<id>/app.py`, folgt); das Gerät holt sich beides selbst (folgt) |
 | `device/` | Abbild des Geräts: `main.py`, Paket `clippy/` (Desktop, Windows-98-Bausteine, Klammer), `res/` |
 | `tools/` | Skripte für den PC: Vorschau ohne Gerät, Hintergrundbild und Schrift erzeugen |
 | `checks/` | Prüfskripte, die einzeln am Gerät laufen |

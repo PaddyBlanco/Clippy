@@ -2,9 +2,8 @@
 import time
 
 from clippy import win98
-from clippy.pet.draw import FIELD_Y
 
-X, W, BOTTOM = 72, 124, FIELD_Y + 46
+X, W, BOTTOM = 72, 124, 106  # endet auf Höhe der Augen
 PAPER = 0xFFFFE1
 BLACK = 0x000000
 LINE_H = win98.FONT_H + 1
