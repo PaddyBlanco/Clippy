@@ -53,6 +53,20 @@ python -m mpremote connect COM6 resume run firmware/hello.py
 
 Prüfskripte: `firmware/hello.py` (Text am Display), `firmware/inventory.py` (listet Module und fragt Sensoren ab).
 
+## Netz (gemessen mit `firmware/nettest.py`)
+
+- Verbinden mit `network.WLAN(network.STA_IF)`; vorher `network.hostname("clippy")` setzen. Das Gerät ist dann
+  vom PC aus unter **`clippy.local`** erreichbar, im Test sogar aus einem anderen Netzabschnitt des Routers.
+- PC → Gerät: Nachrichten direkt an `clippy.local` oder an die Adresse kommen an. Rundrufe (Broadcast) kommen
+  nicht an, wenn PC und Gerät in verschiedenen Netzabschnitten hängen. `ping` blieb unbeantwortet; das ist kein
+  Zeichen, dass das Gerät weg ist.
+- Abruf von GitHub per HTTPS mit `requests`: der erste Abruf nach dem Verbinden dauerte 7,5 s, danach 0,4 s.
+  Während eines Abrufs steht alles andere still.
+- Änderungserkennung: GitHub liefert einen `ETag`. Schickt man ihn als `If-None-Match` mit, kommt `304` ohne
+  Inhalt zurück, solange die Datei gleich ist.
+- Uhr: `ntptime.settime()` stellt sie. `time.gmtime()` ist dann richtig (UTC). `time.localtime()` rechnet mit der
+  voreingestellten Zeitzone der Firmware (UTC+8); umstellen mit `time.timezone("GMT-1")` (= UTC+1).
+
 ## Hintergrundbild
 
 Der Desktop zeigt ein Bild mit 320×240 Pixeln. Es liegt nur am Gerät, nicht im Repo; fehlt es, ist der Desktop
