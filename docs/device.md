@@ -53,6 +53,18 @@ python -m mpremote connect COM6 resume run firmware/hello.py
 
 Prüfskripte: `firmware/hello.py` (Text am Display), `firmware/inventory.py` (listet Module und fragt Sensoren ab).
 
+## Hintergrundbild
+
+Der Desktop zeigt ein Bild mit 320×240 Pixeln. Es liegt nur am Gerät, nicht im Repo; fehlt es, ist der Desktop
+türkis. So macht man eines aus einem beliebigen Bild (schneidet auf 4:3 zu, nimmt etwas Farbe heraus):
+
+```
+.\tools\make-background.ps1 -Source mein-bild.jpg -Out local\bg\bg.jpg
+```
+
+Mit `-Saturation 1` bleiben die Farben wie im Original, kleinere Werte machen es blasser. Ein JPG dieser Größe
+zeichnet das Gerät in etwa 60 ms. Wie es aufs Gerät kommt, steht bei der Installation (folgt).
+
 ## Retten
 
 Der Start-Lader sitzt fest im Chip und wird beim Flashen nicht überschrieben. Die Firmware lässt sich deshalb
