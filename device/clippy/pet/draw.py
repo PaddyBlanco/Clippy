@@ -26,8 +26,9 @@ EYES = ((29, 47), (71, 55))
 EYE_RX, EYE_RY = 17, 14
 BROWS = ((14, 33, 26, 24), (26, 24, 43, 23), (62, 30, 78, 31), (78, 31, 91, 42))
 FOOT = (14, 147)  # um diesen Punkt links unten kippt sie
+FOOT_RIGHT = (90, 147)
 
-REST = {"look": (0, 0), "lid": 0.0, "brow": 0, "bob": 0, "stretch": 0, "lean": 0, "arm": 0, "red": False,
+REST = {"look": (0, 0), "lid": 0.0, "brow": 0, "bob": 0, "dx": 0, "stretch": 0, "lean": 0, "arm": 0, "red": False,
         "weight": False, "stick": False, "drum": False, "spark": False, "zzz": 0, "snot": 0}
 
 
@@ -57,17 +58,19 @@ def draw(g, pose, ox=0):
     lean, bob = pose["lean"], pose["bob"]
     ca, sa = math.cos(math.radians(-lean)), math.sin(math.radians(-lean))
 
+    foot = FOOT if lean >= 0 else FOOT_RIGHT  # nach links kippt sie über den linken Fuß, nach rechts über den rechten
     # Beim Kippen rollt sie auf dem unteren Bogen ab: so weit absenken, dass er am Boden bleibt statt zu schweben
-    ux, uy = ARCS[2][0] - FOOT[0], ARCS[2][1] - FOOT[1]
+    ux, uy = ARCS[2][0] - foot[0], ARCS[2][1] - foot[1]
     drop = max(0, -int(ux * sa + uy * ca) - ARCS[2][2] - 5)
 
     stretch = pose["stretch"]
+    ox += pose["dx"]
 
     def at(x, y):  # Punkt der Figur -> Punkt im Bild: strecken, wippen, um den Fuß kippen, versetzen
         if y < 70:  # obere Hälfte wandert beim Strecken nach oben, die Beine werden länger
             y -= stretch
-        dx, dy = x - FOOT[0], y + bob - FOOT[1]
-        return int(ox + FOOT[0] + dx * ca - dy * sa), int(HEADROOM + FOOT[1] + drop + dx * sa + dy * ca)
+        dx, dy = x - foot[0], y + bob - foot[1]
+        return int(ox + foot[0] + dx * ca - dy * sa), int(HEADROOM + foot[1] + drop + dx * sa + dy * ca)
 
     a = math.radians(pose["arm"])  # Unterarm: 0 = gerade nach oben, 105 = hängt nach außen
     hand = (ELBOW[0] + FOREARM * math.sin(a), ELBOW[1] - FOREARM * math.cos(a))

@@ -30,12 +30,14 @@ Spalte „Getestet“: ✅ = am Gerät gesehen, ⬜ = noch offen. Stand: 12.11.2
 | 13 | ✅ | Blinzeln | alle 2,5 bis 6 Sekunden |
 | 14 | ✅ | Umschauen | nach 6 Sekunden, dann alle 8 bis 20 Sekunden |
 | 16 | ✅ | Bizepscurls mit Hantel | nach 1 Minute, dann alle 3 bis 6 Minuten |
+| 24 | ✅ | Anlehnen: lehnt sich kurz rechts an den Bildschirmrand | nach rund 40 Sekunden, dann alle 2 bis 5 Minuten |
+| 25 | ✅ | Will Aufmerksamkeit: hüpft hin und her und winkt | wenn 1 Minute lang nichts aus 2 bis 10 passiert ist, dann alle 2 bis 4 Minuten |
 | 17 | ✅ | Langeweile: Augen verdrehen | wenn 2 Minuten lang nichts aus 2 bis 10 passiert ist |
 | 18 | ✅ | Sekundenschlaf: sackt ab, schreckt hoch | wenn 3,5 Minuten lang nichts passiert ist |
 | 19 | ✅ | Einschlafen: Augen zu, Zs steigen auf und treiben davon, sie atmet, Display dimmt | nach 5 Minuten Ruhe, nur wenn es dunkel ist; nachts nach 3 Minuten |
-| 23 | ⬜ | Rotzblase im Schlaf, wächst und schrumpft mit dem Atem | bei jedem zehnten Einschlafen, also Glückssache; zum Testen `SNOT_CHANCE` in `habits.py` kurz auf 1 stellen |
+| 23 | ✅ | Rotzblase im Schlaf, wächst und schrumpft mit dem Atem | bei jedem zehnten Einschlafen, also Glückssache; zum Testen `SNOT_CHANCE` in `habits.py` kurz auf 1 stellen |
 
-Bei 16 bis 18 sagt sie bei jedem zweiten Mal etwas dazu. Für 17 bis 19 das Gerät nicht berühren und leise sein,
+Bei 16, 17, 18 und 25 sagt sie bei jedem zweiten Mal etwas dazu. Für 17 bis 19 und 25 das Gerät nicht berühren und leise sein,
 sonst beginnt die Wartezeit von vorn.
 
 ## Schwer zu provozieren

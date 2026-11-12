@@ -28,7 +28,8 @@ Eine **Haltung** (`pose`) ist ein Dictionary; `draw.REST` ist die Ruhehaltung.
 | `bob` | ganze Figur nach unten versetzt, in Pixeln; negativ = Sprung nach oben (bis etwa −20) | 0 |
 | `stretch` | positiv = sie streckt sich nach oben, negativ = sie staucht sich, in Pixeln | 0 |
 | `red` | Draht läuft rot an | False |
-| `lean` | Neigung nach links in Grad, um den linken Fuß: 0 = steht, 88 = liegt | 0 |
+| `lean` | Neigung in Grad: positiv nach links um den linken Fuß (88 = liegt), negativ nach rechts um den rechten Fuß (−15 = lehnt am Bildschirmrand) | 0 |
+| `dx` | ganze Figur seitlich versetzt, in Pixeln; Platz ist etwa −10 bis +25 | 0 |
 | `arm` | Unterarm (freies Drahtende, rechts) in Grad: 0 = gerade nach oben, 105 = hängt nach außen | 0 |
 | `weight` | Hantel in der Hand | False |
 | `stick` | Schlägel in der Hand | False |
@@ -76,7 +77,7 @@ Der Spruch dazu kommt aus `apps/phrases.json` unter demselben Namen.
 | `low_battery` | Akku unter 15 %, alle 5 Minuten | gähnt, hat Hunger |
 
 Dazu ohne Ereignis: Seitliches Kippen lässt die Augen mitrollen. Nachts (23 bis 6 Uhr) hängen die Lider.
-Passiert länger nichts, wird sie stufenweise müde: nach 2 Minuten Langeweile, nach 3,5 Minuten
+Passiert länger nichts, will sie nach 1 Minute beachtet werden (hüpft, winkt) und wird dann stufenweise müde: nach 2 Minuten Langeweile, nach 3,5 Minuten
 Sekundenschlaf (`QUIET` in `habits.py`). Ist es dunkel oder Nacht und passiert 5 bzw. 3 Minuten nichts, schläft sie ein: Lider zu, Zs steigen auf
 und treiben davon, das Display dimmt. Bei jedem zehnten Einschlafen bläst sie dabei eine Rotzblase auf (`SNOT_CHANCE`). Jedes Ereignis weckt sie.
 
@@ -96,7 +97,7 @@ eine Leitung. Wer Ton ausgeben will, muss das Mikrofon vorher beenden (`M5.Mic.e
 „Schaut aus, ois dadst ...“ ist das Markenzeichen, soll aber selten bleiben (ein bis zwei Sprüche), sonst
 wirkt es eintönig. Höchstens etwa 100 Zeichen, sonst passt es nicht in die Blase. Erlaubt sind die
 Zeichen der Geräte-Schrift: ASCII, Umlaute, ß und einige Satzzeichen (siehe `tools/make_font.py`).
-Neben den Ereignissen von oben gibt es `start`, `sleep`, `curl`, `drum`, `bored`, `nod` und `fall`.
+Neben den Ereignissen von oben gibt es `start`, `sleep`, `curl`, `drum`, `attention`, `bored`, `nod` und `fall`.
 
 ## Sprechblase
 
@@ -107,6 +108,6 @@ rund 18 Zeichen.
 ## Feld
 
 Die Klammer lebt in einem Feld von 122×176 Pixeln rechts unten (`FIELD_X`, `FIELD_Y` in `draw.py`).
-Nur beim Umfallen (`lean` ungleich 0) zeichnet sie auf einer breiteren Bühne (`STAGE_W`), die bis an die
+Nur beim Umfallen nach links (`lean` größer 0) zeichnet sie auf einer breiteren Bühne (`STAGE_W`), die bis an die
 Symbol-Spalte reicht; die Sprechblase wird dafür weggeräumt. Nur dieses Feld wird je
 Bild neu gezeichnet. Wer dort etwas anderes zeichnet, wird beim nächsten Bild überschrieben.

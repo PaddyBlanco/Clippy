@@ -39,7 +39,7 @@ class Pet:
         return event in self.until and time.ticks_diff(self.until[event], now) > 0
 
     def show(self):
-        wide = self.pose["lean"] != 0
+        wide = self.pose["lean"] > 0  # nur der Sturz nach links braucht mehr Platz
         if wide or self.was_wide:  # kippt, liegt oder steht gerade wieder auf: breite Bühne
             if self.stage is None:
                 work = self.d.newCanvas(STAGE_W, FIELD_H, 16, True)

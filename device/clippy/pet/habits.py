@@ -7,14 +7,16 @@ IDLE = {
     moves.blink: (2500, 2500, 6000),
     moves.glance: (6000, 8000, 20000),
     moves.curl: (60000, 180000, 360000),
+    moves.lean_on: (40000, 120000, 300000),
+    moves.attention: (75000, 120000, 240000),  # nur wenn sich eine Weile niemand um sie kümmert, siehe QUIET
     moves.bored: (30000, 30000, 70000),   # nur nach längerer Ruhe, siehe QUIET
     moves.nod: (50000, 60000, 150000),    # ebenso
     moves.zap: (25000, 20000, 40000),     # nur solange sie lädt
 }
 # Diese kommen erst, wenn so viele Sekunden lang kein Ereignis war
-QUIET = {moves.bored: 120, moves.nod: 210}
+QUIET = {moves.attention: 60, moves.bored: 120, moves.nod: 210}
 # Zu diesen sagt sie bei jedem zweiten Mal etwas: Bewegung -> Name in phrases.json
-SPOKEN = {moves.curl: "curl", moves.bored: "bored", moves.nod: "nod"}
+SPOKEN = {moves.curl: "curl", moves.attention: "attention", moves.bored: "bored", moves.nod: "nod"}
 
 # Wie sie reagiert: Ereignis -> (Bewegung, Mindestabstand in s, wie oft sie etwas dazu sagt von 0 bis 1)
 REACT = {

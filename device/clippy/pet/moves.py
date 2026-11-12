@@ -33,6 +33,25 @@ def nod():
         yield dict(REST, bob=bob, brow=4)
 
 
+def lean_on():
+    # lehnt sich lässig rechts an den Bildschirmrand
+    for lean in (-4, -8, -12, -15):
+        yield dict(REST, lean=lean)
+    for i in range(40):
+        yield dict(REST, lean=-15, lid=0.25, look=(-4, 1), brow=1 if i % 20 < 10 else 0)
+    for lean in (-10, -5):
+        yield dict(REST, lean=lean)
+
+
+def attention():
+    # will beachtet werden: hüpft hin und her und winkt
+    for dx in (-6, 6, -6, 0):
+        for bob, stretch in ((-5, 4), (-11, 7), (-5, 2), (0, -5)):
+            yield dict(REST, dx=dx, bob=bob, stretch=stretch, brow=4)
+    for i in range(18):
+        yield dict(REST, arm=(10, 30, 50, 30)[i % 4], brow=4, bob=-1 if i % 2 else 0)
+
+
 def curl():
     # Hantel greifen, viermal heben, weglegen
     for arm in (30, 60, 90, 105):
