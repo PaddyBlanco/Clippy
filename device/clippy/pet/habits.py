@@ -1,6 +1,7 @@
 # Gewohnheiten der Klammer als Tabellen: was sie von selbst tut und wie sie auf Ereignisse reagiert.
 # Hier wird eingestellt, nicht programmiert. Die Bewegungen selbst stehen in moves.py.
 from clippy.pet import moves
+from clippy.pet.boredom import bored
 
 # Was sie von selbst tut: Bewegung -> (erstes Mal nach ms, danach Pause von, bis in ms)
 IDLE = {
@@ -9,19 +10,19 @@ IDLE = {
     moves.curl: (60000, 180000, 360000),
     moves.lean_on: (40000, 120000, 300000),
     moves.attention: (75000, 120000, 240000),  # nur wenn sich eine Weile niemand um sie kümmert, siehe QUIET
-    moves.bored: (30000, 30000, 70000),   # nur nach längerer Ruhe, siehe QUIET
-    moves.nod: (50000, 60000, 150000),    # ebenso
-    moves.zap: (25000, 20000, 40000),     # nur solange sie lädt
+    bored: (60000, 15000, 30000),         # nur nach längerer Ruhe, siehe QUIET
 }
+# Was sie stattdessen tut, solange es finster ist: gegen den Schlaf kämpfen
+TIRED = {moves.drowsy: (2500, 2500, 5000)}
 # Diese kommen erst, wenn so viele Sekunden lang kein Ereignis war
-QUIET = {moves.attention: 60, moves.bored: 120, moves.nod: 210}
+QUIET = {moves.attention: 60, bored: 60}
 # Zu diesen sagt sie bei jedem zweiten Mal etwas: Bewegung -> Name in phrases.json
-SPOKEN = {moves.curl: "curl", moves.attention: "attention", moves.bored: "bored", moves.nod: "nod"}
+SPOKEN = {moves.curl: "curl", moves.attention: "attention", bored: "bored"}
 
 # Wie sie reagiert: Ereignis -> (Bewegung, Mindestabstand in s, wie oft sie etwas dazu sagt von 0 bis 1)
 REACT = {
     "shake": (moves.dizzy, 4, 1),
-    "face_down": (moves.grump, 10, 1),
+    "dark": (moves.drowsy, 10, 1),
     "near": (moves.perk, 15, 0.5),
     "tap": (moves.flinch, 0, 0.4),
     "grumpy": (moves.threaten, 0, 1),
@@ -36,6 +37,7 @@ ONGOING = {"beat": ("drum", 1500), "pet": ("pet", 900)}
 # Manchmal reagiert sie anders: Ereignis -> (Bewegung, Spruch danach, wie oft von 0 bis 1)
 SOMETIMES = {"shake": (moves.fall, "fall", 0.35)}
 
-BRIGHT, DIM = 220, 60  # Helligkeit wach und schlafend, von 0 bis 255
-SLEEP_AFTER_DARK, SLEEP_AFTER_NIGHT = 300, 180  # Sekunden ohne Ereignis, bis sie einschläft
+BRIGHT, DUSK, DIM = 220, 110, 60  # Helligkeit wach, bei zugehaltenem Sensor und schlafend, von 0 bis 255
+# Sekunden ohne Ereignis, bis sie einschläft; nach der halben Zeit nickt sie einmal ein
+SLEEP_AFTER_COVERED, SLEEP_AFTER_NIGHT, SLEEP_AFTER_DARK = 40, 180, 300  # Sensor zugehalten, nachts, dunkler Raum
 SNOT_CHANCE = 0.1  # bei jedem zehnten Einschlafen schläft sie mit Rotzblase

@@ -5,16 +5,17 @@ import time
 
 import M5
 
-from clippy.pet.draw import FIELD_X, FIELD_Y
+from clippy.pet.touch import Touch
 
 SHAKE_G = 0.8    # Abweichung von 1 g, ab der eine Messung als Rütteln zählt
 NEAR = 60        # Annäherung: frei 0–6, Finger auf dem Sensor ca. 300
 COVERED = 150    # ab hier gilt der Sensor als zugehalten
+DARK_MS = 2000   # so lange zugehalten, bis es für sie finster ist
 TILT_MAX = 9     # so weit rollen die Augen höchstens zur Seite, in Pixeln
 LOUD = 12000     # Mikrofon: Ruhe bis ca. 500, Klatschen bis 32767
 KNOCK = 4000     # ab hier zählt ein Geräusch als Schlag (Klopfen aufs Gehäuse oder den Tisch)
+BEATS, BEAT_MS = 5, 2500  # so viele Schläge in so vielen ms: da trommelt wer
 LOW_BATTERY = 15
-HOLD_MS = 350    # liegt der Finger länger auf ihr, ist es Streicheln statt Antippen
 
 
 class Senses:
@@ -25,10 +26,9 @@ class Senses:
         self.beats = []        # Zeitpunkte der letzten Schläge
         self.knocking = False
         self.shakes = 0
-        self.near = self.covered = self.touching = False
-        self.taps = []
-        self.touch_start = self.stroke_at = 0
-        self.stroked = False
+        self.near = self.covered = self.dark = False
+        self.covered_at = 0
+        self.touch = Touch()
         self.tilt = 0         # Seitenneigung als Blickversatz in Pixeln
         self.light = 100
         self.night = False
@@ -55,40 +55,28 @@ class Senses:
             events.append("shake")
         self.tilt = max(-TILT_MAX, min(TILT_MAX, int(-ax * 16)))
 
+        now = time.ticks_ms()
         prox = M5.Als.getProximitySensorData()
         covered = prox > COVERED
         near = prox > NEAR
         if covered and not self.covered:
-            events.append("face_down")
-        elif near and not self.near and not covered:
+            self.covered_at = now
+        dark = covered and time.ticks_diff(now, self.covered_at) > DARK_MS  # erst nach einer Weile finster
+        if dark and not self.dark:
+            events.append("dark")
+        if near and not self.near and not covered:
             events.append("near")
-        self.covered, self.near = covered, near
+        self.covered, self.near, self.dark = covered, near, dark
 
-        touching = M5.Touch.getCount() > 0 and M5.Touch.getX() >= FIELD_X and M5.Touch.getY() >= FIELD_Y
-        now = time.ticks_ms()
-        if touching and not self.touching:
-            self.touch_start, self.stroked = now, False
-        if touching and time.ticks_diff(now, self.touch_start) > HOLD_MS:
-            if not self.stroked or time.ticks_diff(now, self.stroke_at) > 400:  # solange gestreichelt wird, alle 0,4 s
-                self.stroked, self.stroke_at = True, now
-                events.append("pet")
-        if self.touching and not touching and not self.stroked:  # kurz angetippt und losgelassen
-            self.taps = [t for t in self.taps if time.ticks_diff(now, t) < 5000] + [now]
-            if len(self.taps) >= 3:
-                self.taps = []
-                events.append("grumpy")
-            else:
-                events.append("tap")
-        self.touching = touching
+        events += self.touch.poll(now)
 
         if not M5.Mic.isRecording():
             peak = max(max(self.sound), -min(self.sound))
             knocking = peak > KNOCK
             if knocking and not self.knocking:  # nur der Anfang eines Geräuschs zählt als Schlag
-                now = time.ticks_ms()
-                self.beats = [t for t in self.beats if time.ticks_diff(now, t) < 1500] + [now]
-                if len(self.beats) >= 3:
-                    events.append("beat")   # drei Schläge kurz hintereinander: da trommelt wer
+                self.beats = [t for t in self.beats if time.ticks_diff(now, t) < BEAT_MS] + [now]
+                if len(self.beats) >= BEATS:
+                    events.append("beat")   # viele Schläge kurz hintereinander: da trommelt wer
                 elif len(self.beats) == 1 and peak > LOUD:
                     events.append("loud")   # ein einzelner Knall
             self.knocking = knocking

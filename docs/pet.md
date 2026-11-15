@@ -8,11 +8,16 @@ und spricht in Sprüchen aus `apps/phrases.json`.
 | Datei | Aufgabe |
 |---|---|
 | `draw.py` | Maße der Figur und `draw(g, pose)`: eine Haltung hinein, ein Bild heraus |
-| `moves.py` | Bewegungen: Blinzeln, Umschauen, Langeweile, Sekundenschlaf, Curls, Trommelschlag, Schwindel, Schreck, ... |
+| `extras.py` | Beiwerk zur Zeichnung: Hantel, Trommel, Schlägel, Blitze, Rotzblase, Zs |
+| `moves.py` | Bewegungen: Blinzeln, Umschauen, Sekundenschlaf, Curls, Trommelschlag, Schwindel, Schreck, ... |
+| `boredom.py` | Was sie aus Langeweile tut: Augen verdrehen, strecken, Schlagzeug-Solo, Hanteln, Kopfrolle, Pogo |
+| `sleep.py` | Müdigkeit: wann sie einnickt und einschläft, wie hell das Display ist, wie sie im Schlaf aussieht |
 | `bubble.py` | Sprechblase samt Zeilenumbruch |
 | `senses.py` | Sinne: liest Sensoren, meldet Ereignisse als Wörter |
+| `touch.py` | Berührung: unterscheidet Antippen von Streicheln |
 | `phrases.py` | Wählt zu einem Ereignis einen Spruch |
-| `habits.py` | Tabellen zum Einstellen: `IDLE` (was sie von selbst tut, wie oft), `REACT` (Reaktion je Ereignis), Schlafzeiten, Helligkeit |
+| `habits.py` | Tabellen zum Einstellen: `IDLE` (was sie von selbst tut, wie oft), `TIRED` (dasselbe im Finstern), `REACT` (Reaktion je Ereignis), Schlafzeiten, Helligkeit |
+| `idle.py` | Führt `IDLE` bzw. `TIRED` aus: welche Bewegung sie als Nächstes von selbst macht |
 | `pet.py` | Klasse `Pet`: hält alles zusammen und führt die Tabellen aus |
 
 ## Wie sie gezeichnet wird
@@ -23,15 +28,17 @@ Eine **Haltung** (`pose`) ist ein Dictionary; `draw.REST` ist die Ruhehaltung.
 | Schlüssel | Bedeutung | Ruhe |
 |---|---|---|
 | `look` | Blickrichtung als (x, y) in Pixeln, etwa −5 bis 5 | (0, 0) |
-| `lid` | Augenlid: 0 = offen, 1 = zu | 0 |
+| `lid` | Augenlid: 0 = offen, 1 = ganz zu (nur ein dunkler Strich); die Pupillen bleiben gleich groß, das Lid schneidet sie ab | 0 |
 | `brow` | Brauen: positiv = gehoben, negativ = gesenkt | 0 |
 | `frown` | böser Blick: Brauen als schräge Striche, außen hoch, innen tief | False |
 | `bob` | ganze Figur nach unten versetzt, in Pixeln; negativ = Sprung nach oben (bis etwa −20) | 0 |
 | `stretch` | positiv = sie streckt sich nach oben, negativ = sie staucht sich, in Pixeln | 0 |
 | `red` | Draht läuft rot an | False |
 | `lean` | Neigung in Grad: positiv nach links um den linken Fuß (88 = liegt), negativ nach rechts um den rechten Fuß (−15 = lehnt am Bildschirmrand) | 0 |
+| `roll` | Rolle in Grad um die Mitte der Figur, die dabei am Boden bleibt: 180 = steht am Kopf | 0 |
 | `dx` | ganze Figur seitlich versetzt, in Pixeln; Platz ist etwa −10 bis +25 | 0 |
 | `arm` | Unterarm (freies Drahtende, rechts) in Grad: 0 = gerade nach oben, 105 = hängt nach außen | 0 |
+| `pogo` | freies Drahtende als Pogostick unter der Figur, Länge in Pixeln unter den Füßen; dazu `bob` = −`pogo`, damit der Stick am Boden steht | 0 |
 | `weight` | Hantel in der Hand | False |
 | `stick` | Schlägel in der Hand | False |
 | `drum` | Trommel rechts unten | False |
@@ -67,20 +74,27 @@ Der Spruch dazu kommt aus `apps/phrases.json` unter demselben Namen.
 | Ereignis | Auslöser | Reaktion |
 |---|---|---|
 | `shake` | Gerät schütteln | Augen kreisen, sie schwankt; in etwa einem Drittel der Fälle fällt sie um (`SOMETIMES`) |
-| `face_down` | Sensor unter dem Display zugehalten | läuft rot an, „finster“ |
+| `dark` | Sensor unter dem Display 2 s lang zugehalten (`DARK_MS`) | wird müde, „I siag nix mehr.“: schwere Lider, entspannte Brauen; solange es finster bleibt, blinzelt sie langsam oder die Augen fallen ihr zu und gehen mühsam wieder auf (`TIRED` in `habits.py`) |
 | `near` | Hand nähert sich dem Sensor | merkt auf |
-| `tap` | Klammer kurz antippen | duckt sich, schüttelt den Kopf |
-| `pet` | Finger länger als 0,35 s auf der Klammer lassen oder darüber streichen | schließt die Augen und wiegt sich, solange gestreichelt wird |
+| `tap` | Klammer kurz antippen: Finger beginnt und endet auf ihr, wandert kaum. Gilt 0,2 s nach dem Loslassen (`RELEASE_MS`) oder sobald der Finger an derselben Stelle wieder aufsetzt; setzt er binnen 0,2 s woanders auf, war es ein Aussetzer beim Wischen | duckt sich, schüttelt den Kopf |
+| `pet` | Finger länger als 0,35 s auf der Klammer lassen, darüber streichen (ab 8 Pixel Weg, `MOVE_PX`) oder von außen hereinwischen; kurzes Berühren bis 1 s nach dem Streicheln zählt noch dazu (alles in `touch.py`) | schließt die Augen und wiegt sich, solange gestreichelt wird |
 | `grumpy` | dreimal antippen innerhalb von 5 Sekunden | läuft rot an und droht mit dem Drahtende |
 | `loud` | ein einzelnes lautes Geräusch | springt hoch, streckt sich, landet gestaucht |
-| `beat` | drei Schläge binnen 1,5 s (Klopfen aufs Gehäuse oder den Tisch), dann jeder weitere | spielt Schlagzeug, ein Schlag je Klopfer, bis 1,5 s Ruhe ist |
-| `plugged` | Ladekabel angesteckt | zittert, Blitze; danach alle 20 bis 40 s wieder, solange sie lädt |
+| `beat` | fünf Schläge binnen 2,5 s (Klopfen aufs Gehäuse oder den Tisch; `BEATS`, `BEAT_MS`), dann jeder weitere | spielt Schlagzeug, ein Schlag je Klopfer, bis 1,5 s Ruhe ist |
+| `plugged` | Ladekabel angesteckt | zittert, Blitze; nur einmal beim Anstecken |
 | `low_battery` | Akku unter 15 %, alle 5 Minuten | gähnt, hat Hunger |
 
 Dazu ohne Ereignis: Seitliches Kippen lässt die Augen mitrollen. Nachts (23 bis 6 Uhr) hängen die Lider.
-Passiert länger nichts, will sie nach 1 Minute beachtet werden (hüpft, winkt) und wird dann stufenweise müde: nach 2 Minuten Langeweile, nach 3,5 Minuten
-Sekundenschlaf (`QUIET` in `habits.py`). Ist es dunkel oder Nacht und passiert 5 bzw. 3 Minuten nichts, schläft sie ein: Lider zu, Zs steigen auf
-und treiben davon, das Display dimmt. Bei jedem zehnten Einschlafen bläst sie dabei eine Rotzblase auf (`SNOT_CHANCE`). Jedes Ereignis weckt sie.
+Passiert länger nichts, will sie nach 1 Minute beachtet werden (hüpft, winkt), dann ist ihr fad und sie beschäftigt sich alle 15 bis 30 s (`QUIET` und `IDLE` in `habits.py`).
+Aus Langeweile schläft sie nicht ein, sondern beschäftigt sich: Augen verdrehen, strecken, Schlagzeug-Solo, Hanteln, auf den Kopf rollen
+und zurück, auf dem Drahtende Pogo hüpfen (`boredom.py`, je Mal eines davon zufällig).
+
+**Müde wird sie nur im Finstern und nachts** (`sleep.py`, Zeiten in `habits.py`). Ohne Ereignis schläft sie ein nach 40 s mit zugehaltenem
+Sensor (`SLEEP_AFTER_COVERED`), nachts (23 bis 6 Uhr) nach 3 Minuten, in einem dunklen Raum nach 5 Minuten. Nach der halben Zeit nickt sie
+einmal ein (Sekundenschlaf: sackt ab, schreckt hoch). Im Schlaf sind die Lider zu, Zs steigen auf und treiben davon. Bei jedem zehnten
+Einschlafen bläst sie dabei eine Rotzblase auf (`SNOT_CHANCE`). Jedes Ereignis weckt sie, ebenso wenn es wieder hell wird.
+
+**Helligkeit:** wach `BRIGHT`, solange der Sensor zugehalten ist `DUSK`, im Schlaf `DIM` (alle in `habits.py`).
 
 Die Schwellen stehen als Konstanten oben in `senses.py` und sind am Gerät gemessen
 (Annäherung frei 0–6, Finger drauf ca. 300; Mikrofon leise bis ca. 500, Klatschen bis 32767).

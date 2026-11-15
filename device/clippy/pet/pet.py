@@ -3,11 +3,11 @@ import random
 import time
 
 from clippy import win98
-from clippy.pet import moves, phrases
+from clippy.pet import moves, phrases, sleep
 from clippy.pet.bubble import Bubble
 from clippy.pet.draw import FIELD_H, FIELD_W, FIELD_X, FIELD_Y, REST, STAGE_W, STAGE_X, draw
-from clippy.pet.habits import (BRIGHT, DIM, IDLE, ONGOING, QUIET, REACT, SLEEP_AFTER_DARK, SLEEP_AFTER_NIGHT,
-                               SNOT_CHANCE, SOMETIMES, SPOKEN)
+from clippy.pet.habits import IDLE, ONGOING, REACT, SNOT_CHANCE, SOMETIMES, SPOKEN, TIRED
+from clippy.pet.idle import Idle
 
 
 class Pet:
@@ -25,13 +25,16 @@ class Pet:
         self.move = None
         self.asleep = False
         now = time.ticks_ms()
-        self.due = {m: time.ticks_add(now, first) for m, (first, _, _) in IDLE.items()}
+        self.idle = Idle(IDLE)
+        self.tired = Idle(TIRED)  # im Finstern statt idle
         self.last = {}           # Ereignis -> wann zuletzt darauf reagiert
         self.awake_since = now
         self.slow_due = now
         self.snore = 0
         self.snot = False        # schläft sie diesmal mit Rotzblase
-        display.setBrightness(BRIGHT)  # nach einem Abbruch im Schlaf wäre es sonst noch gedimmt
+        self.nodded = None       # awake_since beim letzten Einnicken: je Ruhezeit nur einmal
+        self.level = None        # aktuelle Display-Helligkeit
+        self._light()            # nach einem Abbruch im Schlaf wäre es sonst noch gedimmt
         self.until = {}          # Andauerndes (Trommeln, Streicheln): Ereignis -> gilt bis zu diesem Zeitpunkt
         self.show()
 
@@ -39,7 +42,7 @@ class Pet:
         return event in self.until and time.ticks_diff(self.until[event], now) > 0
 
     def show(self):
-        wide = self.pose["lean"] > 0  # nur der Sturz nach links braucht mehr Platz
+        wide = self.pose["lean"] > 0 or self.pose["roll"]  # nur Sturz nach links und Rolle brauchen mehr Platz
         if wide or self.was_wide:  # kippt, liegt oder steht gerade wieder auf: breite Bühne
             if self.stage is None:
                 work = self.d.newCanvas(STAGE_W, FIELD_H, 16, True)
@@ -84,9 +87,7 @@ class Pet:
             if not self._ongoing(event, now) and random.random() < 0.5:
                 self.say(phrases.pick(name))
             self.until[event] = time.ticks_add(now, ms)
-        if self.asleep:
-            self.asleep = False
-            self.d.setBrightness(BRIGHT)
+        self.asleep = False
         if event in SOMETIMES and random.random() < SOMETIMES[event][2]:
             self.play(SOMETIMES[event][0])
             self.then_say = phrases.pick(SOMETIMES[event][1])
@@ -98,19 +99,33 @@ class Pet:
     def _rest_pose(self):
         if self._ongoing("beat", time.ticks_ms()):  # wartet mit erhobenem Schlägel auf den nächsten Schlag
             return dict(REST, arm=50, stick=True, drum=True, brow=2, look=(4, 3))
+        if self.senses.dark:
+            return dict(moves.DROWSY)
         # Ruhehaltung: nachts müde Lider, der Blick folgt der Seitenneigung
         return dict(REST, lid=0.4 if self.senses.night else 0.0, look=(self.senses.tilt, 0))
+
+    def _light(self):
+        level = sleep.brightness(self.senses, self.asleep)
+        if level != self.level:
+            self.level = level
+            self.d.setBrightness(level)
 
     def _every_second(self, now):
         for event in self.senses.slow():
             self.react(event)
-        s = self.senses
-        limit = SLEEP_AFTER_NIGHT if s.night else SLEEP_AFTER_DARK if s.light <= 1 else None
-        if limit and not self.asleep and time.ticks_diff(now, self.awake_since) > limit * 1000:
+        limit = sleep.limit(self.senses)
+        quiet = time.ticks_diff(now, self.awake_since) / 1000
+        if limit is None:
+            self.asleep = False  # es ist wieder hell: aufwachen
+        elif not self.asleep and quiet > limit:
             self.asleep, self.move = True, None
             self.snot = random.random() < SNOT_CHANCE
             self.say(phrases.pick("sleep"), 4)
-            self.d.setBrightness(DIM)
+        elif not self.asleep and quiet > limit / 2 and self.nodded != self.awake_since and self.move is None:
+            self.nodded = self.awake_since  # müde: einmal einnicken und hochschrecken
+            self.play(moves.nod)
+            if random.random() < 0.5:
+                self.say(phrases.pick("nod"))
 
     def step(self):
         """Einmal je Schleifendurchlauf aufrufen."""
@@ -121,21 +136,16 @@ class Pet:
         if time.ticks_diff(now, self.slow_due) > 0:
             self.slow_due = time.ticks_add(now, 1000)
             self._every_second(now)
+        self._light()
 
         busy = self._ongoing("beat", now) or self._ongoing("pet", now)
         if self.move is None and not self.asleep and not busy:
-            for m, due in self.due.items():
-                if time.ticks_diff(now, due) > 0:
-                    _, lo, hi = IDLE[m]
-                    self.due[m] = time.ticks_add(now, random.randint(lo, hi))
-                    if m is moves.zap and not self.senses.charging:
-                        continue
-                    if m in QUIET and time.ticks_diff(now, self.awake_since) < QUIET[m] * 1000:
-                        continue
-                    self.move = m()
-                    if m in SPOKEN and random.random() < 0.5:
-                        self.say(phrases.pick(SPOKEN[m]))
-                    break
+            idle = self.tired if self.senses.dark else self.idle
+            m = idle.next(now, time.ticks_diff(now, self.awake_since))
+            if m:
+                self.move = m()
+                if m in SPOKEN and random.random() < 0.5:
+                    self.say(phrases.pick(SPOKEN[m]))
         if self.move:
             try:
                 self.pose = next(self.move)
@@ -148,9 +158,7 @@ class Pet:
         elif self.asleep:
             self.snore += 1
             if self.snore % 2 == 0:  # jedes zweite Bild: Zs treiben weiter, sie atmet
-                breath = abs(self.snore // 2 % 20 - 10)  # 0 bis 10 und zurück
-                self.pose = dict(REST, lid=1.0, zzz=self.snore // 2, bob=breath // 5,
-                                 snot=3 + breath * 0.6 if self.snot else 0)
+                self.pose = sleep.pose(self.snore // 2, self.snot)
                 self.show()
         elif self.pose != self._rest_pose():  # Neigung geändert oder Schlagzeug weggeräumt
             self.pose = self._rest_pose()

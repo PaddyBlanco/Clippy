@@ -17,13 +17,6 @@ def glance():
         yield dict(REST, look=(side, 1), brow=1)
 
 
-def bored():
-    # Langeweile: Augen verdrehen, einmal im Kreis
-    for look in ((0, -4), (3, -4), (5, -2), (5, 0), (3, 2), (0, 3), (-3, 2), (-5, 0), (-3, -3), (0, -4)):
-        yield dict(REST, look=look, lid=0.3, brow=-1)
-        yield dict(REST, look=look, lid=0.3, brow=-1)
-
-
 def nod():
     # Sekundenschlaf: Lider fallen zu, sie sackt ab und schreckt hoch
     for lid, bob in ((0.3, 0), (0.5, 1), (0.7, 2), (0.9, 3), (1.0, 4), (1.0, 5), (1.0, 6), (1.0, 6), (1.0, 6)):
@@ -101,10 +94,17 @@ def flinch():
         yield dict(REST, look=(side, 0), brow=3, stretch=2)
 
 
-def grump():
-    # grantig: sie läuft rot an, zieht die Brauen zusammen und bebt
-    for i in range(22):
-        yield dict(REST, red=True, brow=0, frown=True, lid=0.35, bob=i % 2, stretch=-2 + i % 3)
+DROWSY = dict(REST, lid=0.5)  # schwere Lider, entspannte Brauen, solange es finster ist
+
+
+def drowsy():
+    # müde im Finstern: langsam blinzeln, oder die Augen fallen zu und gehen mühsam wieder auf
+    if random.random() < 0.5:
+        lids = (0.6, 0.6, 0.7, 0.7, 0.8, 0.8, 0.9, 1.0, 1.0, 1.0, 1.0, 0.9, 0.8, 0.7, 0.6)
+    else:
+        lids = (0.6, 0.65, 0.7, 0.75, 0.8, 0.85, 0.9, 0.95, 1.0, 1.0, 1.0, 1.0, 1.0, 0.3, 0.25, 0.3, 0.35, 0.4, 0.45)
+    for lid in lids:
+        yield dict(DROWSY, lid=lid, bob=1 if lid >= 1 else 0)
 
 
 def threaten():
