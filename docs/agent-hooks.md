@@ -1,12 +1,25 @@
 # Coding-Agents mit der Klammer verbinden
 
-Claude Code, Codex und GitHub Copilot melden über **Hooks**, was sie gerade tun. Ein Skript am PC übersetzt jede
-Meldung in einen von vier Zuständen und schickt ihn per WLAN an das Gerät. Dort reagiert die Klammer, und unten in
-der Taskleiste zeigt ein Kästchen je Agent den Zustand.
+Claude Code, Codex und GitHub Copilot melden über **Hooks**, was sie gerade tun. Jeder Hook schickt sein
+JSON unverändert mit `curl` an Clippy; Clippy wertet es selbst aus. Am PC braucht es dafür nichts außer `curl`
+(in Windows 10/11, macOS und Linux eingebaut): kein Python, kein Repo, kein Skript.
 
 ```
-Agent-Hook ──JSON auf stdin──▶ tools/agent_hook.py <agent> ──UDP──▶ clippy.local:4711 ──▶ pet/agents.py
+Agent-Hook ──JSON auf stdin──▶ curl ──HTTP POST──▶ clippy.local:4711/<agent> ──▶ agent_hooks/ ──▶ pet/agents.py
 ```
+
+## Einrichten (für Beschenkte)
+
+1. WLAN am Gerät einrichten (Startmenü → „WLAN einrichten“ → „Mit Handy“).
+2. Startmenü → **„Mit PC verbinden“**: Clippy zeigt einen Satz. Den Satz in Claude Code, Codex oder Copilot
+   eintippen oder kopieren:
+   `Richte Clippy ein: paddyblanco.github.io/Clippy/verbinden.txt`
+3. Der Agent liest die Anleitung, trägt die Hooks in seine Benutzereinstellungen ein, fragt dabei nach und
+   schickt zum Schluss eine Probe: Die Klammer springt vor Freude.
+
+`manual/verbinden.txt` ist die Anleitung **für den Agent** (nicht für Menschen): je Agent und Betriebssystem
+die genauen Einträge, und dass Bestehendes ergänzt statt überschrieben wird. Die Handbuch-Seite
+`manual/verbinden.html` erklärt dasselbe für Menschen und zeigt den Satz zum Kopieren.
 
 ## Zustände
 
@@ -28,99 +41,41 @@ Agents teilen sich ein Kästchen; die letzte Meldung gilt.
 | Codex | `UserPromptSubmit`, `PostToolUse` | `PermissionRequest` | `Stop`, `Interrupt` | `SessionEnd` |
 | Copilot (CLI und VS Code) | `UserPromptSubmit`, `PostToolUse` | `PermissionRequest`; `notification` mit `permission_prompt` | `Stop` | `SessionEnd` |
 
-Alle drei schicken ein JSON-Objekt auf stdin, in dem `hook_event_name` den Hook nennt (bei Copilot nur, wenn die
-Hooks in der VS-Code-Schreibweise `Stop`, `PostToolUse`, ... eingetragen sind, siehe unten). Andere Hooks und
-Benachrichtigungen werden ignoriert.
-
-## Aufbau am PC
-
-| Datei | Aufgabe |
-|---|---|
-| `tools/agent_hook.py` | Wird vom Hook aufgerufen: `python tools/agent_hook.py claude`. Liest stdin, fragt den Agent nach dem Zustand, schickt das Paket. Endet immer mit 0 und schweigt, auch ohne Gerät |
-| `tools/agents/base.py` | Schnittstelle `Agent`: `name` (Anzeige), `short` (Kürzel im Kästchen, zwei Zeichen), Hook-Namen je Zustand, `state(payload)` liefert den Zustand oder `None` |
-| `tools/agents/claude.py`, `codex.py`, `copilot.py` | Je Agent eine Klasse; ändert nur, was bei ihm anders ist |
-| `tools/agents/__init__.py` | `AGENTS`: Name auf der Befehlszeile → Klasse |
-
-**Neuer Agent:** Datei in `tools/agents/` mit einer Unterklasse von `Agent`, in `AGENTS` eintragen, Hooks des Agents
-auf `python tools/agent_hook.py <name>` richten, Tabelle oben ergänzen. Am Gerät ist nichts zu tun.
-
-Adresse: `clippy.local`, abweichend mit der Umgebungsvariable `CLIPPY_HOST`. Die Namensauflösung kann bei
-ausgeschaltetem Gerät einige Sekunden dauern; das Skript merkt sich deshalb die Adresse 10 Minuten lang und einen
-Fehlschlag 1 Minute lang in `%TEMP%\clippy-address.txt`.
-
-## Nachricht ans Gerät
-
-UDP an Port 4711 (`config.AGENT_PORT`), je Paket ein JSON-Objekt:
-
-```json
-{"agent": "Claude", "short": "Cl", "state": "working"}
-```
-
-Das Gerät braucht keinen Code je Agent: `agent` steht in den Sprüchen (`{agent}` in `apps/phrases.json`),
-`short` im Kästchen. Kein Rückkanal; ist das Gerät aus, geht die Meldung verloren.
+Alle drei schicken ein JSON-Objekt, in dem `hook_event_name` den Hook nennt (bei Copilot nur, wenn die Hooks in
+der VS-Code-Schreibweise `Stop`, `PostToolUse`, ... eingetragen sind). Andere Hooks werden ignoriert.
 
 ## Am Gerät
 
-`device/clippy/wifi.py` verbindet sich beim Start mit dem WLAN aus `/flash/wifi.json`, ohne zu warten.
-`device/clippy/pet/agents.py` horcht, sobald die Verbindung steht, auf dem Port, merkt sich je Agent den Zustand
-und meldet der Klammer die Ereignisse `agent_working`, `agent_waiting` und `agent_done` (siehe [pet.md](pet.md)).
-Die Taskleiste zeichnet die Kästchen links neben der Uhr (`shell.tray`).
+| Datei | Aufgabe |
+|---|---|
+| `device/clippy/agent_hooks/server.py` | Kleiner Webserver auf Port 4711 (`config.AGENT_PORT`), sobald das WLAN steht. Nimmt je Schleifendurchlauf höchstens eine Anfrage an, antwortet sofort `200`. `POST /<agent>` mit dem Hook-JSON; `GET /` zeigt „Clippy hört zu“ (zum Ausprobieren im Browser) |
+| `device/clippy/agent_hooks/base.py` | Schnittstelle `Agent`: `name` (Anzeige), `short` (Kürzel im Kästchen, zwei Zeichen), Hook-Namen je Zustand, `state(payload)` liefert den Zustand oder `None` |
+| `device/clippy/agent_hooks/claude.py`, `codex.py`, `copilot.py` | Je Agent eine Klasse; ändert nur, was bei ihm anders ist |
+| `device/clippy/agent_hooks/__init__.py` | `AGENTS`: Pfad der Anfrage (`claude`, `codex`, `copilot`) → Klasse |
+| `device/clippy/pet/agents.py` | Merkt sich je Agent den Zustand, meldet der Klammer `agent_working`, `agent_waiting`, `agent_done` |
 
-## Einrichten
+Große Meldungen (z. B. wenn der Agent eine lange Datei schreibt): Clippy liest höchstens 32 KB als JSON; ist die
+Meldung größer, sucht es die nötigen Felder (`hook_event_name`, `notification_type`) direkt im Text.
 
-1. **WLAN:** am Gerät Startmenü → „WLAN einrichten“. Oder `local/wifi.json` anlegen (liegt nicht im Repo):
-   `{"ssid": "MeinNetz", "password": "..."}`; `tools/install.ps1` kopiert sie nach `/flash/wifi.json`.
-2. **Probe ohne Agent:** `'{"hook_event_name": "Stop"}' | python tools/agent_hook.py claude` → die Klammer freut sich.
-3. **Hooks eintragen**, jeweils in den Benutzereinstellungen (gelten für alle Projekte). `<REPO>` ist der Pfad zu
-   diesem Repo mit Schrägstrichen, z. B. `C:/Projects/Clippy`.
+**Neuer Agent:** Datei in `agent_hooks/` mit einer Unterklasse von `Agent`, in `AGENTS` eintragen, in
+`manual/verbinden.txt` die Einträge für den Agent ergänzen, Tabelle oben ergänzen.
 
-**Claude Code**, `~/.claude/settings.json` (laufen mit `async` im Hintergrund, Claude wartet nicht):
+## Die Einträge
 
-```json
-{
-  "hooks": {
-    "UserPromptSubmit": [{"hooks": [{"type": "command", "command": "python", "args": ["<REPO>/tools/agent_hook.py", "claude"], "async": true}]}],
-    "PostToolUse": [{"hooks": [{"type": "command", "command": "python", "args": ["<REPO>/tools/agent_hook.py", "claude"], "async": true}]}],
-    "PermissionRequest": [{"hooks": [{"type": "command", "command": "python", "args": ["<REPO>/tools/agent_hook.py", "claude"], "async": true}]}],
-    "Notification": [{"hooks": [{"type": "command", "command": "python", "args": ["<REPO>/tools/agent_hook.py", "claude"], "async": true}]}],
-    "Stop": [{"hooks": [{"type": "command", "command": "python", "args": ["<REPO>/tools/agent_hook.py", "claude"], "async": true}]}],
-    "StopFailure": [{"hooks": [{"type": "command", "command": "python", "args": ["<REPO>/tools/agent_hook.py", "claude"], "async": true}]}],
-    "SessionEnd": [{"hooks": [{"type": "command", "command": "python", "args": ["<REPO>/tools/agent_hook.py", "claude"], "timeout": 3}]}]
-  }
-}
-```
+`curl` schickt stdin (`--data-binary @-`) an Clippy, wartet höchstens 2 s (Copilot 1 s) und endet immer still
+mit 0, auch wenn Clippy aus ist. Gemessen am PC: unbekannter Name nach 1,5 s, Clippy an ohne Webserver nach 2 s;
+Weitergabe von stdin geprüft über `cmd.exe`, PowerShell direkt und PowerShell → `cmd.exe`.
 
-Nicht in die Projektdatei `.claude/settings.json` eintragen: Copilot liest die mit und würde sich als Claude melden.
+- **Claude Code**, `~/.claude/settings.json`, je Hook `"async": true` (Claude wartet nicht). Windows:
+  `{"type": "command", "command": "cmd.exe", "args": ["/c", "curl.exe -s -m 2 --data-binary @- http://clippy.local:4711/claude & exit /b 0"], "async": true}`.
+  macOS/Linux: `{"type": "command", "command": "curl -s -m 2 --data-binary @- http://clippy.local:4711/claude || true", "async": true}`.
+  Kein HTTP-Hook (`"type": "http"`): der meldet bei ausgeschaltetem Clippy jedes Mal einen Fehler im Chat.
+  Nicht in die Projektdatei `.claude/settings.json`: Copilot liest die mit und würde sich als Claude melden.
+- **Codex**, `~/.codex/config.toml`, `async = true`, Windows-Befehl in `command_windows`.
+- **Copilot**, `~/.copilot/hooks/clippy.json` (Kommandozeile und VS Code), Felder `bash` und `powershell`,
+  `timeoutSec`; kennt kein `async`.
 
-**Codex**, `~/.codex/config.toml`, je Hook ein Block dieser Art (`UserPromptSubmit`, `PostToolUse`,
-`PermissionRequest`, `Stop`, `Interrupt`; bei `SessionEnd` ohne `async`, das läuft immer synchron):
-
-```toml
-[[hooks.Stop]]
-[[hooks.Stop.hooks]]
-type = "command"
-command = 'python "<REPO>/tools/agent_hook.py" codex'
-async = true
-```
-
-**Copilot** (Kommandozeile und VS Code), `~/.copilot/hooks/clippy.json`. Die Hook-Namen in VS-Code-Schreibweise,
-nur dann steht `hook_event_name` im JSON; Copilot kennt kein `async`, daher kurze Wartezeit:
-
-```json
-{
-  "version": 1,
-  "hooks": {
-    "UserPromptSubmit": [{"type": "command", "command": "python \"<REPO>/tools/agent_hook.py\" copilot", "timeoutSec": 5}],
-    "PostToolUse": [{"type": "command", "command": "python \"<REPO>/tools/agent_hook.py\" copilot", "timeoutSec": 5}],
-    "PermissionRequest": [{"type": "command", "command": "python \"<REPO>/tools/agent_hook.py\" copilot", "timeoutSec": 5}],
-    "notification": [{"type": "command", "command": "python \"<REPO>/tools/agent_hook.py\" copilot", "timeoutSec": 5}],
-    "Stop": [{"type": "command", "command": "python \"<REPO>/tools/agent_hook.py\" copilot", "timeoutSec": 5}],
-    "SessionEnd": [{"type": "command", "command": "python \"<REPO>/tools/agent_hook.py\" copilot", "timeoutSec": 5}]
-  }
-}
-```
-
-Copilot-Hooks in VS Code sind laut Hersteller noch eine Vorschau und können sich ändern.
+Die vollständigen Einträge stehen in [manual/verbinden.txt](../manual/verbinden.txt).
 
 ## Quellen
 

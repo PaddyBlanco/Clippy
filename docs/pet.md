@@ -14,7 +14,7 @@ und spricht in Sprüchen aus `apps/phrases.json`.
 | `sleep.py` | Müdigkeit: wann sie einnickt und einschläft, wie hell das Display ist, wie sie im Schlaf aussieht |
 | `bubble.py` | Sprechblase samt Zeilenumbruch |
 | `senses.py` | Sinne: liest Sensoren, meldet Ereignisse als Wörter |
-| `agents.py` | Horcht auf Meldungen der Coding-Agents am PC, merkt sich je Agent den Zustand ([agent-hooks.md](agent-hooks.md)) |
+| `agents.py` | Merkt sich je Coding-Agent den Zustand aus dessen Hook-Meldungen ([agent-hooks.md](agent-hooks.md)) |
 | `touch.py` | Berührung: unterscheidet Antippen von Streicheln |
 | `phrases.py` | Wählt zu einem Ereignis einen Spruch |
 | `habits.py` | Tabellen zum Einstellen: `IDLE` (was sie von selbst tut, wie oft), `TIRED` (dasselbe im Finstern), `REACT` (Reaktion je Ereignis), Schlafzeiten, Helligkeit |

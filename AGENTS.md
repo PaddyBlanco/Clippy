@@ -3,6 +3,10 @@
 Ein M5Stack CoreS3 (320×240, nur Touch) mit MicroPython (UIFlow2-Firmware). Die Oberfläche sieht aus wie
 Windows 98; am Desktop sitzt eine Büroklammer, die auf Sensoren und auf Coding-Agents am PC reagiert.
 
+**Ziel: ein Geschenk.** Clippy wird verschenkt. Wer es bekommt, soll so wenig wie möglich einrichten müssen;
+was doch nötig ist, muss ohne Technikwissen in wenigen Schritten gehen (am Gerät antippen, QR-Code scannen,
+einen Satz kopieren). Nichts darf voraussetzen, dass am PC Python, dieses Repo oder Entwicklerwerkzeuge da sind.
+
 **Stand: im Aufbau.** Einträge mit „folgt“ gibt es noch nicht. Erfinde keine Schnittstellen, die hier nicht
 dokumentiert sind; lies die genannte Datei oder frag nach.
 
@@ -49,7 +53,7 @@ dokumentiert sind; lies die genannte Datei oder frag nach.
 |---|---|
 | `apps/` | `manifest.json` (App-Liste), `phrases.json` (Sprüche der Klammer) und je App ein Ordner mit `app.py`; den automatischen Abruf gibt es noch nicht |
 | `device/` | Abbild des Geräts: `main.py`, Paket `clippy/` (Desktop, Startmenü, App-Starter, Windows-98-Bausteine, Klammer), `res/` |
-| `tools/` | Skripte für den PC: aufs Gerät installieren, Vorschau ohne Gerät, Hintergrundbild und Schrift erzeugen, Hooks der Coding-Agents (`agent_hook.py`, `agents/`) |
+| `tools/` | Skripte für den PC: aufs Gerät installieren, Vorschau ohne Gerät, Hintergrundbild und Schrift erzeugen |
 | `checks/` | Prüfskripte, die einzeln am Gerät laufen |
 | `tests/` | Selbsttests am PC |
 | `local/` | Nicht im Repo: WLAN-Daten, Bilder, Firmware-Abbild, heruntergeladene Unterlagen |

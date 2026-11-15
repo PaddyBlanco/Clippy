@@ -1,0 +1,88 @@
+ANLEITUNG FÜR DEN CODING-AGENT: CLIPPY VERBINDEN
+================================================
+
+Du bist ein Coding-Agent (Claude Code, Codex oder GitHub Copilot) und dein Mensch hat dich gebeten,
+"Clippy einzurichten". Clippy ist ein kleines Gerät am Schreibtisch (M5Stack mit einer Büroklammer am
+Bildschirm). Es zeigt an, ob du arbeitest, auf deinen Menschen wartest oder fertig bist. Dafür schickt jeder
+deiner Hooks sein JSON mit curl an Clippy. Mehr braucht es nicht: kein Skript, kein Python, nur curl.
+
+So gehst du vor:
+
+1. Prüfe, ob Clippy erreichbar ist:
+     Windows:        curl.exe -s -m 3 http://clippy.local:4711/
+     macOS/Linux:    curl -s -m 3 http://clippy.local:4711/
+   Erwartet: eine Antwort, die "Clippy" enthält. Kommt nichts, sag deinem Menschen: "Clippy ist nicht im WLAN
+   oder nicht im selben Netz. Am Gerät: Startmenü -> WLAN einrichten." und hör hier auf.
+
+2. Stell fest, welcher Agent du bist und welches Betriebssystem läuft. Nimm unten NUR den Abschnitt für dich.
+
+3. Trag die Hooks in deine BENUTZER-Einstellungen ein (gelten für alle Projekte). Wichtig:
+   - Bestehende Einstellungen und Hooks bleiben erhalten. Nur ergänzen, nichts löschen oder ersetzen.
+   - Sind Clippy-Einträge (Adresse clippy.local:4711) schon da, ersetze nur diese, damit nichts doppelt ist.
+   - Zeig deinem Menschen vor dem Speichern kurz, was du einträgst, und frag nach.
+
+4. Probe: Schick eine Test-Meldung. Clippy springt dann vor Freude und unten erscheint ein grünes Kästchen.
+     Windows:        curl.exe -s -m 3 http://clippy.local:4711/<agent>/probe
+     macOS/Linux:    curl -s -m 3 http://clippy.local:4711/<agent>/probe
+   <agent> ist claude, codex oder copilot. Sag deinem Menschen, er soll auf Clippy schauen.
+
+5. Sag zum Schluss: "Fertig. Damit die Hooks gelten, starte mich bitte einmal neu."
+
+
+ABSCHNITT A: CLAUDE CODE
+------------------------
+Datei: ~/.claude/settings.json  (Windows: %USERPROFILE%\.claude\settings.json)
+NICHT in eine Projektdatei .claude/settings.json eintragen.
+In das Objekt "hooks" (anlegen, falls es fehlt) für JEDES dieser Ereignisse einen Eintrag ergänzen:
+UserPromptSubmit, PostToolUse, PermissionRequest, Notification, Stop, StopFailure, SessionEnd
+
+Windows, je Ereignis:
+  {"hooks": [{"type": "command", "command": "cmd.exe", "args": ["/c", "curl.exe -s -m 2 --data-binary @- http://clippy.local:4711/claude & exit /b 0"], "async": true}]}
+
+macOS/Linux, je Ereignis:
+  {"hooks": [{"type": "command", "command": "curl -s -m 2 --data-binary @- http://clippy.local:4711/claude || true", "async": true}]}
+
+Beispiel Windows für ein Ereignis (die anderen genauso):
+  "hooks": {
+    "Stop": [{"hooks": [{"type": "command", "command": "cmd.exe", "args": ["/c", "curl.exe -s -m 2 --data-binary @- http://clippy.local:4711/claude & exit /b 0"], "async": true}]}]
+  }
+
+
+ABSCHNITT B: CODEX
+------------------
+Datei: ~/.codex/config.toml  (Windows: %USERPROFILE%\.codex\config.toml)
+Für JEDES dieser Ereignisse einen Block ergänzen: UserPromptSubmit, PostToolUse, PermissionRequest, Stop, Interrupt
+Beispiel für Stop (die anderen genauso, nur der Name ändert sich):
+
+  [[hooks.Stop]]
+  [[hooks.Stop.hooks]]
+  type = "command"
+  command = 'curl -s -m 2 --data-binary @- http://clippy.local:4711/codex || true'
+  command_windows = 'cmd.exe /c "curl.exe -s -m 2 --data-binary @- http://clippy.local:4711/codex & exit /b 0"'
+  async = true
+
+Für SessionEnd dasselbe, aber ohne die Zeile async und mit -m 1 statt -m 2 (SessionEnd hat nur 1 Sekunde Zeit).
+Falls in [features] "hooks = false" steht: deinem Menschen sagen, dass Hooks ausgeschaltet sind, und fragen.
+
+
+ABSCHNITT C: GITHUB COPILOT (Kommandozeile und VS Code)
+-------------------------------------------------------
+Datei: ~/.copilot/hooks/clippy.json  (Windows: %USERPROFILE%\.copilot\hooks\clippy.json; Ordner anlegen)
+Ist COPILOT_HOME gesetzt, stattdessen $COPILOT_HOME/hooks/clippy.json.
+Die Datei gehört Clippy allein; ganz so anlegen (Ereignisnamen genau so schreiben, sonst fehlt das Feld
+hook_event_name):
+
+{
+  "version": 1,
+  "hooks": {
+    "UserPromptSubmit": [{"type": "command", "bash": "curl -s -m 1 --data-binary @- http://clippy.local:4711/copilot || true", "powershell": "curl.exe -s -m 1 --data-binary '@-' http://clippy.local:4711/copilot; exit 0", "timeoutSec": 3}],
+    "PostToolUse": [{"type": "command", "bash": "curl -s -m 1 --data-binary @- http://clippy.local:4711/copilot || true", "powershell": "curl.exe -s -m 1 --data-binary '@-' http://clippy.local:4711/copilot; exit 0", "timeoutSec": 3}],
+    "PermissionRequest": [{"type": "command", "bash": "curl -s -m 1 --data-binary @- http://clippy.local:4711/copilot || true", "powershell": "curl.exe -s -m 1 --data-binary '@-' http://clippy.local:4711/copilot; exit 0", "timeoutSec": 3}],
+    "notification": [{"type": "command", "bash": "curl -s -m 1 --data-binary @- http://clippy.local:4711/copilot || true", "powershell": "curl.exe -s -m 1 --data-binary '@-' http://clippy.local:4711/copilot; exit 0", "timeoutSec": 3}],
+    "Stop": [{"type": "command", "bash": "curl -s -m 1 --data-binary @- http://clippy.local:4711/copilot || true", "powershell": "curl.exe -s -m 1 --data-binary '@-' http://clippy.local:4711/copilot; exit 0", "timeoutSec": 3}],
+    "SessionEnd": [{"type": "command", "bash": "curl -s -m 1 --data-binary @- http://clippy.local:4711/copilot || true", "powershell": "curl.exe -s -m 1 --data-binary '@-' http://clippy.local:4711/copilot; exit 0", "timeoutSec": 3}]
+  }
+}
+
+
+Hintergrund für Menschen: https://paddyblanco.github.io/Clippy/verbinden.html

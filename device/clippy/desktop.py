@@ -11,7 +11,7 @@ from clippy.pet.habits import BRIGHT
 from clippy.pet.pet import Pet
 from clippy.pet.senses import Senses
 
-MENU = ("WLAN einrichten", "Handbuch", "Beenden")
+MENU = ("WLAN einrichten", "Mit PC verbinden", "Handbuch", "Beenden")
 MAX_ICONS = 4  # mehr passen nicht in die Spalte am linken Rand
 
 
@@ -44,8 +44,10 @@ def start_menu(d):
     if choice == 0:
         launcher.run_builtin(d, MENU[0], wifi_setup.run)
     elif choice == 1:
-        launcher.show_manual(d)
+        launcher.show_connect(d)
     elif choice == 2:
+        launcher.show_manual(d)
+    elif choice == 3:
         launcher.show_goodbye(d, BRIGHT)
 
 

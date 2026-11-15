@@ -17,12 +17,12 @@ Der Ordner `device/` ist ein Abbild dessen, was am Gerät unter `/flash/` liegt.
 | `device/clippy/wifi.py` | WLAN: beim Start verbinden, ohne zu warten; Netze suchen, verbinden, Zugang speichern |
 | `device/clippy/wifi_setup.py` | „WLAN einrichten“ aus dem Startmenü: Netz wählen, Passwort eingeben, verbinden |
 | `device/clippy/keyboard.py` | Bildschirm-Tastatur für Texteingaben |
+| `device/clippy/agent_hooks/` | Nimmt die Hook-Meldungen der Coding-Agents an (Webserver) und wertet sie je Agent aus, siehe [agent-hooks.md](agent-hooks.md) |
 | `device/clippy/wifi_portal.py` | WLAN einrichten mit dem Handy: eigenes WLAN, QR-Codes, kleiner Web- und Namensserver |
 | `device/clippy/portal_page.py` | Die Einrichtungsseite fürs Handy (HTML) und das Auslesen des Formulars |
 | `device/clippy/pet/` | Die Klammer, siehe [pet.md](pet.md) |
 | `device/res/` | Schriften |
 | `tools/preview.py` | Zeichnet ein Geräte-Skript am PC in ein PNG, ohne Gerät |
-| `tools/agent_hook.py`, `tools/agents/` | Hooks der Coding-Agents am PC: Meldung → Zustand → UDP ans Gerät, siehe [agent-hooks.md](agent-hooks.md) |
 | `checks/` | Prüfskripte, die einzeln am Gerät laufen (Sensoren, Netz, Zeichentempo) |
 | `tests/` | Selbsttests am PC: `python tests/test_<name>.py` |
 
@@ -54,6 +54,10 @@ warten mit `launcher.wait_tap()` auf den nächsten Tipper; solange ruht die Klam
 
 Einträge stehen in `desktop.MENU`, ausgeführt werden sie in `desktop.start_menu`. „Handbuch“ zeigt die Adresse
 aus `config.MANUAL_URL` als QR-Code. „Beenden“ schaltet nur das Display aus, bis man es antippt.
+
+Einträge: „WLAN einrichten“, „Mit PC verbinden“, „Handbuch“, „Beenden“. „Mit PC verbinden“
+(`launcher.show_connect`) zeigt den Satz für den Coding-Agent (`config.CONNECT_SENTENCE`) und, ob Clippy im WLAN ist
+(siehe [agent-hooks.md](agent-hooks.md)).
 
 „WLAN einrichten“ (`wifi_setup.py`) läuft im selben Fensterrahmen wie eine App (`launcher.run_builtin`, X schließt):
 

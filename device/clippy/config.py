@@ -10,5 +10,7 @@ APPS_DIR = "/flash/apps"
 WIFI_FILE = "/flash/wifi.json"
 HOSTNAME = "clippy"  # vom PC aus erreichbar als clippy.local
 
-# Port, auf dem die Meldungen der Coding-Agents ankommen (siehe docs/agent-hooks.md, tools/agent_hook.py)
+# Port, auf dem die Hook-Meldungen der Coding-Agents ankommen (siehe docs/agent-hooks.md)
 AGENT_PORT = 4711
+# Diesen Satz tippt man in Claude Code, Codex oder Copilot; die Anleitung für den Agent liegt in manual/verbinden.txt
+CONNECT_SENTENCE = "Richte Clippy ein: paddyblanco.github.io/Clippy/verbinden.txt"

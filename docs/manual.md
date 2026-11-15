@@ -16,6 +16,8 @@ und Eintrag unter „Was ist neu“ auf der Startseite.
 | `manual/klammer.html` | Die Büroklammer: was sie von selbst tut, worauf sie reagiert |
 | `manual/agents.html` | Claude Code, Codex, Copilot: was die Klammer anzeigt, kurz wie man es einrichtet |
 | `manual/hilfe.html` | Bedienung: Tasten, Desktop, Startmenü, Apps; wenn etwas hängt |
+| `manual/verbinden.html` | Coding-Agents verbinden, für Menschen: der eine Satz, was dabei passiert, wieder entfernen |
+| `manual/verbinden.txt` | Anleitung **für den Coding-Agent**, die er auf den Satz hin liest (siehe [agent-hooks.md](agent-hooks.md)) |
 | `manual/style.css` | Gemeinsames Aussehen |
 | `.github/workflows/manual.yml` | Veröffentlicht `manual/` bei jedem Push auf `main` auf GitHub Pages |
 

@@ -5,7 +5,7 @@ import time
 
 import M5
 
-from clippy import config, win98
+from clippy import config, wifi, win98
 from clippy.win98 import H, TITLE_H, W
 
 CLOSE_ZONE = (W - 48, 40)  # Tipper rechts oben (ab x, bis y) schließt das Fenster
@@ -107,6 +107,25 @@ def show_note(display, title, note):
     for i, line in enumerate(win98.wrap(note, W - 40, lambda t: win98.text_width(display, t))):
         win98.text(display, line, 20, TITLE_H + 30 + i * (win98.FONT_H + 3), win98.DARK, win98.FACE)
     win98.button(display, W // 2 - 40, H - 50, 80, 28, "OK")
+    wait_tap()
+
+
+def show_connect(display):
+    # Der Satz, mit dem sich der Coding-Agent am PC selbst einrichtet (docs/agent-hooks.md)
+    win98.window(display, "Mit PC verbinden")
+    win98.text(display, "Tipp diesen Satz in Claude Code,", 14, TITLE_H + 10, win98.DARK, win98.FACE)
+    win98.text(display, "Codex oder Copilot:", 14, TITLE_H + 28, win98.DARK, win98.FACE)
+    win98.bevel(display, 8, TITLE_H + 50, W - 16, 58, raised=False)
+    display.fillRect(10, TITLE_H + 52, W - 20, 54, win98.LIGHT)
+    lines = win98.wrap(config.CONNECT_SENTENCE, W - 36, lambda t: win98.text_width(display, t))
+    for i, line in enumerate(lines[:3]):  # normale Schrift: die Adresse passt sonst nicht in eine Zeile
+        win98.text(display, line, 16, TITLE_H + 58 + i * 18, win98.DARK, win98.LIGHT)
+    now = wifi.info()
+    note = ("Clippy ist im WLAN %s." % now[0]) if now else "Zuerst: Startmenü > WLAN einrichten."
+    win98.text(display, note, W // 2, TITLE_H + 122, win98.DARK, win98.FACE, align="center")
+    win98.text(display, "Der Agent richtet den Rest selbst ein.", W // 2, TITLE_H + 142, win98.DARK, win98.FACE,
+               align="center")
+    win98.button(display, W // 2 - 40, H - 34, 80, 26, "OK")
     wait_tap()
 
 

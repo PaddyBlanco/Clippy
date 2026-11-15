@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Clippy - Mit dem PC verbinden</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="page">
+<div class="titlebar">Clippy - Mit dem PC verbinden</div>
+<div class="content">
+
+<div class="nav">
+  <a href="index.html">Startseite</a>
+  <a href="klammer.html">Die Klammer</a>
+  <a class="here" href="agents.html">Coding-Agents</a>
+  <a href="hilfe.html">Bedienung &amp; Hilfe</a>
+</div>
+
+<h1>Mit dem PC verbinden</h1>
+<p>Damit die Klammer sieht, was <b>Claude Code</b>, <b>Codex</b> oder <b>GitHub Copilot</b> am PC tun, muss der
+Agent ihr Bescheid geben. Das richtet der Agent selbst ein. Du brauchst nur einen Satz.</p>
+
+<h2>In drei Schritten</h2>
+<ol>
+  <li><b>WLAN:</b> Am Gerät Startmenü &rarr; <a href="hilfe.html">WLAN einrichten</a> &rarr; „Mit Handy“.
+    Clippy muss im selben WLAN sein wie der PC.</li>
+  <li><b>Satz eintippen:</b> Diesen Satz in Claude Code, Codex oder Copilot eintippen oder hineinkopieren
+    (Clippy zeigt ihn auch unter Startmenü &rarr; „Mit PC verbinden“):
+    <p style="text-align:center"><span class="say">Richte Clippy ein: paddyblanco.github.io/Clippy/verbinden.txt</span></p></li>
+  <li><b>Bestätigen:</b> Der Agent liest die Anleitung, zeigt dir, was er einträgt, und fragt nach. Danach schickt
+    er eine Probe: Die Klammer springt vor Freude. Zum Schluss den Agent einmal neu starten.</li>
+</ol>
+<p>Hast du mehrere Agents, den Satz einfach in jedem einmal eintippen.</p>
+
+<h2>Was dabei passiert</h2>
+<p>Der Agent trägt in seine Einstellungen kleine „Hooks“ ein. Das sind Befehle, die er bei jeder Anfrage, jeder
+Rückfrage und am Ende seiner Antwort ausführt. Jeder Hook schickt mit dem Programm <i>curl</i> eine kurze
+Nachricht an Clippy. Curl ist in Windows 10/11, macOS und Linux schon eingebaut; installiert wird nichts.
+Ist Clippy aus, merkt der Agent davon nichts.</p>
+<p>Die Anleitung für den Agent ist öffentlich und lesbar:
+<a href="verbinden.txt">verbinden.txt</a>.</p>
+
+<h2>Wieder entfernen</h2>
+<p>Sag deinem Agent: <span class="say">Entferne alle Hooks, die an clippy.local schicken.</span></p>
+
+<hr>
+<div class="footer">
+  Zuletzt aktualisiert: 15.11.2026 &middot; <a href="agents.html">Zurück zu Coding-Agents</a>
+</div>
+</div>
+</div>
+</body>
+</html>
