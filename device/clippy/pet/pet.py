@@ -66,7 +66,7 @@ class Pet:
 
     def say(self, s, seconds=6):
         if s:
-            self.bubble.say(s, seconds)
+            self.bubble.say(s.replace("{agent}", self.senses.agents.last), seconds)
 
     def react(self, event):
         move, gap, chatty = REACT[event]
@@ -96,6 +96,8 @@ class Pet:
             return dict(REST, arm=50, stick=True, drum=True, brow=2, look=(4, 3))
         if self.senses.dark:
             return dict(moves.DROWSY)
+        if self.senses.agents.working():  # ein Agent arbeitet: sie schaut gespannt zu
+            return dict(REST, look=(-5, -1), brow=2)
         # Ruhehaltung: nachts müde Lider, der Blick folgt der Seitenneigung
         return dict(REST, lid=0.4 if self.senses.night else 0.0, look=(self.senses.tilt, 0))
 

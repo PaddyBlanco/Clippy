@@ -35,7 +35,7 @@ dokumentiert sind; lies die genannte Datei oder frag nach.
 | Neue App bauen | [docs/build-an-app.md](docs/build-an-app.md) |
 | Klammer: Zeichnung, Bewegungen, Sinne und Reaktionen, Sprüche | [docs/pet.md](docs/pet.md) |
 | Klammer am Gerät durchtesten | [docs/pet-checklist.md](docs/pet-checklist.md) |
-| Claude Code / Codex mit der Klammer verbinden | `docs/agent-hooks.md` (folgt) |
+| Claude Code / Codex / Copilot mit der Klammer verbinden | [docs/agent-hooks.md](docs/agent-hooks.md) |
 | Überblick, Bildschirmaufteilung, Zeichnen, Schrift, Vorschau am PC | [docs/architecture.md](docs/architecture.md) |
 | Ideen für weitere Apps | `docs/ideas.md` (folgt) |
 
@@ -45,7 +45,7 @@ dokumentiert sind; lies die genannte Datei oder frag nach.
 |---|---|
 | `apps/` | `manifest.json` (App-Liste), `phrases.json` (Sprüche der Klammer) und je App ein Ordner mit `app.py`; den automatischen Abruf gibt es noch nicht |
 | `device/` | Abbild des Geräts: `main.py`, Paket `clippy/` (Desktop, Startmenü, App-Starter, Windows-98-Bausteine, Klammer), `res/` |
-| `tools/` | Skripte für den PC: aufs Gerät installieren, Vorschau ohne Gerät, Hintergrundbild und Schrift erzeugen |
+| `tools/` | Skripte für den PC: aufs Gerät installieren, Vorschau ohne Gerät, Hintergrundbild und Schrift erzeugen, Hooks der Coding-Agents (`agent_hook.py`, `agents/`) |
 | `checks/` | Prüfskripte, die einzeln am Gerät laufen |
 | `tests/` | Selbsttests am PC |
 | `local/` | Nicht im Repo: WLAN-Daten, Bilder, Firmware-Abbild, heruntergeladene Unterlagen |

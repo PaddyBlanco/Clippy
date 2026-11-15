@@ -14,6 +14,7 @@ und spricht in Sprüchen aus `apps/phrases.json`.
 | `sleep.py` | Müdigkeit: wann sie einnickt und einschläft, wie hell das Display ist, wie sie im Schlaf aussieht |
 | `bubble.py` | Sprechblase samt Zeilenumbruch |
 | `senses.py` | Sinne: liest Sensoren, meldet Ereignisse als Wörter |
+| `agents.py` | Horcht auf Meldungen der Coding-Agents am PC, merkt sich je Agent den Zustand ([agent-hooks.md](agent-hooks.md)) |
 | `touch.py` | Berührung: unterscheidet Antippen von Streicheln |
 | `phrases.py` | Wählt zu einem Ereignis einen Spruch |
 | `habits.py` | Tabellen zum Einstellen: `IDLE` (was sie von selbst tut, wie oft), `TIRED` (dasselbe im Finstern), `REACT` (Reaktion je Ereignis), Schlafzeiten, Helligkeit |
@@ -85,6 +86,9 @@ Der Spruch dazu kommt aus `apps/phrases.json` unter demselben Namen.
 | `beat` | fünf Schläge binnen 2,5 s (Klopfen aufs Gehäuse oder den Tisch; `BEATS`, `BEAT_MS`), dann jeder weitere | spielt Schlagzeug, ein Schlag je Klopfer, bis 1,5 s Ruhe ist |
 | `plugged` | Ladekabel angesteckt | zittert, Blitze; nur einmal beim Anstecken |
 | `low_battery` | Akku unter 15 %, alle 5 Minuten | gähnt, hat Hunger |
+| `agent_working` | ein Coding-Agent am PC arbeitet ([agent-hooks.md](agent-hooks.md)) | merkt auf, höchstens alle 30 s; solange ein Agent arbeitet, schaut sie gespannt zur Seite |
+| `agent_waiting` | ein Agent wartet auf dich; alle 30 s wieder, bis ein neuer Zustand kommt oder du sie antippst | hüpft, winkt, ruft |
+| `agent_done` | ein Agent ist fertig | springt vor Freude, reckt das Drahtende |
 | `flip` | Gerät auf den Kopf gestellt oder wieder zurück | Desktop dreht sich, sie fällt auf den Kopf und rollt an ihren Platz, siehe „Auf dem Kopf“ |
 
 Dazu ohne Ereignis: Seitliches Kippen lässt die Augen mitrollen. Nachts (23 bis 6 Uhr) hängen die Lider.
@@ -116,6 +120,7 @@ eine Leitung. Wer Ton ausgeben will, muss das Mikrofon vorher beenden (`M5.Mic.e
 wirkt es eintönig. Höchstens etwa 100 Zeichen, sonst passt es nicht in die Blase. Erlaubt sind die
 Zeichen der Geräte-Schrift: ASCII, Umlaute, ß und einige Satzzeichen (siehe `tools/make_font.py`).
 Neben den Ereignissen von oben gibt es `start`, `sleep`, `curl`, `drum`, `attention`, `bored`, `nod` und `fall`.
+In den Sprüchen zu `agent_*` steht `{agent}` für den Namen des Agents („Claude“, „Codex“, „Copilot“).
 
 ## Sprechblase
 

@@ -1,6 +1,6 @@
 # Aufbau
 
-Stand: Desktop, Klammer, Startmenü und Apps im Fenster laufen. Abruf und Agent-Anbindung folgen.
+Stand: Desktop, Klammer, Startmenü, Apps im Fenster und Agent-Anbindung laufen. Der Abruf von Apps folgt.
 
 ## Dateien
 
@@ -13,10 +13,12 @@ Der Ordner `device/` ist ein Abbild dessen, was am Gerät unter `/flash/` liegt.
 | `device/clippy/shell.py` | Taskleiste, Symbole und Startmenü zeichnen; sagt, was unter dem Finger liegt |
 | `device/clippy/launcher.py` | Startet eine App im Fenster, fängt Fehler ab (Bluescreen); Handbuch- und Abschiedsbild |
 | `device/clippy/win98.py` | Farben, Schrift und Grundformen: Text, Knopf, 3D-Kante, Fenster, Bluescreen |
-| `device/clippy/config.py` | Einstellungen an einer Stelle: Adresse des Handbuchs, Ablageort der Apps |
+| `device/clippy/config.py` | Einstellungen an einer Stelle: Adresse des Handbuchs, Ablageort der Apps, WLAN-Datei, Port für Agents |
+| `device/clippy/wifi.py` | Verbindet beim Start mit dem WLAN aus `/flash/wifi.json`, ohne zu warten |
 | `device/clippy/pet/` | Die Klammer, siehe [pet.md](pet.md) |
 | `device/res/` | Schriften |
 | `tools/preview.py` | Zeichnet ein Geräte-Skript am PC in ein PNG, ohne Gerät |
+| `tools/agent_hook.py`, `tools/agents/` | Hooks der Coding-Agents am PC: Meldung → Zustand → UDP ans Gerät, siehe [agent-hooks.md](agent-hooks.md) |
 | `checks/` | Prüfskripte, die einzeln am Gerät laufen (Sensoren, Netz, Zeichentempo) |
 | `tests/` | Selbsttests am PC: `python tests/test_<name>.py` |
 
@@ -31,7 +33,7 @@ Importiert wird immer vom Paket aus, z. B. `from clippy import win98` oder `from
    │                          │ Klammer │ │   Feld der Klammer: 110×150 bei x=205, y=58
    │                          │         │ │
 212├──────────────────────────┴─────────┴─┤
-   │ [Start]                 [Akku % 20:36]│   Taskleiste: 28 hoch
+   │ [Start]      [Cl][Co]   [Akku % 20:36]│   Taskleiste: 28 hoch; Kästchen je Coding-Agent links neben der Uhr
 240└──────────────────────────────────────┘
 ```
 

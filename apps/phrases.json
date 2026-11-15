@@ -11,6 +11,24 @@
     "Mia is schwindlig. Dank da schee.",
     "Hoit! Mia draht si ois."
   ],
+  "agent_working": [
+    "Da {agent} hackelt. I schau eam zua.",
+    "Psst, {agent} denkt nach.",
+    "{agent} tippt, i schau. Arbeitsteilung.",
+    "Schaut aus, ois dad {agent} di Arbeit mochn."
+  ],
+  "agent_waiting": [
+    "He! {agent} braucht di!",
+    "{agent} wart auf di. Schau amoi!",
+    "Hallo? {agent} hot a Frog!",
+    "Ohne di geht nix weida. Sogt {agent}."
+  ],
+  "agent_done": [
+    "{agent} is firti! Schau's da au.",
+    "Fertig! {agent} hot gliefat.",
+    "Juhu, {agent} is durch!",
+    "{agent} hot Feierabend. Du no ned."
+  ],
   "flip": [
     "He! Wer hot mi auf'n Kopf gstöd?",
     "Au! Mei Birn! Aus Stoih is a ned unkaputtbar.",

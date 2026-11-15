@@ -8,10 +8,26 @@ ICON_W, ICON_H = 68, 50      # Zelle eines Symbols; die Symbole stehen in einer 
 MENU_W, ENTRY_H = 150, 38    # Startmenü: Breite und Höhe eines Eintrags
 
 
-def tray(g, hhmm, battery, charging):
-    # Versenktes Feld rechts: Akku-Symbol, Prozent, Uhr
+AGENT_COLORS = {"working": (0xFFE000, DARK), "waiting": (0xE02020, 0xFFFFFF), "done": (0x20A020, 0xFFFFFF)}
+
+
+def agents(g, x_end, states):
+    # Kästchen je Coding-Agent, rechtsbündig bis x_end: Kürzel auf der Farbe des Zustands (docs/agent-hooks.md)
+    y = TASKBAR_Y + 4
+    g.fillRect(x_end - 4 * 24, y, 4 * 24, 21, FACE)  # Platz für höchstens vier, vorher leeren
+    for i, (short, state) in enumerate(states[:4]):
+        bg, fg = AGENT_COLORS.get(state, (FACE, DARK))
+        x = x_end - (i + 1) * 24
+        win98.bevel(g, x, y, 22, 21, raised=False)
+        g.fillRect(x + 2, y + 2, 18, 17, bg)
+        win98.text(g, short, x + 11, y + 3, fg, bg, align="center")
+
+
+def tray(g, hhmm, battery, charging, agent_states=()):
+    # Versenktes Feld rechts: Akku-Symbol, Prozent, Uhr; links davon die Kästchen der Coding-Agents
     w = 104
     x, y = W - 3 - w, TASKBAR_Y + 4
+    agents(g, x - 3, agent_states)
     win98.bevel(g, x, y, w, 21, raised=False)
     bx, by = x + 5, y + 5
     g.drawRect(bx, by, 17, 10, DARK)
@@ -25,7 +41,7 @@ def tray(g, hhmm, battery, charging):
     win98.text(g, hhmm, x + w - 5, y + 3, DARK, FACE, align="right")
 
 
-def taskbar(g, hhmm, battery, charging):
+def taskbar(g, hhmm, battery, charging, agent_states=()):
     g.fillRect(0, TASKBAR_Y, W, TASKBAR_H, FACE)
     g.drawLine(0, TASKBAR_Y + 1, W, TASKBAR_Y + 1, LIGHT)
     win98.bevel(g, 2, TASKBAR_Y + 4, 22 + win98.text_width(g, "Start", bold=True) + 6, 22)  # Breite folgt der Schrift
@@ -33,7 +49,7 @@ def taskbar(g, hhmm, battery, charging):
     for dx, dy, c in ((0, 0, 0xE02020), (7, 0, 0x20A020), (0, 7, 0x2040E0), (7, 7, 0xE0C000)):
         g.fillRect(7 + dx, TASKBAR_Y + 9 + dy, 6, 6, c)
     win98.text(g, "Start", 24, TASKBAR_Y + 8, DARK, FACE, bold=True)
-    tray(g, hhmm, battery, charging)
+    tray(g, hhmm, battery, charging, agent_states)
 
 
 def icon(g, index, name, color, letters):

@@ -5,6 +5,7 @@ import time
 
 import M5
 
+from clippy.pet.agents import Agents
 from clippy.pet.touch import Touch
 
 SHAKE_G = 0.8    # Abweichung von 1 g, ab der eine Messung als Rütteln zählt
@@ -31,6 +32,7 @@ class Senses:
         self.near = self.covered = self.dark = False
         self.covered_at = 0
         self.touch = Touch()
+        self.agents = Agents()  # Coding-Agents am PC, über WLAN
         self.tilt = 0         # Seitenneigung als Blickversatz in Pixeln
         self.flipped = False  # steht das Gerät auf dem Kopf
         self.flip_since = None
@@ -81,7 +83,10 @@ class Senses:
             events.append("near")
         self.covered, self.near, self.dark = covered, near, dark
 
-        events += self.touch.poll(now)
+        touched = self.touch.poll(now)
+        if touched:
+            self.agents.acknowledge()  # angetippt: wer auf dich wartet, ruft nicht mehr
+        events += touched + self.agents.poll(now)
 
         if not M5.Mic.isRecording():
             peak = max(max(self.sound), -min(self.sound))

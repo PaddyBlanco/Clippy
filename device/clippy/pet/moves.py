@@ -119,6 +119,15 @@ def enjoy():
         yield dict(REST, lid=1.0, brow=3, bob=bob, stretch=-1)
 
 
+def cheer():
+    # freut sich: springt zweimal hoch, reckt das Drahtende und winkt damit
+    for _ in range(2):
+        for bob, stretch in ((0, -4), (-8, 5), (-14, 7), (-8, 4), (0, -4)):
+            yield dict(REST, bob=bob, stretch=stretch, arm=-15, brow=5)
+    for i in range(8):
+        yield dict(REST, arm=(-15, 15)[i // 2 % 2], brow=4)
+
+
 def perk():
     # aufmerken: Brauen hoch, sie reckt sich
     for _ in range(10):

@@ -33,6 +33,9 @@ REACT = {
     "plugged": (moves.zap, 0, 1),
     "low_battery": (moves.yawn, 0, 1),
     "flip": (tumble, 0, 0),  # Spruch erst nach dem Rollen, siehe SOMETIMES
+    "agent_working": (moves.perk, 30, 0.5),
+    "agent_waiting": (moves.attention, 10, 1),
+    "agent_done": (moves.cheer, 0, 1),
 }
 # Andauerndes: Ereignis -> (Spruch-Name zu Beginn, gilt so viele ms nach dem letzten Ereignis noch als andauernd)
 ONGOING = {"beat": ("drum", 1500), "pet": ("pet", 900)}

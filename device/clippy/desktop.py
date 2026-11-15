@@ -5,7 +5,7 @@ import time
 
 import M5
 
-from clippy import config, launcher, shell, win98
+from clippy import config, launcher, shell, wifi, win98
 from clippy.pet import phrases
 from clippy.pet.habits import BRIGHT
 from clippy.pet.pet import Pet
@@ -23,16 +23,17 @@ def load_apps():
         return []  # ohne Liste gibt es eben keine Symbole
 
 
-def status():
+def status(senses):
     t = time.localtime()
-    return "%02d:%02d" % (t[3], t[4]), M5.Power.getBatteryLevel(), M5.Power.isCharging()
+    return ("%02d:%02d" % (t[3], t[4]), M5.Power.getBatteryLevel(), M5.Power.isCharging(),
+            senses.agents.summary())
 
 
-def draw(g, apps):
+def draw(g, apps, senses):
     win98.backdrop(g, 0, 0)
     for i, app in enumerate(apps):
         shell.icon(g, i, app["name"], int(app["color"][1:], 16), app["icon"])
-    shell.taskbar(g, *status())
+    shell.taskbar(g, *status(senses))
 
 
 def start_menu(d):
@@ -55,19 +56,20 @@ def run():
         time.timezone("CET+1CEST,M3.5.0,M10.5.0/3")
     except Exception:
         pass  # am PC (Vorschau) gibt es diese Funktion nicht
+    wifi.connect()  # wartet nicht; die Agents horchen, sobald die Verbindung steht
     d = M5.Display
     apps = load_apps()
-    draw(d, apps)
     senses = Senses()
-    clippy = Pet(d, senses, lambda g: draw(g, apps))
+    draw(d, apps, senses)
+    clippy = Pet(d, senses, lambda g: draw(g, apps, senses))
     clippy.say(phrases.pick("start"))
-    shown = status()
+    shown = status(senses)
     turn, down = 0, True
     while True:
         M5.update()
         turn += 1
-        if turn % 16 == 0 and status() != shown:  # etwa einmal je Sekunde nachsehen
-            shown = status()
+        if turn % 16 == 0 and status(senses) != shown:  # etwa einmal je Sekunde nachsehen
+            shown = status(senses)
             shell.tray(d, *shown)
         if turn % 400 == 0:  # etwa alle halbe Minute ein Lebenszeichen auf die USB-Konsole
             print("clippy läuft seit", time.ticks_ms() // 1000, "s, frei", gc.mem_free())
@@ -79,9 +81,9 @@ def run():
                 start_menu(d)
             else:
                 launcher.run_app(d, apps[target]["id"], apps[target]["name"], senses)
-            draw(d, apps)       # zurück am Desktop: alles neu zeichnen
+            draw(d, apps, senses)  # zurück am Desktop: alles neu zeichnen
             clippy.refresh()
-            shown = status()
+            shown = status(senses)
 
         clippy.step()
         time.sleep_ms(60)

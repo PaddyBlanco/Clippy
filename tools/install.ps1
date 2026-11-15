@@ -19,5 +19,6 @@ $mp += "resume"   # do not restart the device before copying
 & $Python @mp cp device/boot.py device/main.py ":/flash/" + cp -r device/clippy device/res ":/flash/" + cp -r apps ":/flash/"
 if ($LASTEXITCODE -ne 0) { Write-Error "Copying failed. Is the device connected? Press its reset button once and try again."; exit 1 }
 if (Test-Path local/bg/bg.jpg) { & $Python @mp cp local/bg/bg.jpg ":/flash/bg.jpg" }   # background lives outside the repo
+if (Test-Path local/wifi.json) { & $Python @mp cp local/wifi.json ":/flash/wifi.json" }   # WLAN secrets, never in the repo
 & $Python @mp reset
 "Installed. The device restarts now."
