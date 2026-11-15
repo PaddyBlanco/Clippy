@@ -26,6 +26,9 @@ dokumentiert sind; lies die genannte Datei oder frag nach.
    (z. B. „Klammer blinzelt und spricht“). Keine „fix“- oder „wip“-Commits; Korrekturen vor dem Hochladen
    in den passenden Commit einarbeiten. Nach dem Hochladen wird nichts mehr umgeschrieben.
 
+8. **Handbuch immer aktuell.** Was man am Gerät sieht oder bedient, steht im Handbuch `manual/` (Webseite für
+   Beschenkte). Neue oder geänderte Funktion → Handbuch im selben Commit nachziehen. Siehe [docs/manual.md](docs/manual.md).
+
 ## Aufgabe → lies diese Datei
 
 | Aufgabe | Datei |
@@ -37,6 +40,7 @@ dokumentiert sind; lies die genannte Datei oder frag nach.
 | Klammer am Gerät durchtesten | [docs/pet-checklist.md](docs/pet-checklist.md) |
 | Claude Code / Codex / Copilot mit der Klammer verbinden | [docs/agent-hooks.md](docs/agent-hooks.md) |
 | Überblick, Bildschirmaufteilung, Zeichnen, Schrift, Vorschau am PC | [docs/architecture.md](docs/architecture.md) |
+| Handbuch (Webseite für Beschenkte) pflegen und veröffentlichen | [docs/manual.md](docs/manual.md) |
 | Ideen für weitere Apps | `docs/ideas.md` (folgt) |
 
 ## Ordner
@@ -50,3 +54,4 @@ dokumentiert sind; lies die genannte Datei oder frag nach.
 | `tests/` | Selbsttests am PC |
 | `local/` | Nicht im Repo: WLAN-Daten, Bilder, Firmware-Abbild, heruntergeladene Unterlagen |
 | `docs/` | Doku, je Aufgabe eine Datei |
+| `manual/` | Handbuch als Webseite (GitHub Pages), siehe [docs/manual.md](docs/manual.md) |

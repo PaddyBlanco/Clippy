@@ -1,7 +1,7 @@
 # Einstellungen an einer Stelle. Wer das Repo übernimmt, ändert nur hier.
 
 # Adresse des Handbuchs; das Startmenü zeigt sie als QR-Code.
-MANUAL_URL = "https://github.com/PaddyBlanco/Clippy"
+MANUAL_URL = "https://paddyblanco.github.io/Clippy/"  # Handbuch-Webseite aus manual/, siehe docs/manual.md
 
 # Wo abgerufene Apps und Sprüche am Gerät liegen
 APPS_DIR = "/flash/apps"

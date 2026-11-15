@@ -1,0 +1,112 @@
+/* Clippy-Handbuch: private Homepage von 1998, aber am Handy lesbar. */
+body {
+  margin: 0;
+  padding: 12px;
+  background-color: #008080;
+  background-image: radial-gradient(#0a9a9a 1px, transparent 1px);
+  background-size: 6px 6px;
+  font-family: "Times New Roman", Times, serif;
+  font-size: 17px;
+  color: #000000;
+}
+.page {
+  max-width: 760px;
+  margin: 0 auto;
+  background: #ffffff;
+  border: 3px outset #c0c0c0;
+}
+.titlebar {
+  background: linear-gradient(90deg, #000080, #1084d0);
+  color: #ffffff;
+  font-family: Tahoma, Verdana, sans-serif;
+  font-weight: bold;
+  font-size: 14px;
+  padding: 3px 6px;
+}
+.content { padding: 10px 16px 16px; }
+h1 {
+  font-family: "Comic Sans MS", "Comic Sans", cursive;
+  color: #800080;
+  text-align: center;
+  font-size: 32px;
+  margin: 8px 0;
+  text-shadow: 2px 2px #c0c0c0;
+}
+h2 {
+  font-family: Arial, Helvetica, sans-serif;
+  color: #000080;
+  border-bottom: 2px ridge #c0c0c0;
+  font-size: 21px;
+  margin-top: 26px;
+}
+a { color: #0000ee; }
+a:visited { color: #551a8b; }
+hr { border: 0; border-top: 3px ridge #c0c0c0; margin: 16px 0; }
+.nav { text-align: center; margin: 8px 0 4px; }
+.nav a {
+  display: inline-block;
+  margin: 3px 2px;
+  padding: 4px 10px;
+  background: #c0c0c0;
+  border: 2px outset #ffffff;
+  color: #000000;
+  text-decoration: none;
+  font-family: Tahoma, Verdana, sans-serif;
+  font-size: 14px;
+}
+.nav a.here { border-style: inset; font-weight: bold; }
+.marquee {
+  background: #000000;
+  color: #00ff00;
+  font-family: "Courier New", monospace;
+  padding: 3px 0;
+  margin: 8px 0;
+}
+.blink { animation: blink 1s steps(1) infinite; color: #ff0000; font-weight: bold; }
+@keyframes blink { 50% { visibility: hidden; } }
+table.box { border-collapse: collapse; width: 100%; margin: 8px 0; }
+table.box th { background: #000080; color: #ffffff; font-family: Arial, sans-serif; font-size: 15px; }
+table.box th, table.box td { border: 2px inset #c0c0c0; padding: 5px 7px; vertical-align: top; text-align: left; }
+table.box tr:nth-child(even) td { background: #ffffe1; }
+.wrap { overflow-x: auto; }
+.shot {
+  border: 2px dashed #808080;
+  background: #c0c0c0;
+  color: #404040;
+  text-align: center;
+  font-family: "Courier New", monospace;
+  padding: 26px 8px;
+  margin: 10px auto;
+  max-width: 340px;
+}
+.say {
+  background: #ffffe1;
+  border: 1px solid #000000;
+  border-radius: 8px;
+  padding: 4px 9px;
+  font-family: Tahoma, Verdana, sans-serif;
+  font-size: 15px;
+  display: inline-block;
+}
+.footer {
+  text-align: center;
+  font-size: 13px;
+  color: #404040;
+  font-family: Arial, sans-serif;
+}
+.hello { text-align: center; }
+.hello svg { width: 110px; height: auto; vertical-align: middle; }
+.hello .say { vertical-align: middle; }
+table.box td, table.box th { overflow-wrap: break-word; hyphens: auto; }
+
+/* Handy: weniger Rand, kleinere Überschriften, Tabellen enger */
+@media (max-width: 520px) {
+  body { padding: 6px; font-size: 16px; }
+  .content { padding: 6px 10px 12px; }
+  h1 { font-size: 25px; }
+  h2 { font-size: 19px; }
+  .nav a { padding: 4px 7px; font-size: 13px; }
+  table.box th, table.box td { padding: 4px 5px; font-size: 15px; }
+  .hello svg { width: 80px; }
+}
+.chip { display: inline-block; min-width: 26px; text-align: center; border: 2px inset #c0c0c0; font-family: Tahoma, sans-serif; }
