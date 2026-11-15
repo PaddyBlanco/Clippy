@@ -2,23 +2,23 @@
 import random
 import time
 
-from clippy import win98
 from clippy.pet import moves, phrases, sleep
 from clippy.pet.bubble import Bubble
-from clippy.pet.draw import FIELD_H, FIELD_W, FIELD_X, FIELD_Y, REST, STAGE_W, STAGE_X, draw
+from clippy.pet.draw import REST
 from clippy.pet.habits import IDLE, ONGOING, REACT, SNOT_CHANCE, SOMETIMES, SPOKEN, TIRED
 from clippy.pet.idle import Idle
+from clippy.pet.stage import Stage
+
+UPRIGHT, UPSIDE_DOWN = 0, 2  # Display-Drehung (setRotation) für das normal stehende und das umgedrehte Gerät
 
 
 class Pet:
-    def __init__(self, display, senses):
+    def __init__(self, display, senses, paint):
+        """paint(g): zeichnet den ganzen Desktop nach g, z. B. nach dem Umdrehen."""
         self.d = display
         self.senses = senses
-        self.work = display.newCanvas(FIELD_W, FIELD_H, 16, True)
-        self.back = self.work.newCanvas(FIELD_W, FIELD_H, 16, True)  # Desktop-Ausschnitt, einmal geholt
-        win98.backdrop(self.back, FIELD_X, FIELD_Y)
-        self.stage = None        # breite Bühne zum Umfallen, wird erst beim ersten Sturz angelegt
-        self.was_wide = False
+        self.paint = paint
+        self.stage = Stage(display, paint)
         self.then_say = None     # Spruch, der nach der laufenden Bewegung kommt
         self.bubble = Bubble(display)
         self.pose = dict(REST)
@@ -42,30 +42,23 @@ class Pet:
         return event in self.until and time.ticks_diff(self.until[event], now) > 0
 
     def show(self):
-        wide = self.pose["lean"] > 0 or self.pose["roll"]  # nur Sturz nach links und Rolle brauchen mehr Platz
-        if wide or self.was_wide:  # kippt, liegt oder steht gerade wieder auf: breite Bühne
-            if self.stage is None:
-                work = self.d.newCanvas(STAGE_W, FIELD_H, 16, True)
-                back = work.newCanvas(STAGE_W, FIELD_H, 16, True)
-                win98.backdrop(back, STAGE_X, FIELD_Y)
-                self.stage = (work, back)
+        if self.stage.needs_wide(self.pose):
             self.bubble.hush()  # die Blase läge mitten auf der Bühne
-            work, back = self.stage
-            back.push(0, 0)
-            draw(work, self.pose, STAGE_W - FIELD_W)
-            work.push(STAGE_X, FIELD_Y)
-        else:
-            self.back.push(0, 0)
-            draw(self.work, self.pose)
-            self.work.push(FIELD_X, FIELD_Y)
-        self.was_wide = wide
+        self.stage.show(self.pose)
 
     def refresh(self):
         """Nach einer App: Der Desktop wurde neu gezeichnet, also auch sich selbst, und die Blase ist weg."""
         self.bubble.box = None
-        self.was_wide = False
+        self.stage.was_wide = False
         self.awake_since = time.ticks_ms()
         self.show()
+
+    def _turn_desktop(self):
+        """Das Gerät wurde umgedreht: Display mitdrehen, Desktop neu; sie selbst zeichnet gleich tumble."""
+        self.d.setRotation(UPSIDE_DOWN if self.senses.flipped else UPRIGHT)
+        self.paint(self.d)
+        self.bubble.box = None
+        self.stage.was_wide = False
 
     def play(self, move):
         """Startet eine Bewegung sofort, z. B. clippy.play(moves.curl)."""
@@ -88,6 +81,8 @@ class Pet:
                 self.say(phrases.pick(name))
             self.until[event] = time.ticks_add(now, ms)
         self.asleep = False
+        if event == "flip":
+            self._turn_desktop()
         if event in SOMETIMES and random.random() < SOMETIMES[event][2]:
             self.play(SOMETIMES[event][0])
             self.then_say = phrases.pick(SOMETIMES[event][1])

@@ -2,6 +2,7 @@
 # Hier wird eingestellt, nicht programmiert. Die Bewegungen selbst stehen in moves.py.
 from clippy.pet import moves
 from clippy.pet.boredom import bored
+from clippy.pet.tumble import tumble
 
 # Was sie von selbst tut: Bewegung -> (erstes Mal nach ms, danach Pause von, bis in ms)
 IDLE = {
@@ -31,11 +32,12 @@ REACT = {
     "beat": (moves.hit, 0, 0),
     "plugged": (moves.zap, 0, 1),
     "low_battery": (moves.yawn, 0, 1),
+    "flip": (tumble, 0, 0),  # Spruch erst nach dem Rollen, siehe SOMETIMES
 }
 # Andauerndes: Ereignis -> (Spruch-Name zu Beginn, gilt so viele ms nach dem letzten Ereignis noch als andauernd)
 ONGOING = {"beat": ("drum", 1500), "pet": ("pet", 900)}
 # Manchmal reagiert sie anders: Ereignis -> (Bewegung, Spruch danach, wie oft von 0 bis 1)
-SOMETIMES = {"shake": (moves.fall, "fall", 0.35)}
+SOMETIMES = {"shake": (moves.fall, "fall", 0.35), "flip": (tumble, "flip", 1)}
 
 BRIGHT, DUSK, DIM = 220, 110, 60  # Helligkeit wach, bei zugehaltenem Sensor und schlafend, von 0 bis 255
 # Sekunden ohne Ereignis, bis sie einschläft; nach der halben Zeit nickt sie einmal ein

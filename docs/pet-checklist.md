@@ -21,6 +21,7 @@ Spalte „Getestet“: ✅ = am Gerät gesehen, ⬜ = noch offen. Stand: 15.11.2
 | 10 | ✅ | Schlagzeug: sie trommelt mit | fünfmal und öfter innerhalb von 2,5 Sekunden aufs Gehäuse oder den Tisch klopfen; hört 1,5 Sekunden nach dem letzten Klopfer auf |
 | 11 | ✅ | Unter Strom: Zittern und Blitze | Ladekabel anstecken; nur einmal, nicht wieder, solange der Akku lädt |
 | 22 | ✅ | Streicheln: Augen zu, sie wiegt sich | Finger auf die Klammer legen und liegen lassen oder darüber streichen, auch mehrmals kurz hintereinander; hört auf, sobald du loslässt. Gegenprobe: schnell hintereinander auf sie tippen ist kein Streicheln, sie duckt sich und wird grantig |
+| 27 | ✅ | Auf dem Kopf: Desktop dreht sich, sie fällt auf den Kopf, rollt nach rechts an ihren Platz, läuft rot an und beschwert sich | Gerät auf den Kopf stellen und kurz halten; danach wieder zurückdrehen, das Gleiche noch einmal. Tippen auf Symbole und die Klammer muss danach weiter stimmen |
 | 12 | ✅ | Aufwachen | irgendetwas aus 2 bis 10 tun, während sie schläft |
 
 ## Von selbst

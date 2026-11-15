@@ -7,9 +7,9 @@ from clippy.pet import extras
 HEADROOM = 24  # Luft über dem Kopf, damit sie springen kann
 FIELD_W, FIELD_H = 122, 152 + HEADROOM
 FIELD_X, FIELD_Y = 320 - FIELD_W, 212 - FIELD_H
-# Zum Umfallen und Rollen braucht sie Platz nach links: breitere Bühne, nur solange sie kippt, liegt oder rollt
-STAGE_W = 252
-STAGE_X = 320 - STAGE_W
+# Zum Umfallen und Rollen braucht sie Platz nach links: Bühne über die ganze Breite, nur solange sie kippt oder rollt
+STAGE_W = 320
+STAGE_X = 0
 
 SILVER = (0x4A4A55, 0xA8A8B8, 0xE4E4EE)  # Draht: Kontur, Fläche, Glanzlicht
 ANGRY = (0x6A1818, 0xD85050, 0xFFB8B8)   # dasselbe, wenn sie rot anläuft

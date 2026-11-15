@@ -6,9 +6,9 @@ Alles hier wurde am echten Gerät geprüft, außer wo „ungetestet“ steht.
 
 | Teil | Zugriff in MicroPython | Stand |
 |---|---|---|
-| Display 320×240 | `M5.Display` (Formen, Bögen, Text, PNG/JPG, QR-Code) | geprüft |
-| Touch | `M5.Touch` (`getCount`, `getX`, `getY`, `getDetail`) | geprüft |
-| Bewegung, Kompass | `M5.Imu` (`getAccel`, `getGyro`, `getMag`) | geprüft |
+| Display 320×240 | `M5.Display` (Formen, Bögen, Text, PNG/JPG, QR-Code). Drehung `setRotation`: 0 = normal, 2 = auf dem Kopf | geprüft (`checks/orientation.py`) |
+| Touch | `M5.Touch` (`getCount`, `getX`, `getY`, `getDetail`); die Koordinaten folgen der Display-Drehung | geprüft |
+| Bewegung, Kompass | `M5.Imu` (`getAccel`, `getGyro`, `getMag`). Schwerkraft in `getAccel()`: normal hingestellt y ≈ +1, auf dem Kopf y ≈ −1, flach liegend z ≈ ±1 | geprüft (`checks/orientation.py`) |
 | Lautsprecher | `M5.Speaker` (`tone`, `playWav`, `playWavFile`) | geprüft |
 | Mikrofon | `M5.Mic` (`record`, `recordWavFile`); vorher `M5.Speaker.end()`, beide teilen sich die Leitung | geprüft |
 | Annäherung | `M5.Als.getProximitySensorData()`, in der Schleife `M5.update()` aufrufen. Sitzt im Streifen unter dem Display | geprüft: frei 0–6, Finger drauf ca. 300 |

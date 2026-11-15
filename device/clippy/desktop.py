@@ -59,7 +59,7 @@ def run():
     apps = load_apps()
     draw(d, apps)
     senses = Senses()
-    clippy = Pet(d, senses)
+    clippy = Pet(d, senses, lambda g: draw(g, apps))
     clippy.say(phrases.pick("start"))
     shown = status()
     turn, down = 0, True

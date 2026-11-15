@@ -18,6 +18,8 @@ und spricht in Sprüchen aus `apps/phrases.json`.
 | `phrases.py` | Wählt zu einem Ereignis einen Spruch |
 | `habits.py` | Tabellen zum Einstellen: `IDLE` (was sie von selbst tut, wie oft), `TIRED` (dasselbe im Finstern), `REACT` (Reaktion je Ereignis), Schlafzeiten, Helligkeit |
 | `idle.py` | Führt `IDLE` bzw. `TIRED` aus: welche Bewegung sie als Nächstes von selbst macht |
+| `tumble.py` | Gerät auf den Kopf gestellt: sie fällt auf den Kopf und rollt an ihren Platz |
+| `stage.py` | Zeichnet sie ins Feld oder, solange sie kippt oder rollt, auf die Bühne |
 | `pet.py` | Klasse `Pet`: hält alles zusammen und führt die Tabellen aus |
 
 ## Wie sie gezeichnet wird
@@ -83,6 +85,7 @@ Der Spruch dazu kommt aus `apps/phrases.json` unter demselben Namen.
 | `beat` | fünf Schläge binnen 2,5 s (Klopfen aufs Gehäuse oder den Tisch; `BEATS`, `BEAT_MS`), dann jeder weitere | spielt Schlagzeug, ein Schlag je Klopfer, bis 1,5 s Ruhe ist |
 | `plugged` | Ladekabel angesteckt | zittert, Blitze; nur einmal beim Anstecken |
 | `low_battery` | Akku unter 15 %, alle 5 Minuten | gähnt, hat Hunger |
+| `flip` | Gerät auf den Kopf gestellt oder wieder zurück | Desktop dreht sich, sie fällt auf den Kopf und rollt an ihren Platz, siehe „Auf dem Kopf“ |
 
 Dazu ohne Ereignis: Seitliches Kippen lässt die Augen mitrollen. Nachts (23 bis 6 Uhr) hängen die Lider.
 Passiert länger nichts, will sie nach 1 Minute beachtet werden (hüpft, winkt), dann ist ihr fad und sie beschäftigt sich alle 15 bis 30 s (`QUIET` und `IDLE` in `habits.py`).
@@ -123,6 +126,15 @@ rund 18 Zeichen.
 ## Feld
 
 Die Klammer lebt in einem Feld von 122×176 Pixeln rechts unten (`FIELD_X`, `FIELD_Y` in `draw.py`).
-Nur beim Umfallen nach links (`lean` größer 0) zeichnet sie auf einer breiteren Bühne (`STAGE_W`), die bis an die
-Symbol-Spalte reicht; die Sprechblase wird dafür weggeräumt. Nur dieses Feld wird je
-Bild neu gezeichnet. Wer dort etwas anderes zeichnet, wird beim nächsten Bild überschrieben.
+Beim Umfallen nach links (`lean` größer 0) und beim Rollen (`roll`) zeichnet sie auf der Bühne: ein Streifen in
+Feldhöhe über die ganze Breite (`STAGE_W`, `stage.py`). Als Hintergrund dient der ganze Desktop samt Symbolen,
+den `desktop.draw` einmal in eine eigene Leinwand malt; die Sprechblase wird dafür weggeräumt. Nur Feld bzw. Bühne
+werden je Bild neu gezeichnet. Wer dort etwas anderes zeichnet, wird beim nächsten Bild überschrieben.
+
+## Auf dem Kopf
+
+Steht das Gerät 0,6 s lang auf dem Kopf (`FLIP_G`, `FLIP_MS` in `senses.py`), meldet `senses.py` das Ereignis
+`flip`, ebenso beim Zurückdrehen. Die Klammer dreht dann das Display um 180° (`setRotation`), lässt den Desktop
+neu zeichnen und spielt `tumble.py`: Sie hängt dort, wo sie vor dem Drehen war (jetzt links oben, verkehrt herum),
+fällt auf den Kopf, rollt nach rechts an ihren Platz, läuft dabei rot an und beschwert sich danach (`flip` in
+`apps/phrases.json`). Die Augen rollen beim Kippen auch umgedreht in die richtige Richtung.

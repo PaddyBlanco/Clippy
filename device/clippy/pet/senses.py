@@ -12,6 +12,8 @@ NEAR = 60        # Annäherung: frei 0–6, Finger auf dem Sensor ca. 300
 COVERED = 150    # ab hier gilt der Sensor als zugehalten
 DARK_MS = 2000   # so lange zugehalten, bis es für sie finster ist
 TILT_MAX = 9     # so weit rollen die Augen höchstens zur Seite, in Pixeln
+FLIP_G = 0.6     # Schwerkraft in y: normal hingestellt ca. +1, auf dem Kopf ca. −1
+FLIP_MS = 600    # so lange muss die neue Lage halten, bis sie als umgedreht gilt
 LOUD = 12000     # Mikrofon: Ruhe bis ca. 500, Klatschen bis 32767
 KNOCK = 4000     # ab hier zählt ein Geräusch als Schlag (Klopfen aufs Gehäuse oder den Tisch)
 BEATS, BEAT_MS = 5, 2500  # so viele Schläge in so vielen ms: da trommelt wer
@@ -30,6 +32,8 @@ class Senses:
         self.covered_at = 0
         self.touch = Touch()
         self.tilt = 0         # Seitenneigung als Blickversatz in Pixeln
+        self.flipped = False  # steht das Gerät auf dem Kopf
+        self.flip_since = None
         self.light = 100
         self.night = False
         self.charging = M5.Power.isCharging()
@@ -53,9 +57,18 @@ class Senses:
         if self.shakes >= 3:
             self.shakes = 0
             events.append("shake")
-        self.tilt = max(-TILT_MAX, min(TILT_MAX, int(-ax * 16)))
-
         now = time.ticks_ms()
+        flipped = True if ay < -FLIP_G else False if ay > FLIP_G else self.flipped  # flach liegend: bleibt, wie es war
+        if flipped == self.flipped:
+            self.flip_since = None
+        elif self.flip_since is None:
+            self.flip_since = now
+        elif time.ticks_diff(now, self.flip_since) > FLIP_MS:
+            self.flipped, self.flip_since = flipped, None
+            events.append("flip")
+        side = ax if self.flipped else -ax  # umgedreht zeigt die x-Achse andersherum
+        self.tilt = max(-TILT_MAX, min(TILT_MAX, int(side * 16)))
+
         prox = M5.Als.getProximitySensorData()
         covered = prox > COVERED
         near = prox > NEAR
