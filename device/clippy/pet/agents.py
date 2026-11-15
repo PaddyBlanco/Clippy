@@ -5,7 +5,8 @@ import time
 from clippy.agent_hooks import AGENTS
 from clippy.agent_hooks.server import HookServer
 
-REPEAT_MS = 30000          # wartet ein Agent noch auf dich, ruft sie so oft wieder
+REPEAT_MS = 30000          # wartet ein Agent noch auf dich, ruft sie nach dieser Zeit wieder ...
+CALLS = 3                  # ... aber höchstens so oft insgesamt; danach bleibt nur das rote Kästchen
 EXPIRE_MS = 30 * 60 * 1000  # so lange ohne Meldung, dann ist der Agent vergessen
 EVENTS = {"working": "agent_working", "waiting": "agent_waiting", "done": "agent_done"}
 
@@ -27,14 +28,15 @@ class Agents:
         elif state:
             name = agent_class.name
             self.known[name] = {"short": agent_class.short, "state": state, "heard": now, "called": now,
-                                "seen": False}
+                                "calls": 1, "seen": False}
             self.last = name
             events.append(EVENTS[state])
         for name, a in list(self.known.items()):
             if time.ticks_diff(now, a["heard"]) > EXPIRE_MS:
                 del self.known[name]
-            elif a["state"] == "waiting" and not a["seen"] and time.ticks_diff(now, a["called"]) > REPEAT_MS:
-                a["called"], self.last = now, name
+            elif (a["state"] == "waiting" and not a["seen"] and a["calls"] < CALLS
+                  and time.ticks_diff(now, a["called"]) > REPEAT_MS):
+                a["called"], a["calls"], self.last = now, a["calls"] + 1, name
                 events.append("agent_waiting")
         return events
 

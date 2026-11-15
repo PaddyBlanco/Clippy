@@ -26,7 +26,7 @@ die genauen Einträge, und dass Bestehendes ergänzt statt überschrieben wird. 
 | Zustand | Bedeutung | Klammer | Kästchen |
 |---|---|---|---|
 | `working` | Agent arbeitet (Anfrage bekommen, Werkzeug benutzt) | merkt auf; solange gearbeitet wird, schaut sie gespannt zur Seite; Spruch höchstens alle 30 s | gelb |
-| `waiting` | Agent wartet auf eine Freigabe oder Antwort | hüpft, winkt, ruft; wiederholt alle 30 s, bis ein neuer Zustand kommt oder du sie antippst | rot |
+| `waiting` | Agent wartet auf eine Freigabe oder Antwort | hüpft, winkt, ruft; nach 30 und 60 s noch einmal, also höchstens dreimal (`CALLS`), und nicht mehr, sobald ein neuer Zustand kommt oder du sie antippst | rot, bleibt bis zum nächsten Zustand |
 | `done` | Agent ist mit seiner Antwort fertig | freut sich und sagt es | grün |
 | `gone` | Sitzung beendet | – | verschwindet |
 

@@ -75,4 +75,16 @@ assert got == ("codex", {"hook_event_name": "PermissionRequest"})
 got, _, seconds = curl(["--data-binary", "@-", base + "/claude"], big)  # curl fragt hier „100-continue“
 assert got == ("claude", {"hook_event_name": "PostToolUse"}) and seconds < 0.9, seconds
 hooks.sock.close()
+
+# Wartet ein Agent, ruft die Klammer höchstens dreimal (sofort, nach 30 und nach 60 s)
+from clippy.pet import agents as pet_agents
+tracker = pet_agents.Agents()
+inbox = [("codex", {"hook_event_name": "PermissionRequest"})]
+tracker.server = types.SimpleNamespace(poll=lambda now: inbox.pop(0) if inbox else None)
+calls = sum(tracker.poll(t * 1000).count("agent_waiting") for t in range(0, 120, 2))
+assert calls == pet_agents.CALLS == 3, calls
+assert tracker.summary() == (("Cx", "waiting"),)  # das rote Kästchen bleibt
+inbox.append(("codex", {"hook_event_name": "SessionEnd"}))
+tracker.poll(130000)
+assert tracker.summary() == ()
 print("ok")

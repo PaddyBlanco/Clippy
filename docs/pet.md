@@ -87,7 +87,7 @@ Der Spruch dazu kommt aus `apps/phrases.json` unter demselben Namen.
 | `plugged` | Ladekabel angesteckt | zittert, Blitze; nur einmal beim Anstecken |
 | `low_battery` | Akku unter 15 %, alle 5 Minuten | gähnt, hat Hunger |
 | `agent_working` | ein Coding-Agent am PC arbeitet ([agent-hooks.md](agent-hooks.md)) | merkt auf, höchstens alle 30 s; solange ein Agent arbeitet, schaut sie gespannt zur Seite |
-| `agent_waiting` | ein Agent wartet auf dich; alle 30 s wieder, bis ein neuer Zustand kommt oder du sie antippst | hüpft, winkt, ruft |
+| `agent_waiting` | ein Agent wartet auf dich; nach 30 und 60 s noch einmal (höchstens dreimal), nicht mehr nach einem neuen Zustand oder Antippen | hüpft, winkt, ruft |
 | `agent_done` | ein Agent ist fertig | springt vor Freude, reckt das Drahtende |
 | `flip` | Gerät auf den Kopf gestellt oder wieder zurück | Desktop dreht sich, sie fällt auf den Kopf und rollt an ihren Platz, siehe „Auf dem Kopf“ |
 
