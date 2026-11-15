@@ -62,6 +62,24 @@ def wait_tap():
         seen_up = seen_up or not down
 
 
+def _crash(display, title, e):
+    out = io.StringIO()
+    sys.print_exception(e, out)
+    win98.bluescreen(display, title, out.getvalue())
+    wait_tap()
+
+
+def run_builtin(display, title, run):
+    """Eingebautes Programm im selben Fensterrahmen wie eine App, z. B. „WLAN einrichten“: run(ctx)."""
+    ctx = Ctx(display, title)
+    try:
+        run(ctx)
+    except Exception as e:
+        _crash(display, title, e)
+    finally:
+        ctx.close()
+
+
 def run_app(display, app_id, title, senses):
     """Lädt apps/<id>/app.py frisch und ruft run(ctx). Jeder Fehler endet im Bluescreen, nie im Stillstand."""
     folder = config.APPS_DIR + "/" + app_id
@@ -75,10 +93,7 @@ def run_app(display, app_id, title, senses):
             exec(f.read(), scope)
         scope["run"](ctx)
     except Exception as e:
-        out = io.StringIO()
-        sys.print_exception(e, out)
-        win98.bluescreen(display, title, out.getvalue())
-        wait_tap()
+        _crash(display, title, e)
     finally:
         ctx.close()
         senses.resume()

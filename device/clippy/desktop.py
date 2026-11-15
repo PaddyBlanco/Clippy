@@ -5,7 +5,7 @@ import time
 
 import M5
 
-from clippy import config, launcher, shell, wifi, win98
+from clippy import config, launcher, shell, wifi, wifi_setup, win98
 from clippy.pet import phrases
 from clippy.pet.habits import BRIGHT
 from clippy.pet.pet import Pet
@@ -25,7 +25,7 @@ def load_apps():
 
 def status(senses):
     t = time.localtime()
-    return ("%02d:%02d" % (t[3], t[4]), M5.Power.getBatteryLevel(), M5.Power.isCharging(),
+    return ("%02d:%02d" % (t[3], t[4]), M5.Power.getBatteryLevel(), M5.Power.isCharging(), wifi.connected(),
             senses.agents.summary())
 
 
@@ -42,7 +42,7 @@ def start_menu(d):
     launcher.wait_tap()
     choice = shell.menu_hit(M5.Touch.getX(), M5.Touch.getY(), MENU)
     if choice == 0:
-        launcher.show_note(d, MENU[0], "Kummt nu. Bis dahin steht in docs/device.md, wia ma's WLAN eistöht.")
+        launcher.run_builtin(d, MENU[0], wifi_setup.run)
     elif choice == 1:
         launcher.show_manual(d)
     elif choice == 2:

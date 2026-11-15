@@ -91,6 +91,18 @@ def bevel(g, x, y, w, h, raised=True):
         g.drawLine(x + w - 2, y + 1, x + w - 2, y + h - 2, SHADOW)
 
 
+def signal(g, x, y, level):
+    # Empfang: vier Balken, level davon schwarz
+    for i in range(4):
+        g.fillRect(x + i * 6, y + 12 - i * 4, 4, 4 + i * 4, DARK if i < level else SHADOW)
+
+
+def lock(g, x, y):
+    # kleines Schloss: Bügel und Körper
+    g.drawRoundRect(x + 2, y, 8, 9, 3, DARK)
+    g.fillRect(x, y + 6, 12, 9, DARK)
+
+
 def button(g, x, y, w, h, caption, bold=False):
     bevel(g, x, y, w, h)
     text(g, caption, x + w // 2, y + (h - FONT_H) // 2, DARK, FACE, bold=bold, align="center")

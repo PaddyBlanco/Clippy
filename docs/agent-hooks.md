@@ -68,8 +68,8 @@ Die Taskleiste zeichnet die Kästchen links neben der Uhr (`shell.tray`).
 
 ## Einrichten
 
-1. **WLAN:** `local/wifi.json` anlegen (liegt nicht im Repo):
-   `{"ssid": "MeinNetz", "password": "..."}`. `tools/install.ps1` kopiert sie nach `/flash/wifi.json`.
+1. **WLAN:** am Gerät Startmenü → „WLAN einrichten“. Oder `local/wifi.json` anlegen (liegt nicht im Repo):
+   `{"ssid": "MeinNetz", "password": "..."}`; `tools/install.ps1` kopiert sie nach `/flash/wifi.json`.
 2. **Probe ohne Agent:** `'{"hook_event_name": "Stop"}' | python tools/agent_hook.py claude` → die Klammer freut sich.
 3. **Hooks eintragen**, jeweils in den Benutzereinstellungen (gelten für alle Projekte). `<REPO>` ist der Pfad zu
    diesem Repo mit Schrägstrichen, z. B. `C:/Projects/Clippy`.

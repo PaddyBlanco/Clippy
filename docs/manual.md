@@ -64,3 +64,7 @@ der Ausnahme.
 | S16 | hilfe | App „Hallo“ im Fenster | Vorschau |
 | S17 | hilfe | Bluescreen der App „Absturz“ | Vorschau |
 | S18 | hilfe | „Sie können Clippy jetzt ignorieren.“ | Vorschau |
+| S19 | hilfe | WLAN einrichten: Liste der Netze | Gerät (echte Netze) |
+| S20 | hilfe | WLAN einrichten: Tastatur mit halb eingetipptem Passwort | Vorschau |
+| S21 | hilfe | WLAN mit Handy: Clippy zeigt den QR-Code | Gerät (echter QR-Code) |
+| S22 | hilfe | WLAN mit Handy: Einrichtungsseite am Handy | Handy-Screenshot |

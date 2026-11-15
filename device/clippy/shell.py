@@ -23,9 +23,16 @@ def agents(g, x_end, states):
         win98.text(g, short, x + 11, y + 3, fg, bg, align="center")
 
 
-def tray(g, hhmm, battery, charging, agent_states=()):
-    # Versenktes Feld rechts: Akku-Symbol, Prozent, Uhr; links davon die Kästchen der Coding-Agents
-    w = 104
+def wifi_sign(g, cx, by):
+    # WLAN-Zeichen: drei Bögen über einem Punkt; (cx, by) ist der Punkt unten in der Mitte
+    for r in (4, 7, 10):
+        g.fillArc(cx, by, r - 1, r, 225, 315, DARK)
+    g.fillCircle(cx, by - 1, 1, DARK)
+
+
+def tray(g, hhmm, battery, charging, online=False, agent_states=()):
+    # Versenktes Feld rechts: Akku-Symbol, Prozent, WLAN-Zeichen (nur verbunden), Uhr; links davon die Agents
+    w = 128
     x, y = W - 3 - w, TASKBAR_Y + 4
     agents(g, x - 3, agent_states)
     win98.bevel(g, x, y, w, 21, raised=False)
@@ -38,10 +45,12 @@ def tray(g, hhmm, battery, charging, agent_states=()):
         g.drawLine(bx + 6, by + 5, bx + 10, by + 5, 0xFFE000)
         g.drawLine(bx + 10, by + 5, bx + 6, by + 9, 0xFFE000)
     win98.text(g, "%d%%" % battery, x + 26, y + 3, DARK, FACE)
+    if online:
+        wifi_sign(g, x + 73, y + 16)
     win98.text(g, hhmm, x + w - 5, y + 3, DARK, FACE, align="right")
 
 
-def taskbar(g, hhmm, battery, charging, agent_states=()):
+def taskbar(g, hhmm, battery, charging, online=False, agent_states=()):
     g.fillRect(0, TASKBAR_Y, W, TASKBAR_H, FACE)
     g.drawLine(0, TASKBAR_Y + 1, W, TASKBAR_Y + 1, LIGHT)
     win98.bevel(g, 2, TASKBAR_Y + 4, 22 + win98.text_width(g, "Start", bold=True) + 6, 22)  # Breite folgt der Schrift
@@ -49,7 +58,7 @@ def taskbar(g, hhmm, battery, charging, agent_states=()):
     for dx, dy, c in ((0, 0, 0xE02020), (7, 0, 0x20A020), (0, 7, 0x2040E0), (7, 7, 0xE0C000)):
         g.fillRect(7 + dx, TASKBAR_Y + 9 + dy, 6, 6, c)
     win98.text(g, "Start", 24, TASKBAR_Y + 8, DARK, FACE, bold=True)
-    tray(g, hhmm, battery, charging, agent_states)
+    tray(g, hhmm, battery, charging, online, agent_states)
 
 
 def icon(g, index, name, color, letters):

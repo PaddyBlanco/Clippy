@@ -56,8 +56,9 @@ Prüfskripte: `checks/hello.py` (Text am Display), `checks/inventory.py` (listet
 ## Netz (gemessen mit `checks/nettest.py`)
 
 - Clippy verbindet sich beim Start selbst (`device/clippy/wifi.py`) mit den Daten aus `/flash/wifi.json`
-  (`{"ssid": ..., "password": ...}`). Die Datei kommt aus `local/wifi.json` und wird von `tools/install.ps1`
-  kopiert; sie liegt nie im Repo.
+  (`{"ssid": ..., "password": ...}`). Die Datei entsteht über Startmenü → „WLAN einrichten“ am Gerät oder kommt
+  aus `local/wifi.json`, die `tools/install.ps1` mitkopiert (überschreibt dann die am Gerät eingerichtete); sie
+  liegt nie im Repo.
 - Verbinden mit `network.WLAN(network.STA_IF)`; vorher `network.hostname("clippy")` setzen. Das Gerät ist dann
   vom PC aus unter **`clippy.local`** erreichbar, im Test sogar aus einem anderen Netzabschnitt des Routers.
 - PC → Gerät: Nachrichten direkt an `clippy.local` oder an die Adresse kommen an. Rundrufe (Broadcast) kommen
