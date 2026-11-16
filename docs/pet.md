@@ -20,7 +20,8 @@ und spricht in Sprüchen aus `apps/phrases.json`.
 | `habits.py` | Tabellen zum Einstellen: `IDLE` (was sie von selbst tut, wie oft), `TIRED` (dasselbe im Finstern), `REACT` (Reaktion je Ereignis), Schlafzeiten, Helligkeit |
 | `idle.py` | Führt `IDLE` bzw. `TIRED` aus: welche Bewegung sie als Nächstes von selbst macht |
 | `tumble.py` | Gerät auf den Kopf gestellt: sie fällt auf den Kopf und rollt an ihren Platz |
-| `stage.py` | Zeichnet sie ins Feld oder, solange sie kippt oder rollt, auf die Bühne |
+| `stage.py` | Zeichnet sie ins Feld oder, solange sie kippt oder rollt, auf die Bühne; darüber das Arbeitswort; dreht das Display um |
+| `rest.py` | Ruhehaltung: was sie macht, wenn gerade keine Bewegung läuft |
 | `pet.py` | Klasse `Pet`: hält alles zusammen und führt die Tabellen aus |
 
 ## Wie sie gezeichnet wird
@@ -86,9 +87,10 @@ Der Spruch dazu kommt aus `apps/phrases.json` unter demselben Namen.
 | `beat` | fünf Schläge binnen 2,5 s (Klopfen aufs Gehäuse oder den Tisch; `BEATS`, `BEAT_MS`), dann jeder weitere | spielt Schlagzeug, ein Schlag je Klopfer, bis 1,5 s Ruhe ist |
 | `plugged` | Ladekabel angesteckt | zittert, Blitze; nur einmal beim Anstecken |
 | `low_battery` | Akku unter 15 %, alle 5 Minuten | gähnt, hat Hunger |
-| `agent_working` | ein Coding-Agent am PC arbeitet ([agent-hooks.md](agent-hooks.md)) | merkt auf, höchstens alle 30 s; solange ein Agent arbeitet, schaut sie gespannt zur Seite |
+| `agent_working` | ein Coding-Agent am PC arbeitet ([agent-hooks.md](agent-hooks.md)) | merkt auf, höchstens alle 30 s; solange ein Agent arbeitet, schaut sie gespannt zur Seite, über dem Kopf das Arbeitswort, und sie sagt nichts (siehe „Arbeitswort“) |
 | `agent_waiting` | ein Agent wartet auf dich; nach 30 und 60 s noch einmal (höchstens dreimal), nicht mehr nach einem neuen Zustand oder Antippen | hüpft, winkt, ruft |
 | `agent_done` | ein Agent ist fertig | springt vor Freude, reckt das Drahtende |
+| `usage_high` | 5-Stunden-Limit von Claude erreicht 80 % (einmal je Zeitfenster) | merkt auf, warnt |
 | `flip` | Gerät auf den Kopf gestellt oder wieder zurück | Desktop dreht sich, sie fällt auf den Kopf und rollt an ihren Platz, siehe „Auf dem Kopf“ |
 
 Dazu ohne Ereignis: Seitliches Kippen lässt die Augen mitrollen. Nachts (23 bis 6 Uhr) hängen die Lider.
@@ -130,11 +132,33 @@ rund 18 Zeichen.
 
 ## Feld
 
-Die Klammer lebt in einem Feld von 122×176 Pixeln rechts unten (`FIELD_X`, `FIELD_Y` in `draw.py`).
+Die Klammer lebt in einem Feld von 122×212 Pixeln am rechten Rand, von ganz oben bis zur Taskleiste (`FIELD_X`,
+`FIELD_Y` in `draw.py`). Die oberen 60 Pixel (`HEADROOM`) sind Luft über dem Kopf: dort springt sie hin, und dort
+steht die Konsole, wenn ein Agent arbeitet (siehe „Arbeitswort“). Antippen zählt erst ab `TOUCH_Y` = 36, also unter
+der Konsole. Links daneben ist Platz für das Fenster „Nutzung“ (bis x = 196).
 Beim Umfallen nach links (`lean` größer 0) und beim Rollen (`roll`) zeichnet sie auf der Bühne: ein Streifen in
 Feldhöhe über die ganze Breite (`STAGE_W`, `stage.py`). Als Hintergrund dient der ganze Desktop samt Symbolen,
 den `desktop.draw` einmal in eine eigene Leinwand malt; die Sprechblase wird dafür weggeräumt. Nur Feld bzw. Bühne
 werden je Bild neu gezeichnet. Wer dort etwas anderes zeichnet, wird beim nächsten Bild überschrieben.
+
+## Arbeitswort
+
+Solange ein Coding-Agent arbeitet, steht über ihrem Kopf eine kleine Konsole wie Claude Code im alten cmd-Fenster
+(`extras.console`, 122×58 ganz oben im Feld, rechts neben dem Fenster „Nutzung“): Titelleiste in der Farbe des
+Agents (`color` in `agent_hooks/`: Claude orange, Codex grün, Copilot lila) mit Agent und Projekt („claude:
+Clippy“, aus `cwd` der Hook-Meldung). Darunter schwarz: der funkelnde Stern von Claude Code und das Arbeitswort in
+der Farbe des Agents („Percolating…“), in der zweiten Zeile grau, wie lange er schon arbeitet
+(„12s · esc to interrupt“, gekürzt, wenn es nicht passt).
+Die Wörter sind die eingebauten von Claude Code (Liste `agent_verbs` in `apps/phrases.json`, 187 Stück, Stand
+April 2026; das gerade in Claude angezeigte Wort selbst kommt über die Hooks nicht mit). Ein neues Wort gibt es,
+wenn ein Agent zu arbeiten beginnt, und bei langen Aufgaben alle 20 s (`VERB_MS` in `agents.py`). Zeichen, die die
+Geräte-Schrift nicht hat (é), werden ersetzt. Nur Wörter bis 13 Buchstaben (`VERB_MAX`, 173 der 187), längere passen
+neben dem Stern nicht in die Konsole.
+Gezeichnet wird sie über jeder Haltung, nicht auf der breiten Bühne.
+
+**Solange ein Agent arbeitet, gibt es keine Sprechblasen:** Beginnt er, verschwindet eine offene Blase, und
+`clippy.say` schweigt. Ausnahmen, weil sie wichtig sind: `agent_waiting`, `agent_done`, `usage_high` (`URGENT` in
+`habits.py`), auch wenn ein anderer Agent noch arbeitet.
 
 ## Auf dem Kopf
 

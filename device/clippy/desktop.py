@@ -6,6 +6,7 @@ import time
 import M5
 
 from clippy import config, launcher, shell, wifi, wifi_setup, win98
+from clippy.monitor import Monitor
 from clippy.pet import phrases
 from clippy.pet.habits import BRIGHT
 from clippy.pet.pet import Pet
@@ -13,14 +14,17 @@ from clippy.pet.senses import Senses
 
 MENU = ("WLAN einrichten", "Mit PC verbinden", "Handbuch", "Beenden")
 MAX_ICONS = 4  # mehr passen nicht in die Spalte am linken Rand
+MONITOR = {"id": None, "name": "Nutzung", "icon": "%", "color": "#208080"}  # eingebaut, öffnet monitor.py
 
 
 def load_apps():
+    """Symbole am Desktop: die Apps aus manifest.json, zuletzt das eingebaute „Nutzung“."""
     try:
         with open(config.APPS_DIR + "/manifest.json") as f:
-            return json.load(f)[:MAX_ICONS]
+            apps = json.load(f)[:MAX_ICONS - 1]
     except (OSError, ValueError):
-        return []  # ohne Liste gibt es eben keine Symbole
+        apps = []  # ohne Liste gibt es eben keine App-Symbole
+    return apps + [MONITOR]
 
 
 def status(senses):
@@ -64,27 +68,40 @@ def run():
     senses = Senses()
     draw(d, apps, senses)
     clippy = Pet(d, senses, lambda g: draw(g, apps, senses))
+    monitor = Monitor(d, senses.agents)
     clippy.say(phrases.pick("start"))
     shown = status(senses)
-    turn, down = 0, True
+    turn, down, clock_set = 0, True, False
     while True:
         M5.update()
         turn += 1
-        if turn % 16 == 0 and status(senses) != shown:  # etwa einmal je Sekunde nachsehen
-            shown = status(senses)
-            shell.tray(d, *shown)
+        if turn % 16 == 0:  # etwa einmal je Sekunde
+            if not clock_set and turn % 160 == 0:  # Uhr stellen, sobald das WLAN steht; sonst in 10 s nochmal
+                clock_set = wifi.sync_clock()
+            if status(senses) != shown:
+                shown = status(senses)
+                shell.tray(d, *shown)
+            if not clippy.bubble.box:  # die Klammer spricht: Blase bleibt vorn, das Fenster wartet
+                monitor.draw()  # auch, was Sprechblase oder Sturz darübergemalt haben, ist danach wieder weg
         if turn % 400 == 0:  # etwa alle halbe Minute ein Lebenszeichen auf die USB-Konsole
-            print("clippy läuft seit", time.ticks_ms() // 1000, "s, frei", gc.mem_free())
+            print("clippy läuft seit", time.ticks_ms() // 1000, "s, frei", getattr(gc, "mem_free", int)())
 
         was_down, down = down, M5.Touch.getCount() > 0
-        target = shell.hit(M5.Touch.getX(), M5.Touch.getY(), len(apps)) if down and not was_down else None
-        if target is not None:
-            if target == "start":
+        tap = (M5.Touch.getX(), M5.Touch.getY()) if down and not was_down else None
+        inside = monitor.hit(*tap) if tap else None
+        target = shell.hit(tap[0], tap[1], len(apps)) if tap and not inside else None
+        if inside == "close" or target is not None:
+            if inside == "close":
+                monitor.open = False
+            elif target == "start":
                 start_menu(d)
+            elif apps[target] is MONITOR:
+                monitor.open = True
             else:
                 launcher.run_app(d, apps[target]["id"], apps[target]["name"], senses)
-            draw(d, apps, senses)  # zurück am Desktop: alles neu zeichnen
+            draw(d, apps, senses)  # alles neu zeichnen: nach App oder Menü, oder das Fenster ist auf oder zu
             clippy.refresh()
+            monitor.draw()
             shown = status(senses)
 
         clippy.step()

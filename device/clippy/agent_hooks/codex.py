@@ -8,4 +8,5 @@ _hooks["done"] = ("stop", "interrupt")  # Interrupt: du hast die Antwort abgebro
 class Codex(Agent):
     name = "Codex"
     short = "Cx"
+    color = 0x10A37F  # OpenAI-Grün
     hooks = _hooks

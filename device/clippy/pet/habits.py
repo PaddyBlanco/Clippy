@@ -33,10 +33,13 @@ REACT = {
     "plugged": (moves.zap, 0, 1),
     "low_battery": (moves.yawn, 0, 1),
     "flip": (tumble, 0, 0),  # Spruch erst nach dem Rollen, siehe SOMETIMES
-    "agent_working": (moves.perk, 30, 0.5),
+    "agent_working": (moves.perk, 30, 0),  # kein Spruch: solange ein Agent arbeitet, redet sie nicht
     "agent_waiting": (moves.attention, 10, 1),
     "agent_done": (moves.cheer, 0, 1),
+    "usage_high": (moves.perk, 0, 1),
 }
+# Diese Sprüche kommen auch, während ein Agent arbeitet; alle anderen schweigen dann
+URGENT = ("agent_waiting", "agent_done", "usage_high")
 # Andauerndes: Ereignis -> (Spruch-Name zu Beginn, gilt so viele ms nach dem letzten Ereignis noch als andauernd)
 ONGOING = {"beat": ("drum", 1500), "pet": ("pet", 900)}
 # Manchmal reagiert sie anders: Ereignis -> (Bewegung, Spruch danach, wie oft von 0 bis 1)

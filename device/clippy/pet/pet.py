@@ -5,11 +5,10 @@ import time
 from clippy.pet import moves, phrases, sleep
 from clippy.pet.bubble import Bubble
 from clippy.pet.draw import REST
-from clippy.pet.habits import IDLE, ONGOING, REACT, SNOT_CHANCE, SOMETIMES, SPOKEN, TIRED
+from clippy.pet.habits import IDLE, ONGOING, REACT, SNOT_CHANCE, SOMETIMES, SPOKEN, TIRED, URGENT
 from clippy.pet.idle import Idle
+from clippy.pet.rest import rest_pose
 from clippy.pet.stage import Stage
-
-UPRIGHT, UPSIDE_DOWN = 0, 2  # Display-Drehung (setRotation) für das normal stehende und das umgedrehte Gerät
 
 
 class Pet:
@@ -17,8 +16,7 @@ class Pet:
         """paint(g): zeichnet den ganzen Desktop nach g, z. B. nach dem Umdrehen."""
         self.d = display
         self.senses = senses
-        self.paint = paint
-        self.stage = Stage(display, paint)
+        self.stage = Stage(display, paint, senses.agents)
         self.then_say = None     # Spruch, der nach der laufenden Bewegung kommt
         self.bubble = Bubble(display)
         self.pose = dict(REST)
@@ -53,19 +51,13 @@ class Pet:
         self.awake_since = time.ticks_ms()
         self.show()
 
-    def _turn_desktop(self):
-        """Das Gerät wurde umgedreht: Display mitdrehen, Desktop neu; sie selbst zeichnet gleich tumble."""
-        self.d.setRotation(UPSIDE_DOWN if self.senses.flipped else UPRIGHT)
-        self.paint(self.d)
-        self.bubble.box = None
-        self.stage.was_wide = False
-
     def play(self, move):
         """Startet eine Bewegung sofort, z. B. clippy.play(moves.curl)."""
         self.move = move()
 
-    def say(self, s, seconds=6):
-        if s:
+    def say(self, s, seconds=6, urgent=False):
+        """Sprechblase. Solange ein Agent arbeitet, nur wenn es wichtig ist (urgent)."""
+        if s and (urgent or not self.senses.agents.working()):
             self.bubble.say(s.replace("{agent}", self.senses.agents.last), seconds)
 
     def react(self, event):
@@ -81,25 +73,21 @@ class Pet:
                 self.say(phrases.pick(name))
             self.until[event] = time.ticks_add(now, ms)
         self.asleep = False
-        if event == "flip":
-            self._turn_desktop()
+        if event == "agent_working":
+            self.bubble.hush()  # ein Agent arbeitet: kein Gerede, nur das Arbeitswort
+        if event == "flip":  # Display mitdrehen, Desktop neu; sie selbst zeichnet gleich tumble
+            self.stage.turn(self.senses.flipped)
+            self.bubble.box = None
         if event in SOMETIMES and random.random() < SOMETIMES[event][2]:
             self.play(SOMETIMES[event][0])
             self.then_say = phrases.pick(SOMETIMES[event][1])
             return
         self.play(move)
         if random.random() < chatty:
-            self.say(phrases.pick(event))
+            self.say(phrases.pick(event), urgent=event in URGENT)
 
     def _rest_pose(self):
-        if self._ongoing("beat", time.ticks_ms()):  # wartet mit erhobenem Schlägel auf den nächsten Schlag
-            return dict(REST, arm=50, stick=True, drum=True, brow=2, look=(4, 3))
-        if self.senses.dark:
-            return dict(moves.DROWSY)
-        if self.senses.agents.working():  # ein Agent arbeitet: sie schaut gespannt zu
-            return dict(REST, look=(-5, -1), brow=2)
-        # Ruhehaltung: nachts müde Lider, der Blick folgt der Seitenneigung
-        return dict(REST, lid=0.4 if self.senses.night else 0.0, look=(self.senses.tilt, 0))
+        return rest_pose(self.senses, self._ongoing("beat", time.ticks_ms()))
 
     def _light(self):
         level = sleep.brightness(self.senses, self.asleep)
@@ -157,6 +145,6 @@ class Pet:
             if self.snore % 2 == 0:  # jedes zweite Bild: Zs treiben weiter, sie atmet
                 self.pose = sleep.pose(self.snore // 2, self.snot)
                 self.show()
-        elif self.pose != self._rest_pose():  # Neigung geändert oder Schlagzeug weggeräumt
+        elif self.pose != self._rest_pose() or self.senses.agents.verb:  # Neigung, Schlagzeug, Arbeitswort dreht sich
             self.pose = self._rest_pose()
             self.show()

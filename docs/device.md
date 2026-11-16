@@ -16,7 +16,7 @@ Alles hier wurde am echten Gerät geprüft, außer wo „ungetestet“ steht.
 | Akku, Strom | `M5.Power` (`getBatteryLevel`, `getBatteryVoltage`, `isCharging`, `lightSleep`, ...) | geprüft; direkt nach dem Flashen kamen falsche Werte (0 %), nach Ab- und Anstecken des Kabels stimmten sie |
 | Kamera | Modul `camera` | ungetestet |
 | WLAN | Modul `network`, nur 2,4 GHz | Scan geprüft |
-| Uhr | `machine.RTC()` oder `time.localtime()`; nicht als `M5.Rtc` vorhanden | läuft, steht aber auf 1999, bis sie gestellt wird |
+| Uhr | `machine.RTC()` oder `time.localtime()`; nicht als `M5.Rtc` vorhanden | läuft, steht nach dem Einschalten auf 1.1.1970 (Unix-Zeit ab 1970), bis sie gestellt wird; Clippy stellt sie per NTP, sobald das WLAN steht |
 
 Firmware: UIFlow2 v2.5.4, MicroPython 1.27. Frei: ca. 8 MB Arbeitsspeicher, ca. 4,6 MB Dateisystem (`/flash`).
 Schriften: `M5.Display.FONTS` enthält u. a. `DejaVu9` bis `DejaVu72` und `Montserrat12` bis `Montserrat48`.

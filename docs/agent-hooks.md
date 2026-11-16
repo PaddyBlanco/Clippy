@@ -25,13 +25,37 @@ die genauen Einträge, und dass Bestehendes ergänzt statt überschrieben wird. 
 
 | Zustand | Bedeutung | Klammer | Kästchen |
 |---|---|---|---|
-| `working` | Agent arbeitet (Anfrage bekommen, Werkzeug benutzt) | merkt auf; solange gearbeitet wird, schaut sie gespannt zur Seite; Spruch höchstens alle 30 s | gelb |
+| `working` | Agent arbeitet (Anfrage bekommen, Werkzeug benutzt) | merkt auf; solange gearbeitet wird, schaut sie gespannt zur Seite und über ihrem Kopf dreht sich ein Arbeitswort wie in Claude Code, in einem kleinen alten Eingabefenster („C:\>Percolating_“, siehe [pet.md](pet.md)); keine Sprechblasen, solange gearbeitet wird | gelb |
 | `waiting` | Agent wartet auf eine Freigabe oder Antwort | hüpft, winkt, ruft; nach 30 und 60 s noch einmal, also höchstens dreimal (`CALLS`), und nicht mehr, sobald ein neuer Zustand kommt oder du sie antippst | rot, bleibt bis zum nächsten Zustand |
 | `done` | Agent ist mit seiner Antwort fertig | freut sich und sagt es | grün |
 | `gone` | Sitzung beendet | – | verschwindet |
 
 Kommt 30 Minuten lang nichts von einem Agent, verschwindet sein Kästchen ebenfalls. Mehrere Sitzungen desselben
 Agents teilen sich ein Kästchen; die letzte Meldung gilt.
+
+## Nutzung und Limits (nur Claude Code)
+
+Claude Code ruft seine **Statuszeile** bei jeder Antwort auf und gibt ihr ein JSON mit, unter anderem
+`rate_limits.five_hour` und `rate_limits.seven_day` (`used_percentage`, `resets_at` in Unix-Sekunden; nur bei
+Pro/Max und erst nach der ersten Antwort), `context_window.used_percentage`, `cost.total_cost_usd`,
+`cost.total_lines_added`/`removed`, `model.display_name`, `workspace.project_dir`
+(https://code.claude.com/docs/en/statusline.md). Die Statuszeile ist ein einzelner Befehl:
+
+- Windows (läuft in Git Bash oder PowerShell, `'@-'` in Anführungszeichen für PowerShell):
+  `"statusLine": {"type": "command", "command": "curl.exe -s -m 1 --data-binary '@-' http://clippy.local:4711/claude/status"}`
+- macOS/Linux: `"command": "curl -s -m 1 --data-binary @- http://clippy.local:4711/claude/status"`
+
+Clippy merkt sich die Werte und **antwortet mit der Zeile**, die Claude Code unten anzeigt, z. B.
+`Clippy · 5h 42% · Woche 18% · Kontext 31%`. Ist Clippy aus, bleibt die Zeile leer. Hat jemand schon eine eigene
+Statuszeile, ersetzt der Agent sie nur nach Rückfrage.
+
+Am Gerät: Symbol **„Nutzung“** am Desktop öffnet ein Fenster links (die Klammer bleibt rechts sichtbar und lebt
+weiter), siehe [architecture.md](architecture.md). Erreicht das 5-Stunden-Limit 80 %, meldet die Klammer
+`usage_high` (einmal je Zeitfenster). Codex hat seine Limits nur in internen Dateien am PC, Copilot gar nicht;
+ohne Programm am PC kommt Clippy da nicht ran, daher nur Claude.
+
+Auswertung: `Agent.usage(payload)` in `agent_hooks/` (Claude füllt sie, die anderen liefern `None`),
+gespeichert in `pet/agents.py`, Antworttext von `agent_hooks/usage.py`.
 
 ## Welcher Hook welchen Zustand meldet
 
@@ -48,8 +72,9 @@ der VS-Code-Schreibweise `Stop`, `PostToolUse`, ... eingetragen sind). Andere Ho
 
 | Datei | Aufgabe |
 |---|---|
-| `device/clippy/agent_hooks/server.py` | Kleiner Webserver auf Port 4711 (`config.AGENT_PORT`), sobald das WLAN steht. Nimmt je Schleifendurchlauf höchstens eine Anfrage an, antwortet sofort `200`. `POST /<agent>` mit dem Hook-JSON; `GET /` zeigt „Clippy hört zu“ (zum Ausprobieren im Browser) |
-| `device/clippy/agent_hooks/base.py` | Schnittstelle `Agent`: `name` (Anzeige), `short` (Kürzel im Kästchen, zwei Zeichen), Hook-Namen je Zustand, `state(payload)` liefert den Zustand oder `None` |
+| `device/clippy/agent_hooks/server.py` | Kleiner Webserver auf Port 4711 (`config.AGENT_PORT`), sobald das WLAN steht. Nimmt je Schleifendurchlauf höchstens eine Anfrage an, antwortet sofort `200`. `POST /<agent>` mit dem Hook-JSON, `POST /<agent>/status` mit dem Statuszeilen-JSON (Antwort: die Statuszeile), `GET /<agent>/probe` spielt „fertig“; `GET /` zeigt „Clippy hört zu“ |
+| `device/clippy/agent_hooks/usage.py` | Statuszeilen-Text aus den gemerkten Werten, Prozent-Schwelle für die Warnung |
+| `device/clippy/agent_hooks/base.py` | Schnittstelle `Agent`: `name` (Anzeige), `short` (Kürzel im Kästchen, zwei Zeichen), `color` (Farbe des Arbeitsworts), Hook-Namen je Zustand, `state(payload)` liefert den Zustand oder `None` |
 | `device/clippy/agent_hooks/claude.py`, `codex.py`, `copilot.py` | Je Agent eine Klasse; ändert nur, was bei ihm anders ist |
 | `device/clippy/agent_hooks/__init__.py` | `AGENTS`: Pfad der Anfrage (`claude`, `codex`, `copilot`) → Klasse |
 | `device/clippy/pet/agents.py` | Merkt sich je Agent den Zustand, meldet der Klammer `agent_working`, `agent_waiting`, `agent_done` |

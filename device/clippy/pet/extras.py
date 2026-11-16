@@ -38,11 +38,54 @@ def in_hand(g, pose, at, hand):
         stick(g, hx, hy, hx + 16 * math.sin(w), hy - 16 * math.cos(w), 2, 0x8B5A2B)
 
 
+CONSOLE_H = 58                       # Höhe der Konsole oben im Feld; darunter beginnt der Kopf
+STAR = (1, 2, 3, 4, 5, 5, 4, 3, 2)  # Größe des Sterns je Bild, wie das Funkeln in Claude Code
+GREY, BLACK = 0xC0C0C0, 0x000000
+
+
+def _star(g, cx, cy, frame, color):
+    # achtstrahliger Stern: wächst und schrumpft, abwechselnd sind die geraden oder die schrägen Strahlen länger
+    r, twinkle = STAR[frame // 2 % len(STAR)], frame // 9 % 2
+    for (dx, dy), long in (((1, 0), 1), ((0, 1), 1), ((1, 1), 0), ((1, -1), 0)):
+        k = r if long != twinkle else max(1, r * 2 // 3)
+        for o in (0, 1):
+            g.drawLine(cx - dx * k + o, cy - dy * k, cx + dx * k + o, cy + dy * k, color)
+
+
+def _fit(g, options, room):
+    """Die erste Fassung, die in room Pixel passt, sonst die letzte."""
+    from clippy import win98
+    for s in options:
+        if win98.text_width(g, s) <= room:
+            return s
+    return options[-1]
+
+
+def console(g, c, frame, width):
+    """Konsole über dem Kopf wie Claude Code im alten cmd-Fenster. c: siehe pet.agents.Agents.console()."""
+    from clippy import win98
+    color, h = c["color"], CONSOLE_H
+    win98.bevel(g, 0, 0, width, h)                                      # Fensterrahmen
+    g.fillRect(2, 2, width - 4, 15, color)                              # Titelleiste in der Farbe des Agents
+    title = c["agent"].lower() + (": " + c["project"] if c["project"] else "")
+    win98.text(g, _fit(g, (title, c["agent"].lower()), width - 24), 5, 2, 0xFFFFFF, color, bold=True)
+    win98.bevel(g, width - 16, 4, 12, 11)                               # Schließen-Knopf
+    g.drawLine(width - 13, 7, width - 8, 12, BLACK)
+    g.drawLine(width - 8, 7, width - 13, 12, BLACK)
+    g.fillRect(2, 18, width - 4, h - 20, BLACK)                         # schwarze Konsole
+    _star(g, 10, 28, frame, color)
+    word = c["verb"].replace("é", "e")                                  # die Geräte-Schrift hat kein é
+    win98.text(g, _fit(g, (word + "…", word), width - 24), 19, 20, color, BLACK)
+    s = c["seconds"]
+    took = "%ds" % s if s < 60 else "%dm %02ds" % (s // 60, s % 60)
+    win98.text(g, _fit(g, (took + " · esc to interrupt", took + " · esc", took), width - 12), 6, 38, GREY, BLACK)
+
+
 def around(g, pose, at, ox, w, h, top):
     """Was um sie herum ist: Blitze, Rotzblase, Zs. w, h: Feldgröße; top: Luft über dem Kopf."""
     if pose["spark"]:  # unter Strom: Blitze an zufälligen Stellen
         for _ in range(4):
-            x, y = ox + random.randint(4, w - 12), random.randint(6, h - 22)
+            x, y = ox + random.randint(4, w - 12), random.randint(top - 18, h - 22)  # rund um sie, nicht ganz oben
             for dx in (0, 1):
                 g.drawLine(x + 6 + dx, y, x + dx, y + 7, YELLOW)
                 g.drawLine(x + dx, y + 7, x + 6 + dx, y + 7, YELLOW)

@@ -7,6 +7,7 @@ STATES = ("working", "waiting", "done", "gone")
 class Agent:
     name = "Agent"      # Anzeige, steht in den Sprüchen für {agent}
     short = "Ag"        # Kürzel im Kästchen der Taskleiste, zwei Zeichen
+    color = 0x000080    # Farbe des Arbeitsworts über der Klammer
     # Hook-Namen je Zustand, klein geschrieben; die meisten Agents nennen ihre Hooks gleich
     hooks = {
         "working": ("userpromptsubmit", "posttooluse"),
@@ -25,4 +26,13 @@ class Agent:
         for state, names in self.hooks.items():
             if event in names:
                 return state
+        return None
+
+    def project(self, payload):
+        """Name des Projekts, an dem der Agent arbeitet: letzter Teil des Arbeitsordners, oder ""."""
+        return str(payload.get("cwd") or "").replace("\\", "/").rstrip("/").split("/")[-1]
+
+    def usage(self, payload):
+        """payload: das JSON der Statuszeile. Liefert die Nutzung als dict (siehe Claude.usage) oder None,
+        wenn der Agent keine Zahlen herausgibt."""
         return None

@@ -7,4 +7,5 @@ from clippy.agent_hooks.base import Agent
 class Copilot(Agent):
     name = "Copilot"
     short = "Co"
+    color = 0x8957E5  # Copilot-Lila
     waiting_notifications = ("permission_prompt",)

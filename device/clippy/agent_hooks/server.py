@@ -39,7 +39,9 @@ def parse(raw):
 
 
 class HookServer:
-    def __init__(self):
+    def __init__(self, on_status=lambda agent, payload: ""):
+        """on_status(agent, Statuszeilen-JSON) liefert den Text, den der Agent als Statuszeile anzeigt."""
+        self.on_status = on_status
         self.sock = None
         self.next_try = time.ticks_ms()
 
@@ -88,23 +90,32 @@ class HookServer:
                     return parts[0], {"hook_event_name": "Stop"}
                 conn.send((TEXT % "Clippy hört zu.").encode())
                 return None
-            length = 0
-            for line in head.lower().split("\r\n"):
-                if line.startswith("content-length:"):
-                    length = int(line[15:])
-                if line.startswith("expect:") and "100-continue" in line:
-                    conn.send(b"HTTP/1.1 100 Continue\r\n\r\n")  # sonst wartet curl bei großen Meldungen 1 s
-            received = len(body)
-            while received < length:
-                chunk = conn.recv(4096)
-                if not chunk:
-                    break
-                received += len(chunk)
-                if len(body) < MAX_KEEP:
-                    body += chunk
+            payload = parse(_body(conn, head, body))
+            if len(parts) > 1 and parts[1] == "status":  # Statuszeile: Antwort ist die Zeile selbst
+                conn.send((TEXT % (self.on_status(parts[0], payload) or "")).encode())
+                return None
             conn.send((TEXT % "ok").encode())
-            return parts[0], parse(body)
+            return parts[0], payload
         except (OSError, ValueError, IndexError):
             return None
         finally:
             conn.close()
+
+
+def _body(conn, head, body):
+    """Liest den Rest der Meldung; hebt höchstens MAX_KEEP davon auf."""
+    length = 0
+    for line in head.lower().split("\r\n"):
+        if line.startswith("content-length:"):
+            length = int(line[15:])
+        if line.startswith("expect:") and "100-continue" in line:
+            conn.send(b"HTTP/1.1 100 Continue\r\n\r\n")  # sonst wartet curl bei großen Meldungen 1 s
+    received = len(body)
+    while received < length:
+        chunk = conn.recv(4096)
+        if not chunk:
+            break
+        received += len(chunk)
+        if len(body) < MAX_KEEP:
+            body += chunk
+    return body

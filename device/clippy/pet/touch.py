@@ -5,7 +5,7 @@ import time
 
 import M5
 
-from clippy.pet.draw import FIELD_X, FIELD_Y
+from clippy.pet.draw import FIELD_X, TOUCH_Y
 
 HOLD_MS = 350           # liegt der Finger länger auf ihr, ist es Streicheln statt Antippen
 MOVE_PX = 8             # wandert der Finger weiter, ist es auch Streicheln
@@ -15,7 +15,7 @@ PET_EVERY_MS = 400      # solange gestreichelt wird, so oft ein Ereignis
 
 
 def _on_pet(x, y):
-    return x >= FIELD_X and y >= FIELD_Y
+    return x >= FIELD_X and y >= TOUCH_Y
 
 
 class Touch:

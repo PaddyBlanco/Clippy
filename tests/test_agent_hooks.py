@@ -74,6 +74,29 @@ got, _, _ = curl(["--data-binary", "@-", base + "/codex"], b'{"hook_event_name":
 assert got == ("codex", {"hook_event_name": "PermissionRequest"})
 got, _, seconds = curl(["--data-binary", "@-", base + "/claude"], big)  # curl fragt hier „100-continue“
 assert got == ("claude", {"hook_event_name": "PostToolUse"}) and seconds < 0.9, seconds
+
+# Statuszeile von Claude: Nutzung auswerten, Clippy antwortet mit der Zeile für unten im Fenster
+from clippy.agent_hooks import usage
+now = time.time()
+status = {"model": {"display_name": "Opus 5.5"}, "workspace": {"project_dir": "C:\\Projects\\Clippy"},
+          "cost": {"total_cost_usd": 1.234, "total_lines_added": 120, "total_lines_removed": 30},
+          "context_window": {"used_percentage": 31.4},
+          "rate_limits": {"five_hour": {"used_percentage": 42.2, "resets_at": now + 3600},
+                          "seven_day": {"used_percentage": 18, "resets_at": now + 86400 * 3}}}
+u = AGENTS["claude"]().usage(status)
+assert u["five_hour"] == (42, now + 3600) and u["seven_day"][0] == 18 and u["context"] == 31
+assert u["project"] == "Clippy" and u["model"] == "Opus 5.5" and u["added"] == 120
+assert usage.status_line(u) == "Clippy · 5h 42% · Woche 18% · Kontext 31%"
+assert AGENTS["codex"]().usage(status) is None  # Codex gibt keine Zahlen heraus
+no_plan = AGENTS["claude"]().usage({"context_window": {"used_percentage": 5}})  # ohne Pro/Max: keine Limits
+assert no_plan["five_hour"] is None and usage.status_line(no_plan) == "Clippy · Kontext 5%"
+assert usage.percent((90, now - 10)) == 0  # Fenster vorbei: wieder bei null
+high = dict(u, five_hour=(81, now + 3600))
+assert usage.crossed(u, high) and not usage.crossed(high, high) and usage.crossed(high, dict(high, five_hour=(85, now + 9000)))
+
+hooks.on_status = lambda agent, payload: usage.status_line(AGENTS[agent]().usage(payload))
+got, text, _ = curl(["--data-binary", "@-", base + "/claude/status"], json.dumps(status).encode())
+assert got is None and text.strip() == "Clippy · 5h 42% · Woche 18% · Kontext 31%", text
 hooks.sock.close()
 
 # Wartet ein Agent, ruft die Klammer höchstens dreimal (sofort, nach 30 und nach 60 s)
@@ -87,4 +110,23 @@ assert tracker.summary() == (("Cx", "waiting"),)  # das rote Kästchen bleibt
 inbox.append(("codex", {"hook_event_name": "SessionEnd"}))
 tracker.poll(130000)
 assert tracker.summary() == ()
+
+# Arbeitswort: erscheint, sobald ein Agent arbeitet, in seiner Farbe; weg, wenn keiner mehr arbeitet
+picks = iter(["Flibbertigibbeting", "Percolating"])  # erst zu lang (18 Buchstaben), dann passend
+pet_agents.phrases.pick = lambda name: next(picks)
+inbox.append(("claude", {"hook_event_name": "UserPromptSubmit", "cwd": "C:\\Projects\\Clippy"}))
+tracker.poll(140000)
+assert tracker.verb == "Percolating"
+inbox.append(("claude", {"hook_event_name": "PostToolUse"}))  # ohne cwd: Projekt bleibt, Zeit läuft weiter
+tracker.poll(152500)
+assert tracker.console(152500) == {"agent": "Claude", "project": "Clippy", "verb": "Percolating",
+                                   "color": 0xD97757, "seconds": 12}
+inbox.append(("claude", {"hook_event_name": "Stop"}))
+tracker.poll(153000)
+assert tracker.verb is None and tracker.console(153000) is None
+
+# Statuszeile über 80 %: einmal "usage_high", die Nutzung ist für das Fenster gemerkt
+assert tracker._status("claude", dict(status, rate_limits={"five_hour": {"used_percentage": 85}})).startswith("Clippy")
+assert tracker.poll(131000) == ["usage_high"] and tracker.poll(132000) == []
+assert tracker.usage["Claude"][0]["five_hour"] == (85, None)
 print("ok")

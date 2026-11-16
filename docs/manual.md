@@ -70,3 +70,4 @@ der Ausnahme.
 | S20 | hilfe | WLAN einrichten: Tastatur mit halb eingetipptem Passwort | Vorschau |
 | S21 | hilfe | WLAN mit Handy: Clippy zeigt den QR-Code | Gerät (echter QR-Code) |
 | S22 | hilfe | WLAN mit Handy: Einrichtungsseite am Handy | Handy-Screenshot |
+| S23 | agents | Fenster „Nutzung“ links, Klammer rechts daneben | Gerät (echte Werte) |

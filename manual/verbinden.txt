@@ -28,6 +28,9 @@ So gehst du vor:
 
 5. Sag zum Schluss: "Fertig. Damit die Hooks gelten, starte mich bitte einmal neu."
 
+Diese Anleitung wird erweitert, wenn Clippy Neues kann. Wer den Satz später noch einmal eintippt, bekommt die
+neuen Einträge; schon vorhandene Clippy-Einträge werden dabei ersetzt, nicht verdoppelt.
+
 
 ABSCHNITT A: CLAUDE CODE
 ------------------------
@@ -46,6 +49,13 @@ Beispiel Windows für ein Ereignis (die anderen genauso):
   "hooks": {
     "Stop": [{"hooks": [{"type": "command", "command": "cmd.exe", "args": ["/c", "curl.exe -s -m 2 --data-binary @- http://clippy.local:4711/claude & exit /b 0"], "async": true}]}]
   }
+
+Zusätzlich die Statuszeile (Clippy zeigt damit 5-Stunden- und Wochenlimit, Kontext und Kosten an und antwortet
+mit einer fertigen Zeile für unten im Fenster). Auf oberster Ebene der settings.json:
+  Windows:        "statusLine": {"type": "command", "command": "curl.exe -s -m 1 --data-binary '@-' http://clippy.local:4711/claude/status"}
+  macOS/Linux:    "statusLine": {"type": "command", "command": "curl -s -m 1 --data-binary @- http://clippy.local:4711/claude/status"}
+Gibt es schon eine statusLine, die NICHT an clippy.local schickt: deinen Menschen fragen, ob sie ersetzt werden
+soll. Sagt er nein, die Statuszeile weglassen (die Hooks trotzdem eintragen).
 
 
 ABSCHNITT B: CODEX

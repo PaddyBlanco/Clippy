@@ -40,6 +40,18 @@ def connected():
     return network is not None and network.WLAN(network.STA_IF).isconnected()
 
 
+def sync_clock():
+    """Stellt die Uhr übers Netz (NTP, UTC; die Zeitzone setzt desktop.run). Liefert True, wenn es geklappt hat."""
+    if not connected():
+        return False
+    try:
+        import ntptime
+        ntptime.settime()
+        return True
+    except Exception:  # Zeitserver nicht erreichbar: später nochmal
+        return False
+
+
 def info():
     """(Netzname, Adresse), solange verbunden, sonst None."""
     if not connected():

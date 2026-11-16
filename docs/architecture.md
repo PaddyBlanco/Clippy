@@ -17,6 +17,7 @@ Der Ordner `device/` ist ein Abbild dessen, was am Gerät unter `/flash/` liegt.
 | `device/clippy/wifi.py` | WLAN: beim Start verbinden, ohne zu warten; Netze suchen, verbinden, Zugang speichern |
 | `device/clippy/wifi_setup.py` | „WLAN einrichten“ aus dem Startmenü: Netz wählen, Passwort eingeben, verbinden |
 | `device/clippy/keyboard.py` | Bildschirm-Tastatur für Texteingaben |
+| `device/clippy/monitor.py` | Fenster „Nutzung“: Limits und Kontext von Claude Code, die Klammer bleibt daneben sichtbar |
 | `device/clippy/agent_hooks/` | Nimmt die Hook-Meldungen der Coding-Agents an (Webserver) und wertet sie je Agent aus, siehe [agent-hooks.md](agent-hooks.md) |
 | `device/clippy/wifi_portal.py` | WLAN einrichten mit dem Handy: eigenes WLAN, QR-Codes, kleiner Web- und Namensserver |
 | `device/clippy/portal_page.py` | Die Einrichtungsseite fürs Handy (HTML) und das Auslesen des Formulars |
@@ -31,12 +32,12 @@ Importiert wird immer vom Paket aus, z. B. `from clippy import win98` oder `from
 ## Bildschirm (320×240)
 
 ```
- 0 ┌──────────────────────────────────────┐
-   │ [Symbol]                             │   Symbole: Spalte links, je 68×50, höchstens vier
-   │ [Symbol]                 ┌─────────┐ │
-   │                          │ Klammer │ │   Feld der Klammer: 110×150 bei x=205, y=58
-   │                          │         │ │
-212├──────────────────────────┴─────────┴─┤
+ 0 ┌───────────────────────┬──────────────┐
+   │ [Symbol] ┌──────────┐ │ [Konsole]    │   Symbole: Spalte links, je 68×50, höchstens vier
+   │ [Symbol] │ Nutzung  │ │──────────────│   Feld der Klammer: 122×212 bei x=198, y=0; oben 60 Luft
+   │          │ (Fenster)│ │   Klammer    │   (Sprünge, Konsole, wenn ein Agent arbeitet)
+   │          └──────────┘ │              │   Fenster „Nutzung“: 194×206 bei x=2, y=2
+212├───────────────────────┴──────────────┤
    │ [Start]    [Cl][Co] [Akku % WLAN 20:36]│  Taskleiste: 28 hoch; Kästchen je Coding-Agent; WLAN-Zeichen nur, wenn verbunden
 240└──────────────────────────────────────┘
 ```
@@ -49,6 +50,22 @@ gezeichnet ist. Das X eines Fensters reagiert in der ganzen Ecke rechts oben (48
 Am Desktop: Symbol-Spalte und Start-Knopf gehören `desktop.py`, das Feld der Klammer gehört ihren Sinnen
 (`pet/senses.py`). In einer App liest nur `ctx.update()` die Berührung. Startmenü und Meldungsfenster
 warten mit `launcher.wait_tap()` auf den nächsten Tipper; solange ruht die Klammer.
+
+## Fenster „Nutzung“
+
+Eingebautes Symbol am Desktop (nach den Apps aus `manifest.json`, zählt zu den höchstens vier). Antippen öffnet
+ein Fenster links (`monitor.py`, 194×206 ab x=2, y=2), das die Klammer rechts frei lässt: Sie lebt weiter, redet
+und reagiert. Inhalt für Claude Code wie in der Windows-98-Ressourcenanzeige: Balken für 5 Stunden und Woche (mit
+Uhrzeit, wann es zurückgesetzt wird), Kontext der zuletzt gemeldeten Sitzung, Modell, Kosten der Sitzung, Zeilen
++/−, „Stand vor … min“. Ab 80 % ist ein Balken rot. Ohne Daten steht dort, wie man sie bekommt (Startmenü →
+„Mit PC verbinden“). Spricht die Klammer, liegt ihre Sprechblase über dem Fenster; sonst zeichnet sich das Fenster
+jede Sekunde neu, damit ist danach auch wieder weg, was Sprechblase oder Sturz-Bühne darübergemalt haben. X schließt es. Daten: [agent-hooks.md](agent-hooks.md) „Nutzung und Limits“.
+
+## Uhr
+
+Sobald das WLAN steht, stellt Clippy einmal die Uhr (`wifi.sync_clock`, NTP, `pool.ntp.org`); die Zeitzone ist
+seit dem Start Mitteleuropa. Ohne WLAN steht die Uhr nach jedem Einschalten auf 1. Jänner 1970 (die Nacht-Regeln
+der Klammer greifen dann nicht, siehe `senses.py`).
 
 ## Startmenü
 

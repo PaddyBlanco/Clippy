@@ -4,9 +4,10 @@ import math
 
 from clippy.pet import extras
 
-HEADROOM = 24  # Luft über dem Kopf, damit sie springen kann
+HEADROOM = 60  # Luft über dem Kopf: dort springt sie, und dort steht die Konsole, wenn ein Agent arbeitet
 FIELD_W, FIELD_H = 122, 152 + HEADROOM
-FIELD_X, FIELD_Y = 320 - FIELD_W, 212 - FIELD_H
+FIELD_X, FIELD_Y = 320 - FIELD_W, 212 - FIELD_H   # von ganz oben bis zur Taskleiste
+TOUCH_Y = 36   # Antippen zählt erst ab hier, also unter der Konsole
 # Zum Umfallen und Rollen braucht sie Platz nach links: Bühne über die ganze Breite, nur solange sie kippt oder rollt
 STAGE_W = 320
 STAGE_X = 0

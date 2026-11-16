@@ -22,7 +22,7 @@ Spalte „Getestet“: ✅ = am Gerät gesehen, ⬜ = noch offen. Stand: 15.11.2
 | 11 | ✅ | Unter Strom: Zittern und Blitze | Ladekabel anstecken; nur einmal, nicht wieder, solange der Akku lädt |
 | 22 | ✅ | Streicheln: Augen zu, sie wiegt sich | Finger auf die Klammer legen und liegen lassen oder darüber streichen, auch mehrmals kurz hintereinander; hört auf, sobald du loslässt. Gegenprobe: schnell hintereinander auf sie tippen ist kein Streicheln, sie duckt sich und wird grantig |
 | 27 | ✅ | Auf dem Kopf: Desktop dreht sich, sie fällt auf den Kopf, rollt nach rechts an ihren Platz, läuft rot an und beschwert sich | Gerät auf den Kopf stellen und kurz halten; danach wieder zurückdrehen, das Gleiche noch einmal. Tippen auf Symbole und die Klammer muss danach weiter stimmen |
-| 28 | ⬜ | Agent arbeitet: merkt auf, schaut gespannt zur Seite, gelbes Kästchen in der Taskleiste | Claude Code, Codex oder Copilot am PC etwas fragen (Einrichten: [agent-hooks.md](agent-hooks.md)) |
+| 28 | ⬜ | Agent arbeitet: merkt auf, schaut gespannt zur Seite, über dem Kopf eine Konsole wie Claude Code im cmd-Fenster (Projekt in der Titelleiste, funkelnder Stern, „Percolating…“, Sekunden), rechts neben dem offenen Fenster „Nutzung“, gelbes Kästchen in der Taskleiste | Claude Code, Codex oder Copilot am PC etwas fragen (Einrichten: [agent-hooks.md](agent-hooks.md)) |
 | 29 | ⬜ | Agent wartet: hüpft, winkt, „… braucht di!“, rotes Kästchen; nach 30 und 60 s noch einmal, dann nur noch das rote Kästchen | den Agent etwas tun lassen, das eine Freigabe braucht; einmal auf die Klammer tippen, dann ruft sie nicht mehr |
 | 30 | ⬜ | Agent fertig: springt vor Freude, grünes Kästchen | Antwort des Agents abwarten |
 | 31 | ⬜ | Kästchen verschwindet | Sitzung des Agents beenden |
