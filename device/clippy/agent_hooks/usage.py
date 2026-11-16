@@ -36,8 +36,6 @@ def status_line(u):
     for label, key in (("5h", "five_hour"), ("Woche", "seven_day")):
         if percent(u[key]) is not None:
             parts.append("%s %d%%" % (label, percent(u[key])))
-    if u["context"] is not None:
-        parts.append("Kontext %d%%" % u["context"])
     return " · ".join(parts)
 
 

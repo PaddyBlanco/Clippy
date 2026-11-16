@@ -17,7 +17,7 @@ Der Ordner `device/` ist ein Abbild dessen, was am Gerät unter `/flash/` liegt.
 | `device/clippy/wifi.py` | WLAN: beim Start verbinden, ohne zu warten; Netze suchen, verbinden, Zugang speichern |
 | `device/clippy/wifi_setup.py` | „WLAN einrichten“ aus dem Startmenü: Netz wählen, Passwort eingeben, verbinden |
 | `device/clippy/keyboard.py` | Bildschirm-Tastatur für Texteingaben |
-| `device/clippy/monitor.py` | Fenster „Nutzung“: Limits und Kontext von Claude Code, die Klammer bleibt daneben sichtbar |
+| `device/clippy/monitor.py` | Fenster „Nutzung“: Limits von Claude Code, die Klammer bleibt daneben sichtbar |
 | `device/clippy/agent_hooks/` | Nimmt die Hook-Meldungen der Coding-Agents an (Webserver) und wertet sie je Agent aus, siehe [agent-hooks.md](agent-hooks.md) |
 | `device/clippy/wifi_portal.py` | WLAN einrichten mit dem Handy: eigenes WLAN, QR-Codes, kleiner Web- und Namensserver |
 | `device/clippy/portal_page.py` | Die Einrichtungsseite fürs Handy (HTML) und das Auslesen des Formulars |
@@ -56,7 +56,7 @@ warten mit `launcher.wait_tap()` auf den nächsten Tipper; solange ruht die Klam
 Eingebautes Symbol am Desktop (nach den Apps aus `manifest.json`, zählt zu den höchstens vier). Antippen öffnet
 ein Fenster links (`monitor.py`, 194×206 ab x=2, y=2), das die Klammer rechts frei lässt: Sie lebt weiter, redet
 und reagiert. Inhalt für Claude Code wie in der Windows-98-Ressourcenanzeige: Balken für 5 Stunden und Woche (mit
-Uhrzeit, wann es zurückgesetzt wird), Kontext der zuletzt gemeldeten Sitzung, Modell, Kosten der Sitzung, Zeilen
+Uhrzeit, wann es zurückgesetzt wird); nur im Terminal (Statuszeile) dazu Modell, Projekt, Kosten der Sitzung, Zeilen
 +/−, „Stand vor … min“. Ab 80 % ist ein Balken rot. Ohne Daten steht dort, wie man sie bekommt (Startmenü →
 „Mit PC verbinden“). Spricht die Klammer, liegt ihre Sprechblase über dem Fenster; sonst zeichnet sich das Fenster
 jede Sekunde neu, damit ist danach auch wieder weg, was Sprechblase oder Sturz-Bühne darübergemalt haben. X schließt es. Daten: [agent-hooks.md](agent-hooks.md) „Nutzung und Limits“.

@@ -46,7 +46,7 @@ class Agents:
         data = agent_class().usage(body) if kind == "status" else agent_class().usage_text(body)
         if not data:
             return ""
-        if got:  # was die neue Meldung nicht hat (z. B. Kontext bei /usage), bleibt vom letzten Mal
+        if got:  # was die neue Meldung nicht hat (z. B. Kosten bei /usage), bleibt vom letzten Mal
             data = {k: got[0][k] if v is None or v == "" else v for k, v in data.items()}
         self.usage[name] = (data, now)
         if usage.crossed(got[0] if got else None, data):

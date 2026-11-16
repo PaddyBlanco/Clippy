@@ -42,12 +42,10 @@ class Claude(Agent):
 
     def usage(self, payload):
         cost = payload.get("cost") or {}
-        context = (payload.get("context_window") or {}).get("used_percentage")
         project = (payload.get("workspace") or {}).get("project_dir") or payload.get("cwd") or ""
         return {
             "five_hour": _window(payload, "five_hour"),
             "seven_day": _window(payload, "seven_day"),
-            "context": None if context is None else int(round(context)),
             "model": (payload.get("model") or {}).get("display_name") or "",
             "cost": cost.get("total_cost_usd"),
             "added": cost.get("total_lines_added"),
@@ -74,5 +72,5 @@ class Claude(Agent):
                     found[key] = (pct, _when(reset, today))
         if not found:
             return None
-        return {"five_hour": found.get("five_hour"), "seven_day": found.get("seven_day"), "context": None,
+        return {"five_hour": found.get("five_hour"), "seven_day": found.get("seven_day"),
                 "model": "", "cost": None, "added": None, "removed": None, "project": ""}

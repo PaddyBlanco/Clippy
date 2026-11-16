@@ -1,4 +1,4 @@
-# Fenster „Nutzung“ links am Desktop: Limits und Kontext von Claude Code wie in der Ressourcenanzeige von
+# Fenster „Nutzung“ links am Desktop: Limits von Claude Code wie in der Ressourcenanzeige von
 # Windows 98. Die Klammer bleibt rechts sichtbar und lebt weiter (docs/architecture.md).
 import time
 
@@ -58,12 +58,11 @@ class Monitor:
         else:
             u, heard = got
             win98.text(g, ("Claude " + u["model"])[:24], 8, TITLE_H + 6, DARK, FACE, bold=True)
-            y = TITLE_H + 28
+            y = TITLE_H + 32
             for label, key in (("5 Stunden", "five_hour"), ("Woche", "seven_day")):
                 _bar(g, y, label, usage.percent(u[key]), usage.reset_text(u[key]))
-                y += 38
-            _bar(g, y, "Kontext", u["context"], u["project"][:12])
-            y += 40
+                y += 50
+            y += 10
             if u["cost"] is not None:
                 win98.text(g, ("Sitzung %.2f $" % u["cost"]).replace(".", ","), 8, y, DARK, FACE)
             if u["added"] is not None:

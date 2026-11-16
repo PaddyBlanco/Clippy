@@ -84,19 +84,19 @@ status = {"model": {"display_name": "Opus 5.5"}, "workspace": {"project_dir": "C
           "rate_limits": {"five_hour": {"used_percentage": 42.2, "resets_at": now + 3600},
                           "seven_day": {"used_percentage": 18, "resets_at": now + 86400 * 3}}}
 u = AGENTS["claude"]().usage(status)
-assert u["five_hour"] == (42, now + 3600) and u["seven_day"][0] == 18 and u["context"] == 31
+assert u["five_hour"] == (42, now + 3600) and u["seven_day"][0] == 18 and "context" not in u
 assert u["project"] == "Clippy" and u["model"] == "Opus 5.5" and u["added"] == 120
-assert usage.status_line(u) == "Clippy · 5h 42% · Woche 18% · Kontext 31%"
+assert usage.status_line(u) == "Clippy · 5h 42% · Woche 18%"
 assert AGENTS["codex"]().usage(status) is None  # Codex gibt keine Zahlen heraus
-no_plan = AGENTS["claude"]().usage({"context_window": {"used_percentage": 5}})  # ohne Pro/Max: keine Limits
-assert no_plan["five_hour"] is None and usage.status_line(no_plan) == "Clippy · Kontext 5%"
+no_plan = AGENTS["claude"]().usage({"cost": {"total_cost_usd": 0.5}})  # ohne Pro/Max: keine Limits
+assert no_plan["five_hour"] is None and usage.status_line(no_plan) == "Clippy"
 assert usage.percent((90, now - 10)) == 0  # Fenster vorbei: wieder bei null
 high = dict(u, five_hour=(81, now + 3600))
 assert usage.crossed(u, high) and not usage.crossed(high, high) and usage.crossed(high, dict(high, five_hour=(85, now + 9000)))
 
 hooks.answer = lambda agent, kind, body: usage.status_line(AGENTS[agent]().usage(body))
 got, text, _ = curl(["--data-binary", "@-", base + "/claude/status"], json.dumps(status).encode())
-assert got is None and text.strip() == "Clippy · 5h 42% · Woche 18% · Kontext 31%", text
+assert got is None and text.strip() == "Clippy · 5h 42% · Woche 18%", text
 
 # Ausgabe von `claude -p /usage` (so am PC gesehen; „·“ kommt aus PowerShell oft als „?“ an)
 from clippy.agent_hooks.claude import _when
@@ -107,7 +107,7 @@ Current week (all models): 8% used ? resets Nov 21, 9:59pm (Europe/Vienna)
 Current week (Fable): 4% used · resets Nov 21, 9:59pm (Europe/Vienna)
 """
 t = AGENTS["claude"]().usage_text(usage_out, today=(11, 16))
-assert t["five_hour"] == (9, "23:49") and t["seven_day"] == (8, "21.11. 21:59") and t["context"] is None
+assert t["five_hour"] == (9, "23:49") and t["seven_day"] == (8, "21.11. 21:59") and t["cost"] is None
 assert usage.reset_text(t["five_hour"]) == "bis 23:49" and usage.percent(t["seven_day"]) == 8
 assert _when("12:05am", (1, 1)) == "00:05" and _when("Dec 3, 12pm", (1, 1)) == "3.12. 12:00" and _when("?", (1, 1)) == ""
 assert AGENTS["claude"]().usage_text("Error: not logged in") is None
@@ -157,7 +157,7 @@ assert tracker._answer("claude", "usage", None) == "bitte"          # letzte Zah
 assert tracker._answer("claude", "usage", None) == "danke"          # schon gefragt, Antwort läuft noch
 assert tracker._answer("claude", "usage", usage_out).startswith("Clippy · 5h 9% · Woche 8%")
 merged = tracker.usage["Claude"][0]
-assert merged["context"] == 31 and merged["model"] == "Opus 5.5"     # Kontext und Modell bleiben von der Statuszeile
+assert merged["cost"] == 1.234 and merged["model"] == "Opus 5.5"    # Kosten und Modell bleiben von der Statuszeile
 time.ticks_ms = lambda: T0 + 60000
 assert tracker._answer("claude", "usage", None) == "danke"          # frisch genug
 time.ticks_ms = lambda: T0 + pet_agents.USAGE_MS + 1000

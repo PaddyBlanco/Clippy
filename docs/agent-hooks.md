@@ -57,7 +57,7 @@ Die Ausgabe ist Text, ausgewertet von `Claude.usage_text`:
 
 **2. Statuszeile (nur Terminal).** Claude Code ruft seine **Statuszeile** bei jeder Antwort auf und gibt ihr ein JSON mit, unter anderem
 `rate_limits.five_hour` und `rate_limits.seven_day` (`used_percentage`, `resets_at` in Unix-Sekunden; nur bei
-Pro/Max und erst nach der ersten Antwort), `context_window.used_percentage`, `cost.total_cost_usd`,
+Pro/Max und erst nach der ersten Antwort), `cost.total_cost_usd`,
 `cost.total_lines_added`/`removed`, `model.display_name`, `workspace.project_dir`
 (https://code.claude.com/docs/en/statusline.md). Die Statuszeile ist ein einzelner Befehl:
 
@@ -66,7 +66,9 @@ Pro/Max und erst nach der ersten Antwort), `context_window.used_percentage`, `co
 - macOS/Linux: `"command": "curl -s -m 1 --data-binary @- http://clippy.local:4711/claude/status"`
 
 Clippy merkt sich die Werte und **antwortet mit der Zeile**, die Claude Code unten anzeigt, z. B.
-`Clippy · 5h 42% · Woche 18% · Kontext 31%`. Ist Clippy aus, bleibt die Zeile leer. Hat jemand schon eine eigene
+`Clippy · 5h 42% · Woche 18%`. Ist Clippy aus, bleibt die Zeile leer. Den Kontext (wie voll Claudes Gedächtnis
+ist) zeigt Clippy bewusst nicht: In VS Code gibt es ihn nur als Tokenzahl in der internen Verlaufsdatei, ohne die
+Größe des Fensters, eine Prozentzahl wäre geraten. Hat jemand schon eine eigene
 Statuszeile, ersetzt der Agent sie nur nach Rückfrage.
 
 Am Gerät: Symbol **„Nutzung“** am Desktop öffnet ein Fenster links (die Klammer bleibt rechts sichtbar und lebt
@@ -76,7 +78,7 @@ ohne Programm am PC kommt Clippy da nicht ran, daher nur Claude.
 
 Auswertung: `Agent.usage(payload)` (Statuszeile) und `Agent.usage_text(text)` (Ausgabe von `/usage`) in
 `agent_hooks/` (Claude füllt sie, die anderen liefern `None`), zusammengeführt in `pet/agents.py`: was die neue
-Meldung nicht hat (z. B. Kontext bei `/usage`), bleibt vom letzten Mal. Antworttext von `agent_hooks/usage.py`.
+Meldung nicht hat (z. B. Kosten bei `/usage`), bleibt vom letzten Mal. Antworttext von `agent_hooks/usage.py`.
 `GET /claude/status` zeigt zum Nachsehen, was zuletzt ankam; `GET /` zeigt, welcher Agent sich zuletzt gemeldet hat.
 
 ## Welcher Hook welchen Zustand meldet
