@@ -94,9 +94,29 @@ assert usage.percent((90, now - 10)) == 0  # Fenster vorbei: wieder bei null
 high = dict(u, five_hour=(81, now + 3600))
 assert usage.crossed(u, high) and not usage.crossed(high, high) and usage.crossed(high, dict(high, five_hour=(85, now + 9000)))
 
-hooks.on_status = lambda agent, payload: usage.status_line(AGENTS[agent]().usage(payload))
+hooks.answer = lambda agent, kind, body: usage.status_line(AGENTS[agent]().usage(body))
 got, text, _ = curl(["--data-binary", "@-", base + "/claude/status"], json.dumps(status).encode())
 assert got is None and text.strip() == "Clippy · 5h 42% · Woche 18% · Kontext 31%", text
+
+# Ausgabe von `claude -p /usage` (so am PC gesehen; „·“ kommt aus PowerShell oft als „?“ an)
+from clippy.agent_hooks.claude import _when
+usage_out = """You are currently using your subscription to power your Claude Code usage
+
+Current session: 9% used · resets Nov 16, 11:49pm (Europe/Vienna)
+Current week (all models): 8% used ? resets Nov 21, 9:59pm (Europe/Vienna)
+Current week (Fable): 4% used · resets Nov 21, 9:59pm (Europe/Vienna)
+"""
+t = AGENTS["claude"]().usage_text(usage_out, today=(11, 16))
+assert t["five_hour"] == (9, "23:49") and t["seven_day"] == (8, "21.11. 21:59") and t["context"] is None
+assert usage.reset_text(t["five_hour"]) == "bis 23:49" and usage.percent(t["seven_day"]) == 8
+assert _when("12:05am", (1, 1)) == "00:05" and _when("Dec 3, 12pm", (1, 1)) == "3.12. 12:00" and _when("?", (1, 1)) == ""
+assert AGENTS["claude"]().usage_text("Error: not logged in") is None
+assert AGENTS["codex"]().usage_text(usage_out) is None
+hooks.answer = lambda agent, kind, body: usage.status_line(AGENTS[agent]().usage_text(body, today=(11, 16)))
+got, text, _ = curl(["--data-binary", "@-", base + "/claude/usage"], usage_out.encode())
+assert got is None and text.strip() == "Clippy · 5h 9% · Woche 8%", text
+hooks.answer = lambda agent, kind, body: 1 / 0  # Fehler beim Auswerten: Server bleibt heil
+assert curl(["--data-binary", "@-", base + "/claude/usage"], b"x")[0] is None
 hooks.sock.close()
 
 # Wartet ein Agent, ruft die Klammer höchstens dreimal (sofort, nach 30 und nach 60 s)
@@ -126,7 +146,20 @@ tracker.poll(153000)
 assert tracker.verb is None and tracker.console(153000) is None
 
 # Statuszeile über 80 %: einmal "usage_high", die Nutzung ist für das Fenster gemerkt
-assert tracker._status("claude", dict(status, rate_limits={"five_hour": {"used_percentage": 85}})).startswith("Clippy")
+assert tracker._answer("claude", "status", dict(status, rate_limits={"five_hour": {"used_percentage": 85}})).startswith("Clippy")
 assert tracker.poll(131000) == ["usage_high"] and tracker.poll(132000) == []
 assert tracker.usage["Claude"][0]["five_hour"] == (85, None)
+
+# /usage: Clippy bittet nur um Zahlen, wenn die letzten älter als 3 Minuten sind, und nie zweimal gleichzeitig
+T0 = time.ticks_ms() + 10 ** 7  # gespielte Zeit, deutlich nach allem bisher
+time.ticks_ms = lambda: T0
+assert tracker._answer("claude", "usage", None) == "bitte"          # letzte Zahlen sind uralt
+assert tracker._answer("claude", "usage", None) == "danke"          # schon gefragt, Antwort läuft noch
+assert tracker._answer("claude", "usage", usage_out).startswith("Clippy · 5h 9% · Woche 8%")
+merged = tracker.usage["Claude"][0]
+assert merged["context"] == 31 and merged["model"] == "Opus 5.5"     # Kontext und Modell bleiben von der Statuszeile
+time.ticks_ms = lambda: T0 + 60000
+assert tracker._answer("claude", "usage", None) == "danke"          # frisch genug
+time.ticks_ms = lambda: T0 + pet_agents.USAGE_MS + 1000
+assert tracker._answer("claude", "usage", None) == "bitte"
 print("ok")

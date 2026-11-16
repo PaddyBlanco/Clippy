@@ -39,9 +39,11 @@ def parse(raw):
 
 
 class HookServer:
-    def __init__(self, on_status=lambda agent, payload: ""):
-        """on_status(agent, Statuszeilen-JSON) liefert den Text, den der Agent als Statuszeile anzeigt."""
-        self.on_status = on_status
+    def __init__(self, answer=lambda agent, kind, body: ""):
+        """answer(agent, kind, body) liefert den Antworttext für alles, was keine Hook-Meldung ist:
+        kind "status" (body: Statuszeilen-JSON als dict), "usage" (body: Text von `/usage`), "" (GET /);
+        bei GET ist body None."""
+        self.answer = answer
         self.sock = None
         self.next_try = time.ticks_ms()
 
@@ -84,19 +86,22 @@ class HookServer:
             head, body = data[:cut].decode(), data[cut + 4:]
             method, path = head.split(" ")[:2]
             parts = path.strip("/").split("/")
+            kind = parts[1] if len(parts) > 1 else ""
             if method != "POST":
-                if len(parts) > 1 and parts[1] == "probe":
+                if kind == "probe":
                     conn.send((TEXT % "Clippy freut sich.").encode())
                     return parts[0], {"hook_event_name": "Stop"}
-                conn.send((TEXT % "Clippy hört zu.").encode())
+                text = self.answer(parts[0], kind, None) or ""  # Nachsehen: was zuletzt ankam, braucht es Zahlen
+                conn.send((TEXT % (text if kind else "Clippy hört zu." + text)).encode())
                 return None
-            payload = parse(_body(conn, head, body))
-            if len(parts) > 1 and parts[1] == "status":  # Statuszeile: Antwort ist die Zeile selbst
-                conn.send((TEXT % (self.on_status(parts[0], payload) or "")).encode())
+            raw = _body(conn, head, body)
+            if kind in ("status", "usage"):  # Statuszeile (JSON) bzw. Ausgabe von /usage (Text)
+                text = self.answer(parts[0], kind, parse(raw) if kind == "status" else raw.decode())
+                conn.send((TEXT % (text or "")).encode())
                 return None
             conn.send((TEXT % "ok").encode())
-            return parts[0], payload
-        except (OSError, ValueError, IndexError):
+            return parts[0], parse(raw)
+        except Exception:  # kaputte Anfrage oder Fehler beim Auswerten: nie den Desktop mitreißen
             return None
         finally:
             conn.close()

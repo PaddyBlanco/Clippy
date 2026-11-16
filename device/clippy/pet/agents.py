@@ -1,5 +1,5 @@
-# Die Coding-Agents am PC: merkt sich je Agent den Zustand aus seinen Hook-Meldungen und die Nutzung aus seiner
-# Statuszeile (docs/agent-hooks.md) und meldet der Klammer Ereignisse. Annehmen und Auswerten: clippy.agent_hooks.
+# Die Coding-Agents am PC: merkt sich je Agent den Zustand aus seinen Hook-Meldungen und die Nutzung aus Statuszeile
+# bzw. `/usage` (docs/agent-hooks.md) und meldet der Klammer Ereignisse. Annehmen und Auswerten: clippy.agent_hooks.
 import time
 
 from clippy.agent_hooks import AGENTS, usage
@@ -11,29 +11,46 @@ CALLS = 3                  # ... aber höchstens so oft insgesamt; danach bleibt
 EXPIRE_MS = 30 * 60 * 1000  # so lange ohne Meldung, dann ist der Agent vergessen
 VERB_MS = 20000            # bei langer Arbeit so oft ein neues Arbeitswort
 VERB_MAX = 13              # längere Wörter passen nicht in die Konsole über der Klammer (173 von 187 passen)
+USAGE_MS = 3 * 60 * 1000   # Zahlen von `/usage` höchstens so oft neu holen lassen
 EVENTS = {"working": "agent_working", "waiting": "agent_waiting", "done": "agent_done"}
 AGENTS_BY_NAME = {c.name: c for c in AGENTS.values()}
 
 
 class Agents:
     def __init__(self):
-        self.server = HookServer(self._status)
+        self.server = HookServer(self._answer)
+        self.asked = time.ticks_add(time.ticks_ms(), -60000)  # wann zuletzt um Zahlen von /usage gebeten
         self.known = {}       # Name -> {"short", "state", "heard": letzte Meldung, "called": letzter Ruf, "seen"}
         self.usage = {}       # Name -> (Nutzung als dict, wann gemeldet in ms)
         self.pending = []     # Ereignisse aus der Statuszeile, gehen mit dem nächsten poll hinaus
         self.last = "Agent"   # wer zuletzt etwas gemeldet hat; steht im Spruch für {agent}
         self.verb, self.verb_at = None, 0  # Arbeitswort in der Konsole über der Klammer, None = keiner arbeitet
 
-    def _status(self, path, payload):
-        """Statuszeile eines Agents: Nutzung merken, Warnung vormerken, Zeile zurückgeben."""
-        agent_class = AGENTS.get(path)
-        data = agent_class().usage(payload) if agent_class else None
+    def _answer(self, path, kind, body):
+        """Antwort des Webservers auf alles außer Hook-Meldungen (siehe HookServer):
+        "status": Statuszeile (JSON) merken, Zeile zurück; "usage": Text von `/usage` merken, bzw. bei GET „bitte“,
+        wenn neue Zahlen gebraucht werden; GET "status": was zuletzt ankam; GET /: wer sich zuletzt gemeldet hat."""
+        now, agent_class = time.ticks_ms(), AGENTS.get(path)
+        if agent_class is None:
+            return "".join("\n%s: %s (vor %d s)" % (n, a["state"], time.ticks_diff(now, a["heard"]) // 1000)
+                           for n, a in self.known.items())
+        name, got = agent_class.name, self.usage.get(agent_class.name)
+        if body is None and kind == "usage":  # nicht öfter als alle USAGE_MS, und nicht zwei Abfragen gleichzeitig
+            if got and time.ticks_diff(now, got[1]) < USAGE_MS or time.ticks_diff(now, self.asked) < 30000:
+                return "danke"
+            self.asked = now
+            return "bitte"
+        if body is None:
+            return "%s (vor %d s)" % (usage.status_line(got[0]), time.ticks_diff(now, got[1]) // 1000) if got \
+                else "Noch keine Zahlen."
+        data = agent_class().usage(body) if kind == "status" else agent_class().usage_text(body)
         if not data:
             return ""
-        old = self.usage.get(agent_class.name)
-        self.usage[agent_class.name] = (data, time.ticks_ms())
-        if usage.crossed(old[0] if old else None, data):
-            self.last = agent_class.name
+        if got:  # was die neue Meldung nicht hat (z. B. Kontext bei /usage), bleibt vom letzten Mal
+            data = {k: got[0][k] if v is None or v == "" else v for k, v in data.items()}
+        self.usage[name] = (data, now)
+        if usage.crossed(got[0] if got else None, data):
+            self.last = name
             self.pending.append("usage_high")
         return usage.status_line(data)
 

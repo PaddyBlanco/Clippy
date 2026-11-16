@@ -35,7 +35,27 @@ Agents teilen sich ein Kästchen; die letzte Meldung gilt.
 
 ## Nutzung und Limits (nur Claude Code)
 
-Claude Code ruft seine **Statuszeile** bei jeder Antwort auf und gibt ihr ein JSON mit, unter anderem
+Zwei Quellen, weil die VS-Code-Erweiterung keine Statuszeile ausführt (am PC geprüft: Hooks aus derselben Sitzung
+kamen an, die Statuszeile nie):
+
+**1. `claude -p /usage` (VS Code und Terminal).** Ein zweiter Hook bei `Stop` fragt Clippy
+(`GET /claude/usage`), ob es neue Zahlen braucht: Antwort `bitte`, wenn die letzten älter als 3 Minuten sind
+(`USAGE_MS` in `pet/agents.py`), sonst `danke`. Bei `bitte` startet der Hook das laufende Claude Code noch einmal im
+Druckmodus und schickt dessen Ausgabe an `POST /claude/usage`. Den Pfad zum Programm liefert die Umgebungsvariable
+`CLAUDE_PID`, die Claude Code jedem Hook mitgibt (auch in VS Code, wo `claude` nicht im Suchpfad liegt):
+`(Get-Process -Id $env:CLAUDE_PID).Path -p /usage --no-session-persistence --setting-sources project`.
+`--setting-sources project` lädt die Benutzereinstellungen nicht, also auch nicht die Clippy-Hooks (sonst ruft sich
+das im Kreis); `--no-session-persistence` legt keine Sitzung an. Dauer am PC: 2,4 s für `/usage`, knapp 6 s für den
+ganzen Hook über PowerShell, im Hintergrund (`async`); am PC so aufgerufen wie Claude Code es tut (Liste von
+Argumenten, ohne Shell) und am Gerät angekommen. Die Variante für macOS/Linux in `manual/verbinden.txt` ist
+ungetestet. Die genauen Einträge stehen dort.
+Die Ausgabe ist Text, ausgewertet von `Claude.usage_text`:
+`Current session: 9% used · resets Nov 16, 11:49pm (Europe/Vienna)` (5-Stunden-Fenster) und
+`Current week (all models): 8% used · resets Nov 21, 9:59pm (Europe/Vienna)`. Clippy zeigt die Zeit als
+`bis 23:49` (heute) bzw. `bis 21.11. 21:59`. So holt Claude Code die Zahlen selbst (intern über
+`/api/oauth/usage`, steht in seinem Protokoll); Clippy fasst kein Anmelde-Token an.
+
+**2. Statuszeile (nur Terminal).** Claude Code ruft seine **Statuszeile** bei jeder Antwort auf und gibt ihr ein JSON mit, unter anderem
 `rate_limits.five_hour` und `rate_limits.seven_day` (`used_percentage`, `resets_at` in Unix-Sekunden; nur bei
 Pro/Max und erst nach der ersten Antwort), `context_window.used_percentage`, `cost.total_cost_usd`,
 `cost.total_lines_added`/`removed`, `model.display_name`, `workspace.project_dir`
@@ -54,8 +74,10 @@ weiter), siehe [architecture.md](architecture.md). Erreicht das 5-Stunden-Limit 
 `usage_high` (einmal je Zeitfenster). Codex hat seine Limits nur in internen Dateien am PC, Copilot gar nicht;
 ohne Programm am PC kommt Clippy da nicht ran, daher nur Claude.
 
-Auswertung: `Agent.usage(payload)` in `agent_hooks/` (Claude füllt sie, die anderen liefern `None`),
-gespeichert in `pet/agents.py`, Antworttext von `agent_hooks/usage.py`.
+Auswertung: `Agent.usage(payload)` (Statuszeile) und `Agent.usage_text(text)` (Ausgabe von `/usage`) in
+`agent_hooks/` (Claude füllt sie, die anderen liefern `None`), zusammengeführt in `pet/agents.py`: was die neue
+Meldung nicht hat (z. B. Kontext bei `/usage`), bleibt vom letzten Mal. Antworttext von `agent_hooks/usage.py`.
+`GET /claude/status` zeigt zum Nachsehen, was zuletzt ankam; `GET /` zeigt, welcher Agent sich zuletzt gemeldet hat.
 
 ## Welcher Hook welchen Zustand meldet
 

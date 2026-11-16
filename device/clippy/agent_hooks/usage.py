@@ -14,11 +14,15 @@ def percent(window):
     if not window:
         return None
     pct, resets = window
+    if isinstance(resets, str):  # aus `/usage`: Zeit nur als Text, dort nicht nachrechenbar
+        return pct
     return 0 if resets and clock_set() and time.time() >= resets else pct
 
 
 def reset_text(window):
     """„bis 14:30“, an einem anderen Tag „bis Mo 09:00“; leer ohne gestellte Uhr."""
+    if window and isinstance(window[1], str):  # aus `/usage`: schon fertig als Text
+        return "bis " + window[1] if window[1] else ""
     if not window or not window[1] or not clock_set():
         return ""
     t, now = time.localtime(window[1]), time.localtime()

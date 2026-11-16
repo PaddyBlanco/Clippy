@@ -36,3 +36,8 @@ class Agent:
         """payload: das JSON der Statuszeile. Liefert die Nutzung als dict (siehe Claude.usage) oder None,
         wenn der Agent keine Zahlen herausgibt."""
         return None
+
+    def usage_text(self, text):
+        """text: was der Agent auf seinen Nutzungs-Befehl ausgibt (bei Claude `claude -p /usage`). Nutzung als dict
+        wie bei usage(), fehlende Werte None; oder None, wenn nichts darin steht."""
+        return None
