@@ -158,7 +158,7 @@ assert tracker._answer("claude", "usage", None) == "danke"          # schon gefr
 assert tracker._answer("claude", "usage", usage_out).startswith("Clippy · 5h 9% · Woche 8%")
 merged = tracker.usage["Claude"][0]
 assert merged["cost"] == 1.234 and merged["model"] == "Opus 5.5"    # Kosten und Modell bleiben von der Statuszeile
-time.ticks_ms = lambda: T0 + 60000
+time.ticks_ms = lambda: T0 + pet_agents.USAGE_MS // 2 + 5000
 assert tracker._answer("claude", "usage", None) == "danke"          # frisch genug
 time.ticks_ms = lambda: T0 + pet_agents.USAGE_MS + 1000
 assert tracker._answer("claude", "usage", None) == "bitte"

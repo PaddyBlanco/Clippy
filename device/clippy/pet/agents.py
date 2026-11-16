@@ -11,7 +11,7 @@ CALLS = 3                  # ... aber höchstens so oft insgesamt; danach bleibt
 EXPIRE_MS = 30 * 60 * 1000  # so lange ohne Meldung, dann ist der Agent vergessen
 VERB_MS = 20000            # bei langer Arbeit so oft ein neues Arbeitswort
 VERB_MAX = 13              # längere Wörter passen nicht in die Konsole über der Klammer (173 von 187 passen)
-USAGE_MS = 3 * 60 * 1000   # Zahlen von `/usage` höchstens so oft neu holen lassen
+USAGE_MS = 60 * 1000       # Zahlen von `/usage` höchstens so oft neu holen lassen
 EVENTS = {"working": "agent_working", "waiting": "agent_waiting", "done": "agent_done"}
 AGENTS_BY_NAME = {c.name: c for c in AGENTS.values()}
 

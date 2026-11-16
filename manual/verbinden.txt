@@ -50,10 +50,10 @@ Beispiel Windows für ein Ereignis (die anderen genauso):
     "Stop": [{"hooks": [{"type": "command", "command": "cmd.exe", "args": ["/c", "curl.exe -s -m 2 --data-binary @- http://clippy.local:4711/claude & exit /b 0"], "async": true}]}]
   }
 
-Zusätzlich für Nutzung und Limits (5-Stunden- und Wochenlimit; geht auch in der VS-Code-Erweiterung): beim
-Ereignis Stop einen ZWEITEN Eintrag in dieselbe "hooks"-Liste, also
+Zusätzlich für Nutzung und Limits (5-Stunden- und Wochenlimit; geht auch in der VS-Code-Erweiterung): bei den
+Ereignissen UserPromptSubmit UND Stop je einen ZWEITEN Eintrag in dieselbe "hooks"-Liste, also z. B.
 "Stop": [{"hooks": [ <Eintrag von oben>, <dieser Eintrag> ]}]. Er fragt Clippy, ob es neue Zahlen braucht
-(höchstens alle 3 Minuten), und lässt dann Claude Code selbst "/usage" ausgeben; CLAUDE_PID setzt Claude Code.
+(höchstens jede Minute), und lässt dann Claude Code selbst "/usage" ausgeben; CLAUDE_PID setzt Claude Code.
   Windows:
     {"type": "command", "command": "powershell.exe", "args": ["-NoProfile", "-NonInteractive", "-Command", "if ((curl.exe -s -m 2 http://clippy.local:4711/claude/usage) -eq 'bitte') { & (Get-Process -Id $env:CLAUDE_PID).Path -p /usage --no-session-persistence --setting-sources project 2>$null | curl.exe -s -m 5 --data-binary '@-' http://clippy.local:4711/claude/usage | Out-Null }; exit 0"], "async": true}
   macOS/Linux:

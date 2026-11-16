@@ -38,9 +38,9 @@ Agents teilen sich ein Kästchen; die letzte Meldung gilt.
 Zwei Quellen, weil die VS-Code-Erweiterung keine Statuszeile ausführt (am PC geprüft: Hooks aus derselben Sitzung
 kamen an, die Statuszeile nie):
 
-**1. `claude -p /usage` (VS Code und Terminal).** Ein zweiter Hook bei `Stop` fragt Clippy
-(`GET /claude/usage`), ob es neue Zahlen braucht: Antwort `bitte`, wenn die letzten älter als 3 Minuten sind
-(`USAGE_MS` in `pet/agents.py`), sonst `danke`. Bei `bitte` startet der Hook das laufende Claude Code noch einmal im
+**1. `claude -p /usage` (VS Code und Terminal).** Ein zweiter Hook bei `UserPromptSubmit` und bei `Stop` (also am
+Anfang und am Ende jeder Antwort) fragt Clippy (`GET /claude/usage`), ob es neue Zahlen braucht: Antwort `bitte`,
+wenn die letzten älter als 1 Minute sind (`USAGE_MS` in `pet/agents.py`), sonst `danke`. Bei `bitte` startet der Hook das laufende Claude Code noch einmal im
 Druckmodus und schickt dessen Ausgabe an `POST /claude/usage`. Den Pfad zum Programm liefert die Umgebungsvariable
 `CLAUDE_PID`, die Claude Code jedem Hook mitgibt (auch in VS Code, wo `claude` nicht im Suchpfad liegt):
 `(Get-Process -Id $env:CLAUDE_PID).Path -p /usage --no-session-persistence --setting-sources project`.
