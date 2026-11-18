@@ -70,8 +70,8 @@ ist) zeigt Clippy bewusst nicht: In VS Code gibt es ihn nur als Tokenzahl in der
 Größe des Fensters, eine Prozentzahl wäre geraten. Hat jemand schon eine eigene
 Statuszeile, ersetzt der Agent sie nur nach Rückfrage.
 
-Am Gerät: Symbol **„Nutzung“** am Desktop öffnet ein Fenster links (die Klammer bleibt rechts sichtbar und lebt
-weiter), siehe [architecture.md](architecture.md). Erreicht das 5-Stunden-Limit 80 %, meldet die Klammer
+Am Gerät: Symbol **„Agent“** am Desktop (zeigt das Zeichen des Agents, der zuletzt dran war) öffnet das Fenster
+„Agent-Nutzung“ links (die Klammer bleibt rechts sichtbar und lebt weiter), siehe [architecture.md](architecture.md). Erreicht das 5-Stunden-Limit 80 %, meldet die Klammer
 `usage_high` (einmal je Zeitfenster). Codex hat seine Limits nur in internen Dateien am PC, Copilot gar nicht;
 ohne Programm am PC kommt Clippy da nicht ran, daher nur Claude.
 

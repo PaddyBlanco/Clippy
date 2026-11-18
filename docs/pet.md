@@ -135,7 +135,7 @@ rund 18 Zeichen.
 Die Klammer lebt in einem Feld von 122×212 Pixeln am rechten Rand, von ganz oben bis zur Taskleiste (`FIELD_X`,
 `FIELD_Y` in `draw.py`). Die oberen 60 Pixel (`HEADROOM`) sind Luft über dem Kopf: dort springt sie hin, und dort
 steht die Konsole, wenn ein Agent arbeitet (siehe „Arbeitswort“). Antippen zählt erst ab `TOUCH_Y` = 36, also unter
-der Konsole. Links daneben ist Platz für das Fenster „Nutzung“ (bis x = 196).
+der Konsole. Links daneben ist Platz für das Fenster „Agent-Nutzung“ (bis x = 196).
 Beim Umfallen nach links (`lean` größer 0) und beim Rollen (`roll`) zeichnet sie auf der Bühne: ein Streifen in
 Feldhöhe über die ganze Breite (`STAGE_W`, `stage.py`). Als Hintergrund dient der ganze Desktop samt Symbolen,
 den `desktop.draw` einmal in eine eigene Leinwand malt; die Sprechblase wird dafür weggeräumt. Nur Feld bzw. Bühne
@@ -144,7 +144,7 @@ werden je Bild neu gezeichnet. Wer dort etwas anderes zeichnet, wird beim nächs
 ## Arbeitswort
 
 Solange ein Coding-Agent arbeitet, steht über ihrem Kopf eine kleine Konsole wie Claude Code im alten cmd-Fenster
-(`extras.console`, 122×58 ganz oben im Feld, rechts neben dem Fenster „Nutzung“): Titelleiste in der Farbe des
+(`extras.console`, 122×58 ganz oben im Feld, rechts neben dem Fenster „Agent-Nutzung“): Titelleiste in der Farbe des
 Agents (`color` in `agent_hooks/`: Claude orange, Codex grün, Copilot lila) mit Agent und Projekt („claude:
 Clippy“, aus `cwd` der Hook-Meldung). Darunter schwarz: der funkelnde Stern von Claude Code und das Arbeitswort in
 der Farbe des Agents („Percolating…“), in der zweiten Zeile grau, wie lange er schon arbeitet

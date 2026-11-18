@@ -12,6 +12,7 @@ Der Ordner `device/` ist ein Abbild dessen, was am Gerät unter `/flash/` liegt.
 | `device/main.py` | Start am Gerät, ruft nur `desktop.run()` |
 | `device/clippy/desktop.py` | Hauptschleife: lädt die App-Liste, verteilt Tipper an Symbole, Startmenü und Klammer |
 | `device/clippy/shell.py` | Taskleiste, Symbole und Startmenü zeichnen; sagt, was unter dem Finger liegt |
+| `device/clippy/logos.py` | Zeichen von Claude (Stern) und Codex (Knoten) für das Desktop-Symbol „Agent“ |
 | `device/clippy/launcher.py` | Startet eine App im Fenster, fängt Fehler ab (Bluescreen); Verbinden-, Handbuch- und Abschiedsbild |
 | `device/clippy/app_context.py` | `Ctx`: was eine App bekommt (Zeichenfläche, Tipper, Ton, WLAN-Stand, Radio), Vertrag in [build-an-app.md](build-an-app.md) |
 | `device/clippy/player.py` | Internetradio über den Player der Firmware; nur http-MP3, siehe [device.md](device.md) |
@@ -20,7 +21,7 @@ Der Ordner `device/` ist ein Abbild dessen, was am Gerät unter `/flash/` liegt.
 | `device/clippy/wifi.py` | WLAN: beim Start verbinden, ohne zu warten; Netze suchen, verbinden, Zugang speichern |
 | `device/clippy/wifi_setup.py` | „WLAN einrichten“ aus dem Startmenü: Netz wählen, Passwort eingeben, verbinden |
 | `device/clippy/keyboard.py` | Bildschirm-Tastatur für Texteingaben |
-| `device/clippy/monitor.py` | Fenster „Nutzung“: Limits von Claude Code, die Klammer bleibt daneben sichtbar |
+| `device/clippy/monitor.py` | Fenster „Agent-Nutzung“: was der Agent tut, bei Claude Code die Limits; die Klammer bleibt daneben sichtbar |
 | `device/clippy/agent_hooks/` | Nimmt die Hook-Meldungen der Coding-Agents an (Webserver) und wertet sie je Agent aus, siehe [agent-hooks.md](agent-hooks.md) |
 | `device/clippy/wifi_portal.py` | WLAN einrichten mit dem Handy: eigenes WLAN, QR-Codes, kleiner Web- und Namensserver |
 | `device/clippy/portal_page.py` | Die Einrichtungsseite fürs Handy (HTML) und das Auslesen des Formulars |
@@ -37,9 +38,9 @@ Importiert wird immer vom Paket aus, z. B. `from clippy import win98` oder `from
 ```
  0 ┌───────────────────────┬──────────────┐
    │ [Symbol] ┌──────────┐ │ [Konsole]    │   Symbole: Spalte links, je 68×50, höchstens vier
-   │ [Symbol] │ Nutzung  │ │──────────────│   Feld der Klammer: 122×212 bei x=198, y=0; oben 60 Luft
-   │          │ (Fenster)│ │   Klammer    │   (Sprünge, Konsole, wenn ein Agent arbeitet)
-   │          └──────────┘ │              │   Fenster „Nutzung“: 194×206 bei x=2, y=2
+   │ [Symbol] │ Agent-   │ │──────────────│   Feld der Klammer: 122×212 bei x=198, y=0; oben 60 Luft
+   │          │ Nutzung  │ │   Klammer    │   (Sprünge, Konsole, wenn ein Agent arbeitet)
+   │          └──────────┘ │              │   Fenster „Agent-Nutzung“: 194×206 bei x=2, y=2
 212├───────────────────────┴──────────────┤
    │ [Start]    [Cl][Co] [Akku % WLAN 20:36]│  Taskleiste: 28 hoch; Kästchen je Coding-Agent; WLAN-Zeichen nur, wenn verbunden
 240└──────────────────────────────────────┘
@@ -54,13 +55,18 @@ Am Desktop: Symbol-Spalte und Start-Knopf gehören `desktop.py`, das Feld der Kl
 (`pet/senses.py`). In einer App liest nur `ctx.update()` die Berührung. Startmenü und Meldungsfenster
 warten mit `launcher.wait_tap()` auf den nächsten Tipper; solange ruht die Klammer.
 
-## Fenster „Nutzung“
+## Symbol „Agent“ und Fenster „Agent-Nutzung“
 
-Eingebautes Symbol am Desktop (nach den Apps aus `manifest.json`, zählt zu den höchstens vier). Antippen öffnet
-ein Fenster links (`monitor.py`, 194×206 ab x=2, y=2), das die Klammer rechts frei lässt: Sie lebt weiter, redet
-und reagiert. Inhalt für Claude Code wie in der Windows-98-Ressourcenanzeige: Balken für 5 Stunden und Woche (mit
-Uhrzeit, wann es zurückgesetzt wird); nur im Terminal (Statuszeile) dazu Modell, Projekt, Kosten der Sitzung, Zeilen
-+/−, „Stand vor … min“. Ab 80 % ist ein Balken rot. Ohne Daten steht dort, wie man sie bekommt (Startmenü →
+Eingebautes Symbol „Agent“ am Desktop (nach den Apps aus `manifest.json`, zählt zu den höchstens vier). Es zeigt
+das Zeichen des Agents, der gerade dran ist (`agents.current()`: wer sich zuletzt gemeldet hat, sonst wer
+Nutzungszahlen geschickt hat): der Stern von Claude, der Knoten von Codex (`logos.py`, aus Grundformen gezeichnet);
+Copilot und „noch keiner“ bekommen das Prozentzeichen. Wechselt der Agent, zeichnet `desktop.py` das Symbol neu.
+Antippen öffnet ein Fenster links (`monitor.py`, 194×206 ab x=2, y=2), das die Klammer rechts frei lässt: Sie lebt
+weiter, redet und reagiert. Inhalt: oben der Agent, rechts daneben wie alt seine Zahlen sind, darunter was er tut
+(„arbeitet grad an Clippy“, „wartet auf di“, „is fertig“). Für Claude Code folgen die Limits wie in der
+Windows-98-Ressourcenanzeige: Balken für 5 Stunden und Woche (mit Uhrzeit, wann es zurückgesetzt wird); nur im
+Terminal (Statuszeile) dazu Modell, Kosten der Sitzung und Zeilen +/−. Ab 80 % ist ein Balken rot. Codex und Copilot
+geben keine Limits heraus, das steht dann dort. Ohne Agent steht dort, wie man einen verbindet (Startmenü →
 „Mit PC verbinden“). Spricht die Klammer, liegt ihre Sprechblase über dem Fenster; sonst zeichnet sich das Fenster
 jede Sekunde neu, damit ist danach auch wieder weg, was Sprechblase oder Sturz-Bühne darübergemalt haben. X schließt es. Daten: [agent-hooks.md](agent-hooks.md) „Nutzung und Limits“.
 

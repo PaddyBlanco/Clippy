@@ -1,5 +1,5 @@
 # Die Desktop-Oberfläche: Taskleiste mit Start-Knopf und Uhr, Symbole, Startmenü.
-from clippy import win98
+from clippy import logos, win98
 from clippy.win98 import DARK, FACE, H, LIGHT, NAVY, W
 
 TASKBAR_H = 28
@@ -61,10 +61,14 @@ def taskbar(g, hhmm, battery, charging, online=False, agent_states=()):
     tray(g, hhmm, battery, charging, online, agent_states)
 
 
-def icon(g, index, name, color, letters):
-    # Symbol 32×32 mit zwei Buchstaben, darunter der Name
+def icon(g, index, name, color, letters, agent=None):
+    # Symbol 32×32 mit zwei Buchstaben, darunter der Name; ohne Buchstaben das Zeichen des Agents (logos.py)
     x, y = 4, 8 + index * ICON_H
     ix = x + 16
+    if letters is None:
+        logos.tile(g, ix, y, agent)
+        win98.label(g, name, x + 32, y + 34)
+        return
     g.fillRect(ix, y, 32, 32, color)
     g.drawRect(ix, y, 32, 32, DARK)
     g.drawLine(ix + 1, y + 1, ix + 30, y + 1, LIGHT)

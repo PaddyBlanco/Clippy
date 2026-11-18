@@ -113,3 +113,10 @@ class Agents:
     def summary(self):
         """Für die Taskleiste: ((Kürzel, Zustand), ...), immer gleich sortiert."""
         return tuple(sorted((a["short"], a["state"]) for a in self.known.values()))
+
+    def current(self):
+        """Der Agent für Symbol und Fenster „Agent-Nutzung“: wer sich zuletzt gemeldet hat und noch bekannt ist,
+        sonst wer Nutzungszahlen geschickt hat, sonst None."""
+        if self.known:
+            return max((a["heard"], n) for n, a in self.known.items())[1]
+        return next(iter(self.usage)) if self.usage else None

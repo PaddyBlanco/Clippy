@@ -14,11 +14,12 @@ from clippy.pet.senses import Senses
 
 MENU = ("WLAN einrichten", "Mit PC verbinden", "Handbuch", "Beenden")
 MAX_ICONS = 4  # mehr passen nicht in die Spalte am linken Rand
-MONITOR = {"id": None, "name": "Nutzung", "icon": "%", "color": "#208080"}  # eingebaut, öffnet monitor.py
+# eingebaut, öffnet monitor.py; statt Buchstaben zeigt das Symbol das Zeichen des Agents, der gerade dran ist
+MONITOR = {"id": None, "name": "Agent", "icon": None, "color": "#208080"}
 
 
 def load_apps():
-    """Symbole am Desktop: die Apps aus manifest.json, zuletzt das eingebaute „Nutzung“."""
+    """Symbole am Desktop: die Apps aus manifest.json, zuletzt das eingebaute „Agent“."""
     try:
         with open(config.APPS_DIR + "/manifest.json") as f:
             apps = json.load(f)[:MAX_ICONS - 1]
@@ -36,7 +37,7 @@ def status(senses):
 def draw(g, apps, senses):
     win98.backdrop(g, 0, 0)
     for i, app in enumerate(apps):
-        shell.icon(g, i, app["name"], int(app["color"][1:], 16), app["icon"])
+        shell.icon(g, i, app["name"], int(app["color"][1:], 16), app["icon"], senses.agents.current())
     shell.taskbar(g, *status(senses))
 
 
@@ -70,7 +71,7 @@ def run():
     clippy = Pet(d, senses, lambda g: draw(g, apps, senses))
     monitor = Monitor(d, senses.agents)
     clippy.say(phrases.pick("start"))
-    shown = status(senses)
+    shown, agent = status(senses), senses.agents.current()
     turn, down, clock_set = 0, True, False
     while True:
         M5.update()
@@ -81,6 +82,10 @@ def run():
             if status(senses) != shown:
                 shown = status(senses)
                 shell.tray(d, *shown)
+            if senses.agents.current() != agent:  # ein anderer Agent ist dran: sein Zeichen aufs Symbol
+                agent = senses.agents.current()
+                shell.icon(d, len(apps) - 1, MONITOR["name"], 0, None, agent)
+                clippy.stage.repaint()
             if not clippy.bubble.box:  # die Klammer spricht: Blase bleibt vorn, das Fenster wartet
                 monitor.draw()  # auch, was Sprechblase oder Sturz darübergemalt haben, ist danach wieder weg
         if turn % 400 == 0:  # etwa alle halbe Minute ein Lebenszeichen auf die USB-Konsole

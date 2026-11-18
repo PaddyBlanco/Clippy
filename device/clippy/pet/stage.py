@@ -21,6 +21,10 @@ class Stage:
         self.was_wide = False
         self.frame = 0           # zählt die Bilder; dreht den Stern des Arbeitsworts
 
+    def repaint(self):
+        """Der Desktop hat sich geändert (z. B. ein Symbol): den Hintergrund der Bühne beim nächsten Mal neu holen."""
+        self.wide = None
+
     def needs_wide(self, pose):
         """Kippt, liegt, rollt sie oder steht sie gerade wieder auf? Dann braucht sie die Bühne."""
         return pose["lean"] > 0 or pose["roll"] != 0 or self.was_wide

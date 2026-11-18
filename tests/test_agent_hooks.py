@@ -162,4 +162,11 @@ time.ticks_ms = lambda: T0 + pet_agents.USAGE_MS // 2 + 5000
 assert tracker._answer("claude", "usage", None) == "danke"          # frisch genug
 time.ticks_ms = lambda: T0 + pet_agents.USAGE_MS + 1000
 assert tracker._answer("claude", "usage", None) == "bitte"
+
+# Wer ist „der Agent“ für Symbol und Fenster: wer sich zuletzt gemeldet hat, sonst wer Zahlen geschickt hat
+assert tracker.current() == "Claude"
+inbox.append(("codex", {"hook_event_name": "PermissionRequest"}))
+tracker.poll(time.ticks_ms())
+assert tracker.current() == "Codex"
+assert pet_agents.Agents().current() is None  # frisch gestartet: noch keiner
 print("ok")
