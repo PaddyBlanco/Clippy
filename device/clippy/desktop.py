@@ -36,8 +36,9 @@ def status(senses):
 
 def draw(g, apps, senses):
     win98.backdrop(g, 0, 0)
+    agent = senses.agents.current()
     for i, app in enumerate(apps):
-        shell.icon(g, i, app["name"], int(app["color"][1:], 16), app["icon"], senses.agents.current())
+        shell.icon(g, i, app["name"], int(app["color"][1:], 16), app["icon"], agent)
     shell.taskbar(g, *status(senses))
 
 
@@ -79,8 +80,9 @@ def run():
         if turn % 16 == 0:  # etwa einmal je Sekunde
             if not clock_set and turn % 160 == 0:  # Uhr stellen, sobald das WLAN steht; sonst in 10 s nochmal
                 clock_set = wifi.sync_clock()
-            if status(senses) != shown:
-                shown = status(senses)
+            now = status(senses)
+            if now != shown:
+                shown = now
                 shell.tray(d, *shown)
             if senses.agents.current() != agent:  # ein anderer Agent ist dran: sein Zeichen aufs Symbol
                 agent = senses.agents.current()

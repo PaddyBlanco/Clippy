@@ -15,7 +15,6 @@ class Ctx:
     W, H = W, H - TITLE_H
 
     def __init__(self, display, title):
-        self._d = display
         win98.window(display, title)
         self.screen = display.newCanvas(self.W, self.H, 16, True)  # hierauf zeichnet die App
         self.screen.fillScreen(win98.FACE)

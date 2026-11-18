@@ -9,6 +9,11 @@ from clippy.pet.draw import FIELD_H, FIELD_W, FIELD_X, FIELD_Y, STAGE_W, STAGE_X
 UPRIGHT, UPSIDE_DOWN = 0, 2  # Display-Drehung (setRotation) für das normal stehende und das umgedrehte Gerät
 
 
+def _on_stage(pose):
+    # kippt, liegt oder rollt sie gerade?
+    return pose["lean"] > 0 or pose["roll"] != 0
+
+
 class Stage:
     def __init__(self, display, paint, agents):
         """paint(g): zeichnet den ganzen Desktop nach g; daraus kommt der Hintergrund der Bühne.
@@ -27,7 +32,7 @@ class Stage:
 
     def needs_wide(self, pose):
         """Kippt, liegt, rollt sie oder steht sie gerade wieder auf? Dann braucht sie die Bühne."""
-        return pose["lean"] > 0 or pose["roll"] != 0 or self.was_wide
+        return _on_stage(pose) or self.was_wide
 
     def turn(self, flipped):
         """Das Gerät wurde umgedreht: Display mitdrehen und den Desktop neu zeichnen."""
@@ -37,11 +42,11 @@ class Stage:
 
     def show(self, pose):
         self.frame += 1
-        wide = pose["lean"] > 0 or pose["roll"] != 0
+        wide = _on_stage(pose)
         if wide or self.was_wide:
             if self.wide is None:
                 work = self.d.newCanvas(STAGE_W, FIELD_H, 16, True)
-                back = work.newCanvas(320, 240, 16, True)  # der ganze Desktop samt Symbolen
+                back = work.newCanvas(win98.W, win98.H, 16, True)  # der ganze Desktop samt Symbolen
                 self.paint(back)
                 self.wide = (work, back)
             work, back = self.wide

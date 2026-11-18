@@ -63,14 +63,6 @@ def run_app(display, app_id, title, senses):
             del sys.modules[name]
 
 
-def show_note(display, title, note):
-    win98.window(display, title)
-    for i, line in enumerate(win98.wrap(note, W - 40, lambda t: win98.text_width(display, t))):
-        win98.text(display, line, 20, TITLE_H + 30 + i * (win98.FONT_H + 3), win98.DARK, win98.FACE)
-    win98.button(display, W // 2 - 40, H - 50, 80, 28, "OK")
-    wait_tap()
-
-
 def show_connect(display):
     # Der Satz, mit dem sich der Coding-Agent am PC selbst einrichtet (docs/agent-hooks.md)
     win98.window(display, "Mit PC verbinden")

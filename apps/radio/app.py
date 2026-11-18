@@ -30,7 +30,9 @@ def hit(x, y):
     return None
 
 
-def draw(g, w, current, note, volume):
+def show(ctx, current, note):
+    """Zeichnet das Fenster neu und bringt es aufs Display."""
+    g, w = ctx.screen, ctx.W
     g.fillScreen(FACE)
     win98.bevel(g, 4, 4, w - 8, 26, raised=False)  # die Anzeige oben
     g.fillRect(6, 6, w - 12, 22, DARK)
@@ -46,8 +48,9 @@ def draw(g, w, current, note, volume):
     win98.button(g, w - 64, VOL_Y, 60, 40, "+", bold=True)
     win98.text(g, "Lautstärke", w // 2, VOL_Y + 1, DARK, FACE, align="center")
     win98.bevel(g, 70, VOL_Y + 20, w - 140, 16, raised=False)
-    for i in range(volume * (w - 146) // 100 // 7):  # Blöcke wie bei Windows 98
+    for i in range(ctx.volume() * (w - 146) // 100 // 7):  # Blöcke wie bei Windows 98
         g.fillRect(73 + i * 7, VOL_Y + 23, 5, 10, win98.NAVY)
+    ctx.show()
 
 
 def run(ctx):
@@ -64,8 +67,7 @@ def run(ctx):
                     note = NO_WIFI
                 else:  # play() wartet bis zu 3,5 s, bis der Sender läuft; solange soll man sehen, dass etwas passiert
                     note = "Verbind mi mit %s ..." % name
-                    draw(ctx.screen, ctx.W, what[1], note, ctx.volume())
-                    ctx.show()
+                    show(ctx, what[1], note)
                     if ctx.play(url):
                         current, started = what[1], time.ticks_ms()
                     else:
@@ -81,6 +83,5 @@ def run(ctx):
             elif time.ticks_diff(time.ticks_ms(), started) > WAIT_MS:
                 started, note, dirty = None, "%s meldt si net" % STATIONS[current][0], True
         if dirty:
-            draw(ctx.screen, ctx.W, current, note, ctx.volume())
-            ctx.show()
+            show(ctx, current, note)
             dirty = False

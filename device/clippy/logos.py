@@ -10,8 +10,8 @@ PLAIN = 0x208080                                 # Kachel, solange kein Agent be
 CREAM = 0xF4EDE4                                 # der Stern von Claude
 
 
-def _frame(g, x, y, color):
-    # Kachel mit heller Kante oben und links, wie jedes Symbol (shell.icon)
+def frame(g, x, y, color):
+    # Kachel mit heller Kante oben und links; auch für die Symbole mit Buchstaben (shell.icon)
     g.fillRect(x, y, 32, 32, color)
     g.drawRect(x, y, 32, 32, DARK)
     g.drawLine(x + 1, y + 1, x + 30, y + 1, LIGHT)
@@ -37,15 +37,16 @@ def _codex(g, cx, cy):
                for i in range(6)]
     for i, (x0, y0) in enumerate(corners):
         x1, y1 = corners[(i + 1) % 6]
+        edge, spoke = (x0, y0, x1, y1), (x0, y0, cx + (x0 - cx) * 0.45, cy + (y0 - cy) * 0.45)
         for ox, oy in ((0, 0), (1, 0), (0, 1)):  # drei Linien übereinander ergeben die Dicke
-            g.drawLine(int(round(x0)) + ox, int(round(y0)) + oy, int(round(x1)) + ox, int(round(y1)) + oy, LIGHT)
-            g.drawLine(int(round(x0)) + ox, int(round(y0)) + oy, int(round(cx + (x0 - cx) * 0.45)) + ox,
-                       int(round(cy + (y0 - cy) * 0.45)) + oy, LIGHT)
+            for line in (edge, spoke):
+                ax, ay, bx, by = [int(round(v)) for v in line]
+                g.drawLine(ax + ox, ay + oy, bx + ox, by + oy, LIGHT)
 
 
 def tile(g, x, y, agent):
     """Kachel 32×32 bei (x, y) für den Agent (Name wie in agent_hooks/) oder None."""
-    _frame(g, x, y, TILE.get(agent, PLAIN))
+    frame(g, x, y, TILE.get(agent, PLAIN))
     if agent == "Claude":
         _claude(g, x + 16, y + 16)
     elif agent == "Codex":

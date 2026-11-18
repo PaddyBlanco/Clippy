@@ -41,8 +41,9 @@ class Agents:
             self.asked = now
             return "bitte"
         if body is None:
-            return "%s (vor %d s)" % (usage.status_line(got[0]), time.ticks_diff(now, got[1]) // 1000) if got \
-                else "Noch keine Zahlen."
+            if not got:
+                return "Noch keine Zahlen."
+            return "%s (vor %d s)" % (usage.status_line(got[0]), time.ticks_diff(now, got[1]) // 1000)
         data = agent_class().usage(body) if kind == "status" else agent_class().usage_text(body)
         if not data:
             return ""

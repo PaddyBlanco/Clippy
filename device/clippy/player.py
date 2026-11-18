@@ -32,8 +32,8 @@ def _write(addr, reg, value):
 
 def _read(addr, reg):
     _bus[0].writeto(addr, bytes([reg]), False)
-    b = _bus[0].readfrom(addr, 2 if addr == AW88298 else 1)
-    return b[0] << 8 | b[1] if addr == AW88298 else b[0]
+    data = _bus[0].readfrom(addr, 2 if addr == AW88298 else 1)
+    return data[0] << 8 | data[1] if addr == AW88298 else data[0]
 
 
 def amp_reset_off():
@@ -50,8 +50,8 @@ def amp_check():
 
 
 def amp_volume():
-    att = 100 - _volume[0] if _volume[0] else MUTE
-    _write(AW88298, 0x0C, att << 8 | 0x64)
+    attenuation = 100 - _volume[0] if _volume[0] else MUTE
+    _write(AW88298, 0x0C, attenuation << 8 | 0x64)
 
 
 class Player:

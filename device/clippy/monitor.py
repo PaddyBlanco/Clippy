@@ -65,8 +65,8 @@ class Monitor:
 
     def _agent(self, g, name):
         got, known = self.agents.usage.get(name), self.agents.known.get(name)
-        u = got[0] if got else None
-        win98.text(g, (name + " " + (u["model"] if u else ""))[:24], 8, TITLE_H + 6, DARK, FACE, bold=True)
+        numbers = got[0] if got else None
+        win98.text(g, (name + " " + (numbers["model"] if numbers else ""))[:24], 8, TITLE_H + 6, DARK, FACE, bold=True)
         if got:
             minutes = time.ticks_diff(time.ticks_ms(), got[1]) // 60000
             win98.text(g, "grad eben" if minutes < 1 else "vor %d min" % minutes, W - 8, TITLE_H + 6, win98.SHADOW,
@@ -76,14 +76,14 @@ class Monitor:
             project = known["project"] if known["state"] == "working" and known["project"] else ""
             win98.text(g, (STATE[known["state"]] + (" an " + project if project else ""))[:28], 8, y, DARK, FACE)
             y += 20
-        if u is None:  # Codex und Copilot geben ihre Limits nicht heraus; Claude erst mit der nächsten Antwort
+        if numbers is None:  # Codex und Copilot geben ihre Limits nicht heraus; Claude erst mit der nächsten Antwort
             _lines(g, y + 20, ("Zahlen kommen mit der", "nächsten Antwort.") if name == "Claude"
                    else (name + " gibt seine Limits", "nicht heraus; die stehen", "nur am PC."))
             return
         for label, key in (("5 Stunden", "five_hour"), ("Woche", "seven_day")):
-            _bar(g, y, label, usage.percent(u[key]), usage.reset_text(u[key]))
+            _bar(g, y, label, usage.percent(numbers[key]), usage.reset_text(numbers[key]))
             y += 50
-        if u["cost"] is not None:
-            win98.text(g, ("Sitzung %.2f $" % u["cost"]).replace(".", ","), 8, y + 4, DARK, FACE)
-        if u["added"] is not None:
-            win98.text(g, "+%d -%d" % (u["added"], u["removed"] or 0), W - 8, y + 4, DARK, FACE, align="right")
+        if numbers["cost"] is not None:
+            win98.text(g, ("Sitzung %.2f $" % numbers["cost"]).replace(".", ","), 8, y + 4, DARK, FACE)
+        if numbers["added"] is not None:
+            win98.text(g, "+%d -%d" % (numbers["added"], numbers["removed"] or 0), W - 8, y + 4, DARK, FACE, align="right")

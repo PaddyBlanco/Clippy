@@ -6,8 +6,6 @@ TASKBAR_H = 28
 TASKBAR_Y = H - TASKBAR_H
 ICON_W, ICON_H = 68, 50      # Zelle eines Symbols; die Symbole stehen in einer Spalte am linken Rand
 MENU_W, ENTRY_H = 150, 38    # Startmenü: Breite und Höhe eines Eintrags
-
-
 AGENT_COLORS = {"working": (0xFFE000, DARK), "waiting": (0xE02020, 0xFFFFFF), "done": (0x20A020, 0xFFFFFF)}
 
 
@@ -64,16 +62,11 @@ def taskbar(g, hhmm, battery, charging, online=False, agent_states=()):
 def icon(g, index, name, color, letters, agent=None):
     # Symbol 32×32 mit zwei Buchstaben, darunter der Name; ohne Buchstaben das Zeichen des Agents (logos.py)
     x, y = 4, 8 + index * ICON_H
-    ix = x + 16
     if letters is None:
-        logos.tile(g, ix, y, agent)
-        win98.label(g, name, x + 32, y + 34)
-        return
-    g.fillRect(ix, y, 32, 32, color)
-    g.drawRect(ix, y, 32, 32, DARK)
-    g.drawLine(ix + 1, y + 1, ix + 30, y + 1, LIGHT)
-    g.drawLine(ix + 1, y + 1, ix + 1, y + 30, LIGHT)
-    win98.text(g, letters, x + 32, y + 9, LIGHT, color, bold=True, align="center")
+        logos.tile(g, x + 16, y, agent)
+    else:
+        logos.frame(g, x + 16, y, color)
+        win98.text(g, letters, x + 32, y + 9, LIGHT, color, bold=True, align="center")
     win98.label(g, name, x + 32, y + 34)
 
 
