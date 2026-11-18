@@ -47,6 +47,7 @@ dokumentiert sind; lies die genannte Datei oder frag nach.
 | Überblick, Bildschirmaufteilung, Zeichnen, Schrift, Vorschau am PC | [docs/architecture.md](docs/architecture.md) |
 | Handbuch (Webseite für Beschenkte) pflegen und veröffentlichen | [docs/manual.md](docs/manual.md) |
 | Ideen für weitere Apps | `docs/ideas.md` (folgt) |
+| Code vereinfachen lassen (Subagent, ohne Verhalten zu ändern) | [.claude/agents/code-simplifier.md](.claude/agents/code-simplifier.md) |
 
 ## Ordner
 
