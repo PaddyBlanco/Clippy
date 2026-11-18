@@ -1,4 +1,5 @@
-# Startet Apps in einem Fenster und fängt ihre Fehler ab. Der Vertrag für Apps steht in docs/build-an-app.md.
+# Startet Apps in einem Fenster und fängt ihre Fehler ab. Was eine App dabei bekommt, steht in app_context.py,
+# der Vertrag für Apps in docs/build-an-app.md.
 import io
 import sys
 import time
@@ -6,48 +7,8 @@ import time
 import M5
 
 from clippy import config, wifi, win98
+from clippy.app_context import Ctx
 from clippy.win98 import H, TITLE_H, W
-
-CLOSE_ZONE = (W - 48, 40)  # Tipper rechts oben (ab x, bis y) schließt das Fenster
-
-
-class Ctx:
-    """Was eine App vom Gerät bekommt."""
-
-    W, H = W, H - TITLE_H
-
-    def __init__(self, display, title):
-        self._d = display
-        win98.window(display, title)
-        self.screen = display.newCanvas(self.W, self.H, 16, True)  # hierauf zeichnet die App
-        self.screen.fillScreen(win98.FACE)
-        self.tap = None      # (x, y) des Tippers in diesem Durchlauf, sonst None
-        self._down = True    # der Tipper, der die App geöffnet hat, zählt nicht
-
-    def update(self):
-        """Einmal je Schleifendurchlauf aufrufen. Liefert False, sobald das Fenster geschlossen wurde."""
-        time.sleep_ms(20)
-        M5.update()
-        down = M5.Touch.getCount() > 0
-        self.tap = None
-        if down and not self._down:
-            x, y = M5.Touch.getX(), M5.Touch.getY()
-            if x >= CLOSE_ZONE[0] and y < CLOSE_ZONE[1]:
-                return False
-            if y >= TITLE_H:
-                self.tap = (x, y - TITLE_H)
-        self._down = down
-        return True
-
-    def show(self):
-        """Bringt screen aufs Display."""
-        self.screen.push(0, TITLE_H)
-
-    def tone(self, hz, ms):
-        M5.Speaker.tone(hz, ms)
-
-    def close(self):
-        self.screen.delete()
 
 
 def wait_tap():
@@ -98,7 +59,7 @@ def run_app(display, app_id, title, senses):
         ctx.close()
         senses.resume()
         sys.path.remove(folder)
-        for name in set(sys.modules) - before:  # Hilfsdateien der App vergessen, damit ein Update sofort gilt
+        for name in set(sys.modules) - before:  # Hilfsdateien der App vergessen, damit eine Änderung sofort gilt
             del sys.modules[name]
 
 

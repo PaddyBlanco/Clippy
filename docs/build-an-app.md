@@ -5,7 +5,7 @@ Sie erscheint als Symbol am Desktop und läuft in einem Fenster mit Titelleiste 
 
 ## In drei Schritten
 
-1. Ordner `apps/<id>/` anlegen und `apps/hello/app.py` als Vorlage hineinkopieren.
+1. Ordner `apps/<id>/` anlegen, darin `app.py` nach dem Vertrag unten beginnen (`apps/radio/` ist eine fertige App).
 2. In `apps/manifest.json` einen Eintrag ergänzen (siehe unten).
 3. Am PC ansehen: `python tools/preview.py apps/<id>/app.py local/preview.png`. Dann aufs Gerät bringen mit
    `.\tools\install.ps1` (siehe [device.md](device.md)). Apps kommen nur so aufs Gerät, nie aus dem Netz.
@@ -32,7 +32,12 @@ def run(ctx):
 | `ctx.screen` | Zeichenfläche, `ctx.W` × `ctx.H` = 320 × 218 Pixel, Nullpunkt links oben unter der Titelleiste |
 | `ctx.show()` | bringt die Zeichenfläche aufs Display (kostet rund 30 ms) |
 | `ctx.tap` | `(x, y)` in Koordinaten der Zeichenfläche oder `None` |
-| `ctx.tone(hz, ms)` | Ton aus dem Lautsprecher |
+| `ctx.tone(hz, ms)` | Ton aus dem Lautsprecher; nicht mehr, sobald `play` benutzt wurde |
+| `ctx.online()` | `True`, wenn das WLAN steht |
+| `ctx.play(url)` | spielt einen MP3-Strom aus dem Netz (nur `http://`, kein https); wartet bis zu 3,5 s, bis er läuft, also vorher anzeigen, dass etwas passiert. `True`, wenn die Firmware ihn angenommen hat |
+| `ctx.playing()` | `True`, sobald Daten fließen |
+| `ctx.volume(pct=None)` | Lautstärke 0 bis 100 lesen, mit `pct` stellen (100 = voll, je Punkt darunter −0,5 dB, 0 = stumm; Start 40); bleibt bis zum Neustart des Geräts |
+| `ctx.stop()` | Musik aus; beim Schließen des Fensters passiert das von selbst |
 
 Mehr bietet `ctx` noch nicht. Was fehlt (Sensoren, Internet, Speichern), kommt dazu, sobald eine App es
 braucht, und wird dann hier eingetragen. Nichts verwenden, was hier nicht steht.
@@ -47,7 +52,7 @@ braucht, und wird dann hier eingetragen. Nichts verwenden, was hier nicht steht.
 - **Zeichnen nur auf `ctx.screen`**, Knöpfe und Text mit den Bausteinen aus `clippy/win98.py`
   (`text`, `button`, `bevel`, Farben), damit alles einheitlich aussieht. Text braucht immer die Farbe dahinter.
 - **Fehler sind erlaubt:** Wirft die App eine Ausnahme, zeigt das Gerät einen Bluescreen mit der Fehlermeldung
-  und kehrt nach einem Tipper zum Desktop zurück. `apps/crash/` führt das vor.
+  und kehrt nach einem Tipper zum Desktop zurück.
 - Weitere Dateien im App-Ordner darf `app.py` normal importieren (`import helper`).
 - Wenig Animation: Ein voller Bildaufbau kostet 30 ms. Nur neu zeichnen, wenn sich etwas geändert hat.
 
@@ -56,7 +61,7 @@ braucht, und wird dann hier eingetragen. Nichts verwenden, was hier nicht steht.
 `apps/manifest.json` ist eine Liste. Die Reihenfolge ist die Reihenfolge der Symbole; es passen vier.
 
 ```json
-{"id": "hello", "name": "Hallo", "icon": "Hi", "color": "#3050B0"}
+{"id": "radio", "name": "Radio", "icon": "FM", "color": "#A03020"}
 ```
 
 | Feld | Bedeutung |
@@ -69,4 +74,4 @@ braucht, und wird dann hier eingetragen. Nichts verwenden, was hier nicht steht.
 ## Während eine App läuft
 
 Die Klammer ist nicht zu sehen und lauscht nicht: Das Mikrofon ist aus, damit der Lautsprecher frei ist
-(beide teilen sich am Gerät eine Leitung). Nach dem Schließen ist sie wieder da.
+(beide teilen sich am Gerät eine Leitung). Nach dem Schließen ist sie wieder da, und das Radio ist aus.

@@ -1,4 +1,3 @@
 [
-  {"id": "hello", "name": "Hallo", "icon": "Hi", "color": "#3050B0"},
-  {"id": "crash", "name": "Absturz", "icon": "!!", "color": "#B03030"}
+  {"id": "radio", "name": "Radio", "icon": "FM", "color": "#A03020"}
 ]

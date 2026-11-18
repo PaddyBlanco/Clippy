@@ -12,7 +12,9 @@ Der Ordner `device/` ist ein Abbild dessen, was am Gerät unter `/flash/` liegt.
 | `device/main.py` | Start am Gerät, ruft nur `desktop.run()` |
 | `device/clippy/desktop.py` | Hauptschleife: lädt die App-Liste, verteilt Tipper an Symbole, Startmenü und Klammer |
 | `device/clippy/shell.py` | Taskleiste, Symbole und Startmenü zeichnen; sagt, was unter dem Finger liegt |
-| `device/clippy/launcher.py` | Startet eine App im Fenster, fängt Fehler ab (Bluescreen); Handbuch- und Abschiedsbild |
+| `device/clippy/launcher.py` | Startet eine App im Fenster, fängt Fehler ab (Bluescreen); Verbinden-, Handbuch- und Abschiedsbild |
+| `device/clippy/app_context.py` | `Ctx`: was eine App bekommt (Zeichenfläche, Tipper, Ton, WLAN-Stand, Radio), Vertrag in [build-an-app.md](build-an-app.md) |
+| `device/clippy/player.py` | Internetradio über den Player der Firmware; nur http-MP3, siehe [device.md](device.md) |
 | `device/clippy/win98.py` | Farben, Schrift und Grundformen: Text, Knopf, 3D-Kante, Fenster, Bluescreen, Empfangsbalken, Schloss |
 | `device/clippy/config.py` | Einstellungen an einer Stelle: Adresse des Handbuchs, Ablageort der Apps, WLAN-Datei, Port für Agents |
 | `device/clippy/wifi.py` | WLAN: beim Start verbinden, ohne zu warten; Netze suchen, verbinden, Zugang speichern |

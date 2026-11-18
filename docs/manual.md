@@ -63,8 +63,7 @@ der Ausnahme.
 | S13 | agents | Klammer ruft „… braucht di!“ mit Sprechblase | Vorschau |
 | S14 | hilfe | Startmenü offen | Vorschau |
 | S15 | hilfe | Handbuch-Fenster mit QR-Code | Vorschau |
-| S16 | hilfe | App „Hallo“ im Fenster | Vorschau |
-| S17 | hilfe | Bluescreen der App „Absturz“ | Vorschau |
+| S16 | hilfe | App „Radio“ im Fenster, ein Sender spielt | Vorschau |
 | S18 | hilfe | „Sie können Clippy jetzt ignorieren.“ | Vorschau |
 | S19 | hilfe | WLAN einrichten: Liste der Netze | Gerät (echte Netze) |
 | S20 | hilfe | WLAN einrichten: Tastatur mit halb eingetipptem Passwort | Vorschau |

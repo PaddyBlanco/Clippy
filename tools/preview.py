@@ -1,7 +1,7 @@
 """Zeichnet ein Geräte-Skript am PC in ein PNG, ohne Gerät.
 
     python tools/preview.py device/main.py local/preview.png [durchlaeufe]
-    python tools/preview.py apps/hello/app.py local/preview.png      (eine App in ihrem Fenster)
+    python tools/preview.py apps/radio/app.py local/preview.png      (eine App in ihrem Fenster)
 
 Ersetzt das Modul M5 durch eine Nachbildung mit Pillow. Text in den Projekt-Schriften (device/res/*.vlw) wird
 aus denselben Dateien gezeichnet wie am Gerät; nur die eingebauten Firmware-Schriften sind eine Näherung.
