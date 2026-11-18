@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Clippy - App-Ideen</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="page">
+<div class="titlebar">Clippy - App-Ideen</div>
+<div class="content">
+
+<div class="nav">
+  <a href="index.html">Startseite</a>
+  <a href="klammer.html">Die Klammer</a>
+  <a href="agents.html">Coding-Agents</a>
+  <a href="hilfe.html">Bedienung &amp; Hilfe</a>
+  <a class="here" href="ideen.html">App-Ideen</a>
+</div>
+
+<h1>Was Clippy noch lernen könnte</h1>
+<p>Clippy kann mehr, als heute drauf ist. Jede App ist ein kleines Programm in Python. Am einfachsten schreibt sie
+ein Coding-Agent wie Claude Code, Codex oder Copilot: <span class="say">Bau mir eine Clippy-App, die ...</span>.
+Die Anleitung dazu steht im <a href="https://github.com/PaddyBlanco/Clippy/blob/main/docs/build-an-app.md">Quellcode
+auf GitHub</a>. Zum Aufspielen braucht es derzeit einen PC mit Python; frag am besten die Person, die dir Clippy
+geschenkt hat.</p>
+<p>Hier sind Ideen, die noch niemand gebaut hat.</p>
+
+<h2>Sonnenstrom und Auto</h2>
+<p>Wer eine Photovoltaik-Anlage und eine Wallbox hat, will meistens auf einen Blick wissen, was gerade los ist.
+Clippy könnte das am Schreibtisch zeigen, und die Klammer reagiert darauf.</p>
+<div class="wrap"><table class="box">
+  <tr><th>Was man sehen will</th><th>Und die Klammer?</th></tr>
+  <tr><td><b>Jetzt:</b> wie viel die Anlage gerade erzeugt, was das Haus braucht, ob Strom ins Netz geht oder
+    aus dem Netz kommt, wie voll der Hausakku ist</td>
+    <td>setzt bei viel Sonne eine Sonnenbrille auf; ruft „Jetzt is a guade Zeit fürs Auto!“, wenn viel übrig ist</td></tr>
+  <tr><td><b>Heute:</b> erzeugt in kWh, selbst verbraucht, eingespeist, wie viel davon das Auto bekommen hat</td>
+    <td>freut sich am Abend über einen guten Tag</td></tr>
+  <tr><td><b>Gespart:</b> was der eigene Strom heute wert war, also Strompreis mal selbst verbrauchte kWh, plus
+    die Einspeisevergütung</td>
+    <td>zählt Münzen</td></tr>
+  <tr><td><b>Auto:</b> lädt gerade mit wie viel Leistung, wie viel seit dem Anstecken, wie viel davon Sonnenstrom</td>
+    <td>schaut gespannt wie bei einem arbeitenden Coding-Agent</td></tr>
+</table></div>
+<p><b>Woher die Zahlen kommen:</b> Viele Wechselrichter und Wallboxen haben eine Schnittstelle im Heimnetz, die
+Clippy über WLAN abfragen kann. Ein paar Beispiele:</p>
+<ul>
+  <li><b>evcc</b>, eine kostenlose Software, die Anlage, Hausakku und Wallbox zusammenführt: Sie liefert alles auf
+    einmal (Erzeugung, Hausverbrauch, Netz, Akkustand, Ladeleistung). Wer evcc schon laufen hat, hat es am
+    leichtesten.</li>
+  <li><b>Wechselrichter von Fronius</b> haben die „Solar API“ im Heimnetz mit den aktuellen Leistungen.</li>
+  <li><b>Wallboxen von go-e</b> haben eine Schnittstelle im Heimnetz; sie muss in der go-e-App erst eingeschaltet
+    werden.</li>
+</ul>
+<p>Welche Schnittstelle die eigene Anlage hat, steht in ihrer Anleitung. Läuft alles nur über eine Hersteller-Cloud,
+wird es schwieriger.</p>
+
+<h2>Zum Anstecken</h2>
+<p>Clippy hat an der Seite drei Anschlüsse (Grove-Buchsen: rot, schwarz, blau). Dafür gibt es vom Hersteller M5Stack
+kleine Messgeräte, „Units“, die man einfach ansteckt. Für diese hier bringt Clippys Grundsoftware die Treiber schon
+mit:</p>
+<div class="wrap"><table class="box">
+  <tr><th>Unit</th><th>misst oder kann</th><th>App-Idee</th></tr>
+  <tr><td>CO2</td><td>CO2-Gehalt der Luft, dazu Temperatur und Feuchte</td>
+    <td>Lüftungs-Ampel; die Klammer gähnt bei dicker Luft: „Mach a Fenster auf!“</td></tr>
+  <tr><td>ENV</td><td>Temperatur, Luftfeuchte, Luftdruck</td>
+    <td>Raumklima am Schreibtisch; die Klammer schwitzt oder friert, Wetter-Trend aus dem Luftdruck</td></tr>
+  <tr><td>TVOC/eCO2</td><td>Ausdünstungen in der Luft (Farbe, Kleber, Kochen)</td>
+    <td>Luftgüte nach dem Basteln oder Kochen</td></tr>
+  <tr><td>Watering</td><td>Feuchte der Blumenerde, dazu eine kleine Pumpe</td>
+    <td>Pflanzenwächter, der selbst gießt; die Klammer meldet „Mei Pflanzerl hot Durst“</td></tr>
+  <tr><td>ToF, Ultrasonic</td><td>Abstand</td>
+    <td>merkt, wenn jemand an den Schreibtisch kommt, und winkt</td></tr>
+  <tr><td>DLight</td><td>Helligkeit in Lux</td><td>sagt, wann Licht zum Lesen fehlt</td></tr>
+  <tr><td>Weight</td><td>Gewicht</td><td>Kaffeebohnen-Waage: „Bohnen san aus!“</td></tr>
+  <tr><td>Thermal</td><td>kleines Wärmebild</td><td>Wärmekamera für Fenster und Heizkörper</td></tr>
+  <tr><td>Color</td><td>Farben</td><td>Farbe vorhalten, Clippy sagt, wie sie heißt</td></tr>
+  <tr><td>RFID</td><td>Karten und Anhänger erkennen</td><td>Anhänger auflegen, Clippy startet die passende App</td></tr>
+  <tr><td>Fan, Vibrator, Servos</td><td>Lüfter, Vibration, kleine Motoren</td>
+    <td>die Klammer bläst dir Luft zu, wenn es warm ist</td></tr>
+</table></div>
+<p>Die Units kosten meist zwischen 5 und 40 Euro. Vor dem Kauf auf der Seite des Herstellers nachsehen, ob die Unit
+zum Clippy-Gerät passt (M5Stack CoreS3).</p>
+
+<h2>Ohne Zusatzteile</h2>
+<ul>
+  <li><b>Wetter:</b> heute und morgen, aus dem Internet; die Klammer hat bei Regen einen Schirm.</li>
+  <li><b>Konzentrations-Timer:</b> 25 Minuten arbeiten, 5 Minuten Pause; die Klammer schickt dich weg vom Schreibtisch.</li>
+  <li><b>Wecker oder Erinnerung:</b> die Klammer winkt zur eingestellten Zeit.</li>
+  <li><b>Würfel und Münze:</b> Gerät schütteln, Clippy würfelt; die Klammer wird dabei wieder schwindlig.</li>
+</ul>
+
+<hr>
+<div class="footer">
+  Zuletzt aktualisiert: 18.11.2026 &middot; <a href="index.html">Zurück zur Startseite</a>
+</div>
+</div>
+</div>
+</body>
+</html>

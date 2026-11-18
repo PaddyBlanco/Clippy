@@ -16,6 +16,7 @@ und Eintrag unter „Was ist neu“ auf der Startseite.
 | `manual/klammer.html` | Die Büroklammer: was sie von selbst tut, worauf sie reagiert |
 | `manual/agents.html` | Claude Code, Codex, Copilot: was die Klammer anzeigt, kurz wie man es einrichtet |
 | `manual/hilfe.html` | Bedienung: Tasten, Desktop, Startmenü, Apps; wenn etwas hängt |
+| `manual/ideen.html` | App-Ideen für später: Photovoltaik und Wallbox, Units zum Anstecken (nur solche, für die die Firmware Treiber hat), Ideen ohne Zusatzteile |
 | `manual/verbinden.html` | Coding-Agents verbinden, für Menschen: der eine Satz, was dabei passiert, wieder entfernen |
 | `manual/verbinden.txt` | Anleitung **für den Coding-Agent**, die er auf den Satz hin liest (siehe [agent-hooks.md](agent-hooks.md)) |
 | `manual/style.css` | Gemeinsames Aussehen |
