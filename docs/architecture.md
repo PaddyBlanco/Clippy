@@ -52,7 +52,8 @@ gezeichnet ist. Das X eines Fensters reagiert in der ganzen Ecke rechts oben (48
 ## Wer bekommt den Tipper?
 
 Am Desktop: Symbol-Spalte und Start-Knopf gehören `desktop.py`, das Feld der Klammer gehört ihren Sinnen
-(`pet/senses.py`). In einer App liest nur `ctx.update()` die Berührung. Startmenü und Meldungsfenster
+(`pet/senses.py`). In einer bildschirmfüllenden App liest nur `ctx.update()` die Berührung; in einer App neben der Klammer
+(`beside`, Fenster 196×212 ab x=0, y=0) bekommt die App nur Tipper ins Fenster, die Klammer ihr Feld. Startmenü und Meldungsfenster
 warten mit `launcher.wait_tap()` auf den nächsten Tipper; solange ruht die Klammer.
 
 ## Symbol „Agent“ und Fenster „Agent-Nutzung“

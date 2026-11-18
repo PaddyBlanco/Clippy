@@ -27,6 +27,8 @@ Spalte „Getestet“: ✅ = am Gerät gesehen, ⬜ = noch offen. Stand: 15.11.2
 | 30 | ⬜ | Agent fertig: springt vor Freude, grünes Kästchen | Antwort des Agents abwarten |
 | 31 | ⬜ | Kästchen verschwindet | Sitzung des Agents beenden |
 | 32 | ⬜ | Symbol „Agent“ wechselt zum Knoten von Codex; Fenster „Agent-Nutzung“ zeigt „Codex arbeitet grad an …“ und dass er keine Limits herausgibt | nach Claude auch Codex etwas fragen |
+| 33 | ⬜ | Tanzen: wippt und schwingt, hüpft mit geschlossenen Augen, groovt lässig; wechselt alle gut drei Sekunden; links das Fenster Radio, nichts wird darübergemalt | App Radio öffnen, einen Sender antippen; Gegenprobe „Aus“: sie hört auf |
+| 34 | ⬜ | Neben dem Radio: antippen, streicheln, schütteln wirken; keine Sprechblase, kein Umfallen; auf den Kopf stellen dreht das Display erst nach dem Schließen | bei offenem Radio ausprobieren, danach X |
 | 12 | ✅ | Aufwachen | irgendetwas aus 2 bis 10 tun, während sie schläft |
 
 ## Von selbst

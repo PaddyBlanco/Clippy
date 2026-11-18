@@ -37,8 +37,13 @@ def _read(addr, reg):
 
 
 def amp_reset_off():
-    """Verstärker aus dem Reset holen; nur Bit 2, die anderen Ausgänge der IO-Erweiterung bleiben, wie sie sind."""
-    _write(AW9523, 0x02, _read(AW9523, 0x02) | 0x04)
+    """Verstärker aus dem Reset holen. Nur Bit 2: dieselbe IO-Erweiterung schaltet auch den USB-Anschluss und die
+    Stromausgänge (Tabu, docs/device.md). Darum zurücklesen; hat sich mehr geändert, alten Wert zurück, nicht spielen."""
+    before = _read(AW9523, 0x02)
+    _write(AW9523, 0x02, before | 0x04)
+    if _read(AW9523, 0x02) & 0xFB != before & 0xFB:
+        _write(AW9523, 0x02, before)
+        raise OSError(-2)  # play() meldet einen Fehler, statt mit falsch geschalteten Ausgängen zu spielen
 
 
 def amp_check():
@@ -52,6 +57,11 @@ def amp_check():
 def amp_volume():
     attenuation = 100 - _volume[0] if _volume[0] else MUTE
     _write(AW88298, 0x0C, attenuation << 8 | 0x64)
+
+
+def active():
+    """Läuft gerade Musik? Die Klammer tanzt dann."""
+    return _firmware[0] is not None and bool(_firmware[0].is_playing()) and bool(_firmware[0].pos())
 
 
 class Player:

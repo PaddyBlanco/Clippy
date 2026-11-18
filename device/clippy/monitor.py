@@ -4,10 +4,10 @@ import time
 
 from clippy import win98
 from clippy.agent_hooks import usage
-from clippy.win98 import DARK, FACE, LIGHT, NAVY
+from clippy.win98 import DARK, FACE
 
 X, Y, W, H = 2, 2, 194, 206   # Lage am Desktop; rechts davon beginnt das Feld der Klammer
-TITLE_H = 20
+TITLE_H = win98.PANEL_TITLE_H
 RED, BLUE = 0xC00000, 0x000080
 STATE = {"working": "arbeitet grad", "waiting": "wartet auf di", "done": "is fertig"}
 
@@ -49,13 +49,7 @@ class Monitor:
         if self.canvas is None:
             self.canvas = self.d.newCanvas(W, H, 16, True)
         g = self.canvas
-        win98.bevel(g, 0, 0, W, H)
-        g.fillRect(2, 2, W - 4, TITLE_H - 2, NAVY)
-        win98.text(g, "Agent-Nutzung", 7, 4, LIGHT, NAVY, bold=True)
-        win98.bevel(g, W - 21, 4, 17, 15)
-        for dx in (0, 1):
-            g.drawLine(W - 16 + dx, 8, W - 10 + dx, 14, DARK)
-            g.drawLine(W - 10 + dx, 8, W - 16 + dx, 14, DARK)
+        win98.panel(g, 0, 0, W, H, "Agent-Nutzung")
         name = self.agents.current()
         if name is None:
             _lines(g, 60, ("Noch kein Agent da.", "Einrichten: Startmenü >", "Mit PC verbinden"))

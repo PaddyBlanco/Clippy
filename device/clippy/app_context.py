@@ -6,20 +6,31 @@ import M5
 
 from clippy import wifi, win98
 from clippy.player import Player
-from clippy.win98 import H, TITLE_H, W
+from clippy.win98 import H, PANEL_TITLE_H, TITLE_H, W
 
-CLOSE_ZONE = (W - 48, 40)  # Tipper rechts oben (ab x, bis y) schließt das Fenster
+BESIDE = (0, 0, 196, 212)  # Fenster neben der Klammer: x, y, Breite, Höhe samt Rahmen; rechts davon ihr Feld
+TICK_MS = 60               # so oft läuft daneben die Klammer mit, wie in der Hauptschleife des Desktops
 
 
 class Ctx:
-    W, H = W, H - TITLE_H
-
-    def __init__(self, display, title):
-        win98.window(display, title)
+    def __init__(self, display, title, beside=False, tick=None):
+        """beside: Fenster links neben der Klammer statt bildschirmfüllend; tick() läuft dann alle TICK_MS mit."""
+        if beside:
+            x, y, w, h = BESIDE
+            win98.panel(display, x, y, w, h, title)
+            self._origin = (x + 3, y + PANEL_TITLE_H + 1)
+            self.W, self.H = w - 6, h - PANEL_TITLE_H - 4
+            self._close = (x + w - 30, x + w, y + PANEL_TITLE_H + 6)  # X: von x, bis x, bis y
+        else:
+            win98.window(display, title)
+            self._origin = (0, TITLE_H)
+            self.W, self.H = W, H - TITLE_H
+            self._close = (W - 48, W, 40)
         self.screen = display.newCanvas(self.W, self.H, 16, True)  # hierauf zeichnet die App
         self.screen.fillScreen(win98.FACE)
-        self.tap = None       # (x, y) des Tippers in diesem Durchlauf, sonst None
-        self._down = True     # der Tipper, der die App geöffnet hat, zählt nicht
+        self.tap = None          # (x, y) des Tippers in diesem Durchlauf, sonst None
+        self._down = True        # der Tipper, der die App geöffnet hat, zählt nicht
+        self._tick, self._ticked = tick, time.ticks_ms()
         self._player = Player()  # legt noch nichts an; erst play() startet den Player der Firmware
         self._played = False     # nach play() gehört der Ton-Ausgang dem Player, tone() schweigt
 
@@ -27,20 +38,26 @@ class Ctx:
         """Einmal je Schleifendurchlauf aufrufen. Liefert False, sobald das Fenster geschlossen wurde."""
         time.sleep_ms(20)
         M5.update()
+        now = time.ticks_ms()
+        if self._tick and time.ticks_diff(now, self._ticked) >= TICK_MS:
+            self._ticked = now
+            self._tick()
         down = M5.Touch.getCount() > 0
         self.tap = None
         if down and not self._down:
             x, y = M5.Touch.getX(), M5.Touch.getY()
-            if x >= CLOSE_ZONE[0] and y < CLOSE_ZONE[1]:
+            x0, x1, y1 = self._close
+            if x0 <= x < x1 and y < y1:
                 return False
-            if y >= TITLE_H:
-                self.tap = (x, y - TITLE_H)
+            ox, oy = self._origin
+            if ox <= x < ox + self.W and oy <= y < oy + self.H:  # daneben: gehört der Klammer
+                self.tap = (x - ox, y - oy)
         self._down = down
         return True
 
     def show(self):
         """Bringt screen aufs Display."""
-        self.screen.push(0, TITLE_H)
+        self.screen.push(*self._origin)
 
     def tone(self, hz, ms):
         """Ton aus dem Lautsprecher; nicht mehr, sobald play() benutzt wurde."""

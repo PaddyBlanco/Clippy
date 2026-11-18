@@ -40,13 +40,16 @@ class Senses:
         self.night = False
         self.charging = M5.Power.isCharging()
         self.hungry_since = None
+        self.paused = False   # eine App hat den Lautsprecher, das Mikrofon bleibt aus
 
     def pause(self):
         """Für Apps: Mikrofon aus, Lautsprecher an. Beide teilen sich die Leitung."""
+        self.paused = True
         M5.Mic.end()
         M5.Speaker.begin()
 
     def resume(self):
+        self.paused = False
         M5.Speaker.end()
         M5.Mic.begin()
 
@@ -88,7 +91,7 @@ class Senses:
             self.agents.acknowledge()  # angetippt: wer auf dich wartet, ruft nicht mehr
         events += touched + self.agents.poll(now)
 
-        if not M5.Mic.isRecording():
+        if not self.paused and not M5.Mic.isRecording():  # neben einer App: nicht wieder einschalten
             peak = max(max(self.sound), -min(self.sound))
             knocking = peak > KNOCK
             if knocking and not self.knocking:  # nur der Anfang eines Geräuschs zählt als Schlag

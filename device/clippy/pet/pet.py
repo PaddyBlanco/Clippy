@@ -2,10 +2,13 @@
 import random
 import time
 
+from clippy import player
 from clippy.pet import moves, phrases, sleep
+from clippy.pet.boredom import bored
 from clippy.pet.bubble import Bubble
+from clippy.pet.dance import dance
 from clippy.pet.draw import REST
-from clippy.pet.habits import IDLE, ONGOING, REACT, SNOT_CHANCE, SOMETIMES, SPOKEN, TIRED, URGENT
+from clippy.pet.habits import IDLE, ONGOING, REACT, SOMETIMES, SPOKEN, TIRED, URGENT
 from clippy.pet.idle import Idle
 from clippy.pet.rest import rest_pose
 from clippy.pet.stage import Stage
@@ -14,26 +17,22 @@ from clippy.pet.stage import Stage
 class Pet:
     def __init__(self, display, senses, paint):
         """paint(g): zeichnet den ganzen Desktop nach g, z. B. nach dem Umdrehen."""
-        self.d = display
-        self.senses = senses
+        self.d, self.senses = display, senses
         self.stage = Stage(display, paint, senses.agents)
         self.then_say = None     # Spruch, der nach der laufenden Bewegung kommt
         self.bubble = Bubble(display)
-        self.pose = dict(REST)
-        self.move = None
-        self.asleep = False
-        now = time.ticks_ms()
+        self.pose, self.move, self.asleep = dict(REST), None, False
         self.idle = Idle(IDLE)
         self.tired = Idle(TIRED)  # im Finstern statt idle
         self.last = {}           # Ereignis -> wann zuletzt darauf reagiert
-        self.awake_since = now
-        self.slow_due = now
+        self.awake_since = self.slow_due = time.ticks_ms()
         self.snore = 0
         self.snot = False        # schläft sie diesmal mit Rotzblase
         self.nodded = None       # awake_since beim letzten Einnicken: je Ruhezeit nur einmal
         self.level = None        # aktuelle Display-Helligkeit
         self._light()            # nach einem Abbruch im Schlaf wäre es sonst noch gedimmt
         self.until = {}          # Andauerndes (Trommeln, Streicheln): Ereignis -> gilt bis zu diesem Zeitpunkt
+        self.beside = False      # links ist ein App-Fenster offen: nichts außerhalb des Felds malen (window)
         self.show()
 
     def _ongoing(self, event, now):
@@ -49,7 +48,15 @@ class Pet:
         self.bubble.box = None
         self.stage.was_wide = False
         self.awake_since = time.ticks_ms()
+        if self.senses.flipped != self.stage.flipped:  # neben einem Fenster umgedreht: jetzt das Display mitdrehen
+            self.stage.turn(self.senses.flipped)
         self.show()
+
+    def window(self, open):
+        """Eine App öffnet links ihr Fenster (True) oder schließt es (False, danach refresh)."""
+        self.beside = self.stage.narrow = open
+        if open:
+            self.bubble.box = None  # liegt unter dem Fenster; wegräumen würde Desktop ins Fenster malen
 
     def play(self, move):
         """Startet eine Bewegung sofort, z. B. clippy.play(moves.curl)."""
@@ -57,10 +64,12 @@ class Pet:
 
     def say(self, s, seconds=6, urgent=False):
         """Sprechblase. Solange ein Agent arbeitet, nur wenn es wichtig ist (urgent)."""
-        if s and (urgent or not self.senses.agents.working()):
+        if s and not self.beside and (urgent or not self.senses.agents.working()):
             self.bubble.say(s.replace("{agent}", self.senses.agents.last), seconds)
 
     def react(self, event):
+        if self.beside and event == "flip":
+            return  # das Display dreht sich erst nach dem Schließen des Fensters (refresh)
         move, gap, chatty = REACT[event]
         now = time.ticks_ms()
         self.awake_since = now
@@ -78,7 +87,7 @@ class Pet:
         if event == "flip":  # Display mitdrehen, Desktop neu; sie selbst zeichnet gleich tumble
             self.stage.turn(self.senses.flipped)
             self.bubble.box = None
-        if event in SOMETIMES and random.random() < SOMETIMES[event][2]:
+        if not self.beside and event in SOMETIMES and random.random() < SOMETIMES[event][2]:  # kein Umfallen
             self.play(SOMETIMES[event][0])
             self.then_say = phrases.pick(SOMETIMES[event][1])
             return
@@ -98,19 +107,7 @@ class Pet:
     def _every_second(self, now):
         for event in self.senses.slow():
             self.react(event)
-        limit = sleep.limit(self.senses)
-        quiet = time.ticks_diff(now, self.awake_since) / 1000
-        if limit is None:
-            self.asleep = False  # es ist wieder hell: aufwachen
-        elif not self.asleep and quiet > limit:
-            self.asleep, self.move = True, None
-            self.snot = random.random() < SNOT_CHANCE
-            self.say(phrases.pick("sleep"), 4)
-        elif not self.asleep and quiet > limit / 2 and self.nodded != self.awake_since and self.move is None:
-            self.nodded = self.awake_since  # müde: einmal einnicken und hochschrecken
-            self.play(moves.nod)
-            if random.random() < 0.5:
-                self.say(phrases.pick("nod"))
+        sleep.check(self, now)
 
     def step(self):
         """Einmal je Schleifendurchlauf aufrufen."""
@@ -123,11 +120,15 @@ class Pet:
             self._every_second(now)
         self._light()
 
+        if player.active():  # das Radio spielt: sie tanzt und schläft nicht ein
+            self.awake_since, self.asleep = now, False
+            if self.move is None:
+                self.move = dance()
         busy = self._ongoing("beat", now) or self._ongoing("pet", now)
         if self.move is None and not self.asleep and not busy:
             idle = self.tired if self.senses.dark else self.idle
             m = idle.next(now, time.ticks_diff(now, self.awake_since))
-            if m:
+            if m and not (self.beside and m is bored):  # die Kopfrolle bräuchte die Bühne über dem Fenster
                 self.move = m()
                 if m in SPOKEN and random.random() < 0.5:
                     self.say(phrases.pick(SPOKEN[m]))

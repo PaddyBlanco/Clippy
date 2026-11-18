@@ -29,7 +29,7 @@ def run(ctx):
 | `ctx` | Bedeutung |
 |---|---|
 | `ctx.update()` | **einmal je Durchlauf aufrufen.** Liest die Berührung, liefert `False` nach dem Schließen. Dann sofort aus `run` zurückkehren |
-| `ctx.screen` | Zeichenfläche, `ctx.W` × `ctx.H` = 320 × 218 Pixel, Nullpunkt links oben unter der Titelleiste |
+| `ctx.screen` | Zeichenfläche, `ctx.W` × `ctx.H` = 320 × 218 Pixel, im Fenster neben der Klammer (`beside`) 190 × 188; Nullpunkt links oben unter der Titelleiste |
 | `ctx.show()` | bringt die Zeichenfläche aufs Display (kostet rund 30 ms) |
 | `ctx.tap` | `(x, y)` in Koordinaten der Zeichenfläche oder `None` |
 | `ctx.tone(hz, ms)` | Ton aus dem Lautsprecher; nicht mehr, sobald `play` benutzt wurde |
@@ -47,7 +47,8 @@ braucht, und wird dann hier eingetragen. Nichts verwenden, was hier nicht steht.
 - **`ctx.update()` in jeder Schleife.** Eine App, die es nicht aufruft, lässt sich nicht schließen; dann hilft
   nur die Reset-Taste.
 - **Die Ecke rechts oben gehört dem X:** Tipper bei x ≥ 272 in den obersten 18 Pixeln der Zeichenfläche
-  schließen das Fenster und kommen nicht bei der App an.
+  schließen das Fenster und kommen nicht bei der App an. Im Fenster neben der Klammer liegt das X in der
+  Titelleiste, die Zeichenfläche gehört ganz der App.
 - **Tippflächen mindestens 40 × 40 Pixel.** Es gibt nur Berührung, keine Tasten.
 - **Zeichnen nur auf `ctx.screen`**, Knöpfe und Text mit den Bausteinen aus `clippy/win98.py`
   (`text`, `button`, `bevel`, Farben), damit alles einheitlich aussieht. Text braucht immer die Farbe dahinter.
@@ -70,8 +71,16 @@ braucht, und wird dann hier eingetragen. Nichts verwenden, was hier nicht steht.
 | `name` | Text unter dem Symbol und in der Titelleiste, höchstens etwa 9 Zeichen |
 | `icon` | zwei Zeichen im Symbol |
 | `color` | Farbe des Symbols als `#RRGGBB` |
+| `beside` | `true`: Fenster links neben der Klammer (196 × 212 samt Rahmen) statt bildschirmfüllend; weglassen für bildschirmfüllend |
 
 ## Während eine App läuft
 
-Die Klammer ist nicht zu sehen und lauscht nicht: Das Mikrofon ist aus, damit der Lautsprecher frei ist
-(beide teilen sich am Gerät eine Leitung). Nach dem Schließen ist sie wieder da, und das Radio ist aus.
+Das Mikrofon ist aus, damit der Lautsprecher frei ist (beide teilen sich am Gerät eine Leitung). Nach dem
+Schließen ist das Radio aus.
+
+- **Bildschirmfüllend:** Die Klammer ist nicht zu sehen und ruht.
+- **Neben der Klammer (`beside`):** Sie bleibt rechts sichtbar und lebt weiter, `ctx.update()` lässt sie
+  mitlaufen, samt Uhr und Kästchen in der Taskleiste. Tipper auf sie gehen an sie, nicht an die App. Solange
+  `ctx.play` Musik liefert, tanzt sie. Damit nichts über das Fenster gemalt wird, redet sie nicht, fällt nicht
+  um und rollt nicht; stellt man das Gerät auf den Kopf, dreht sich das Display erst nach dem Schließen. Weil das
+  Mikrofon aus ist, reagiert sie nicht auf Klatschen und Klopfen.

@@ -9,6 +9,7 @@ Das Skript endet, sobald es M5.update() so oft aufgerufen hat wie angegeben (Sta
 """
 import builtins
 import io
+import json
 import os
 import runpy
 import struct
@@ -234,7 +235,12 @@ def main():
         scope = runpy.run_path(script, run_name="__main__")
         if "run" in scope:  # eine App: im Fenster starten, wie es der Launcher am Gerät tut
             from clippy import launcher
-            ctx = launcher.Ctx(display, os.path.basename(os.path.dirname(os.path.abspath(script))))
+            app_id = os.path.basename(os.path.dirname(os.path.abspath(script)))
+            with real_open(os.path.join(ROOT, "apps", "manifest.json"), encoding="utf-8") as f:
+                app = next((a for a in json.load(f) if a["id"] == app_id), {})
+            if app.get("beside"):  # Fenster neben der Klammer: dahinter der Desktop
+                display.fillScreen(0x008080)
+            ctx = launcher.Ctx(display, app.get("name", app_id), app.get("beside", False))
             ctx._down = False
             scope["run"](ctx)
     except SystemExit:

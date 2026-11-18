@@ -41,13 +41,14 @@ def run_builtin(display, title, run):
         ctx.close()
 
 
-def run_app(display, app_id, title, senses):
-    """Lädt apps/<id>/app.py frisch und ruft run(ctx). Jeder Fehler endet im Bluescreen, nie im Stillstand."""
-    folder = config.APPS_DIR + "/" + app_id
+def run_app(display, app, senses, tick=None):
+    """Lädt apps/<id>/app.py frisch und ruft run(ctx). Jeder Fehler endet im Bluescreen, nie im Stillstand.
+    app: Eintrag aus manifest.json; tick läuft neben einem Fenster (beside) mit, damit die Klammer weiterlebt."""
+    folder, title, beside = config.APPS_DIR + "/" + app["id"], app["name"], app.get("beside", False)
     before = set(sys.modules)
     sys.path.insert(0, folder)   # damit die App Dateien aus ihrem eigenen Ordner importieren kann
     senses.pause()               # Mikrofon aus, Lautsprecher an
-    ctx = Ctx(display, title)
+    ctx = Ctx(display, title, beside, tick if beside else None)
     try:
         scope = {"__name__": "app"}
         with open(folder + "/app.py") as f:

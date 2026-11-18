@@ -11,6 +11,7 @@ und spricht in Sprüchen aus `apps/phrases.json`.
 | `extras.py` | Beiwerk zur Zeichnung: Hantel, Trommel, Schlägel, Blitze, Rotzblase, Zs |
 | `moves.py` | Bewegungen: Blinzeln, Umschauen, Sekundenschlaf, Curls, Trommelschlag, Schwindel, Schreck, ... |
 | `boredom.py` | Was sie aus Langeweile tut: Augen verdrehen, strecken, Schlagzeug-Solo, Hanteln, Kopfrolle, Pogo |
+| `dance.py` | Tanzen, solange das Radio spielt: drei Figuren (wippen und schwingen, hüpfen, lässig grooven) |
 | `sleep.py` | Müdigkeit: wann sie einnickt und einschläft, wie hell das Display ist, wie sie im Schlaf aussieht |
 | `bubble.py` | Sprechblase samt Zeilenumbruch |
 | `senses.py` | Sinne: liest Sensoren, meldet Ereignisse als Wörter |
@@ -159,6 +160,16 @@ Gezeichnet wird sie über jeder Haltung, nicht auf der breiten Bühne.
 **Solange ein Agent arbeitet, gibt es keine Sprechblasen:** Beginnt er, verschwindet eine offene Blase, und
 `clippy.say` schweigt. Ausnahmen, weil sie wichtig sind: `agent_waiting`, `agent_done`, `usage_high` (`URGENT` in
 `habits.py`), auch wenn ein anderer Agent noch arbeitet.
+
+## Tanzen und Fenster daneben
+
+Läuft eine App neben der Klammer (`beside`, siehe [build-an-app.md](build-an-app.md)), ruft `desktop.py`
+`clippy.window(True)` und danach `False`. Solange das Fenster offen ist, malt sie nichts außerhalb ihres Felds:
+keine Sprechblasen (auch keine wichtigen; die Kästchen in der Taskleiste zeigen trotzdem alles), kein Umfallen
+(`SOMETIMES`), keine Langeweile (`bored`, die Kopfrolle bräuchte die Bühne), und `flip` dreht das Display erst nach
+dem Schließen (`refresh`). Zur Sicherheit zeichnet `stage.py` dann nie auf die breite Bühne.
+Solange Musik fließt (`player.active()`), tanzt sie (`dance.py`): eine Figur nach der anderen, jede gut drei
+Sekunden. Sie schläft dabei nicht ein; antippen oder schütteln unterbricht kurz, dann tanzt sie weiter.
 
 ## Auf dem Kopf
 

@@ -1,6 +1,10 @@
 # Müdigkeit der Klammer: wann sie einnickt und einschläft, wie hell das Display ist, wie sie im Schlaf aussieht.
+import random
+import time
+
+from clippy.pet import moves, phrases
 from clippy.pet.draw import REST
-from clippy.pet.habits import BRIGHT, DIM, DUSK, SLEEP_AFTER_COVERED, SLEEP_AFTER_DARK, SLEEP_AFTER_NIGHT
+from clippy.pet.habits import BRIGHT, DIM, DUSK, SLEEP_AFTER_COVERED, SLEEP_AFTER_DARK, SLEEP_AFTER_NIGHT, SNOT_CHANCE
 
 
 def limit(senses):
@@ -12,6 +16,23 @@ def limit(senses):
     if senses.light <= 1:
         return SLEEP_AFTER_DARK
     return None
+
+
+def check(pet, now):
+    """Einmal je Sekunde: aufwachen, wenn es hell ist; einschlafen nach langer Ruhe; nach der halben Zeit einnicken."""
+    most = limit(pet.senses)
+    quiet = time.ticks_diff(now, pet.awake_since) / 1000
+    if most is None:
+        pet.asleep = False  # es ist wieder hell: aufwachen
+    elif not pet.asleep and quiet > most:
+        pet.asleep, pet.move = True, None
+        pet.snot = random.random() < SNOT_CHANCE
+        pet.say(phrases.pick("sleep"), 4)
+    elif not pet.asleep and quiet > most / 2 and pet.nodded != pet.awake_since and pet.move is None:
+        pet.nodded = pet.awake_since  # müde: einmal einnicken und hochschrecken
+        pet.play(moves.nod)
+        if random.random() < 0.5:
+            pet.say(phrases.pick("nod"))
 
 
 def brightness(senses, asleep):

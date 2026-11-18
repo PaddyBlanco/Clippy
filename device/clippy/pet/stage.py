@@ -25,6 +25,8 @@ class Stage:
         self.wide = None         # (Leinwand, Hintergrund) der Bühne, erst beim ersten Bedarf angelegt
         self.was_wide = False
         self.frame = 0           # zählt die Bilder; dreht den Stern des Arbeitsworts
+        self.narrow = False      # links liegt ein App-Fenster: nie auf die breite Bühne, nur ins Feld
+        self.flipped = False     # ist das Display gerade umgedreht
 
     def repaint(self):
         """Der Desktop hat sich geändert (z. B. ein Symbol): den Hintergrund der Bühne beim nächsten Mal neu holen."""
@@ -32,18 +34,19 @@ class Stage:
 
     def needs_wide(self, pose):
         """Kippt, liegt, rollt sie oder steht sie gerade wieder auf? Dann braucht sie die Bühne."""
-        return _on_stage(pose) or self.was_wide
+        return (_on_stage(pose) or self.was_wide) and not self.narrow
 
     def turn(self, flipped):
         """Das Gerät wurde umgedreht: Display mitdrehen und den Desktop neu zeichnen."""
+        self.flipped = flipped
         self.d.setRotation(UPSIDE_DOWN if flipped else UPRIGHT)
         self.paint(self.d)
         self.was_wide = False
 
     def show(self, pose):
         self.frame += 1
-        wide = _on_stage(pose)
-        if wide or self.was_wide:
+        wide = _on_stage(pose) and not self.narrow
+        if wide or (self.was_wide and not self.narrow):
             if self.wide is None:
                 work = self.d.newCanvas(STAGE_W, FIELD_H, 16, True)
                 back = work.newCanvas(win98.W, win98.H, 16, True)  # der ganze Desktop samt Symbolen

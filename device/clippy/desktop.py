@@ -72,27 +72,34 @@ def run():
     clippy = Pet(d, senses, lambda g: draw(g, apps, senses))
     monitor = Monitor(d, senses.agents)
     clippy.say(phrases.pick("start"))
-    shown, agent = status(senses), senses.agents.current()
-    turn, down, clock_set = 0, True, False
-    while True:
-        M5.update()
-        turn += 1
+    state = {"turn": 0, "shown": status(senses), "agent": senses.agents.current(), "clock": False}
+
+    def tick():
+        """Alles je Durchlauf außer Tipper verteilen; läuft auch neben einem App-Fenster (beside) mit."""
+        state["turn"] += 1
+        turn = state["turn"]
         if turn % 16 == 0:  # etwa einmal je Sekunde
-            if not clock_set and turn % 160 == 0:  # Uhr stellen, sobald das WLAN steht; sonst in 10 s nochmal
-                clock_set = wifi.sync_clock()
+            if not state["clock"] and turn % 160 == 0:  # Uhr stellen, sobald das WLAN steht; sonst in 10 s nochmal
+                state["clock"] = wifi.sync_clock()
             now = status(senses)
-            if now != shown:
-                shown = now
-                shell.tray(d, *shown)
-            if senses.agents.current() != agent:  # ein anderer Agent ist dran: sein Zeichen aufs Symbol
-                agent = senses.agents.current()
-                shell.icon(d, len(apps) - 1, MONITOR["name"], 0, None, agent)
-                clippy.stage.repaint()
-            if not clippy.bubble.box:  # die Klammer spricht: Blase bleibt vorn, das Fenster wartet
-                monitor.draw()  # auch, was Sprechblase oder Sturz darübergemalt haben, ist danach wieder weg
+            if now != state["shown"]:
+                state["shown"] = now
+                shell.tray(d, *now)
+            if not clippy.beside:  # hinter einem App-Fenster nichts zeichnen; danach zeichnet draw() alles neu
+                if senses.agents.current() != state["agent"]:  # ein anderer Agent ist dran: sein Zeichen aufs Symbol
+                    state["agent"] = senses.agents.current()
+                    shell.icon(d, len(apps) - 1, MONITOR["name"], 0, None, state["agent"])
+                    clippy.stage.repaint()
+                if not clippy.bubble.box:  # die Klammer spricht: Blase bleibt vorn, das Fenster wartet
+                    monitor.draw()  # auch, was Sprechblase oder Sturz darübergemalt haben, ist danach wieder weg
         if turn % 400 == 0:  # etwa alle halbe Minute ein Lebenszeichen auf die USB-Konsole
             print("clippy läuft seit", time.ticks_ms() // 1000, "s, frei", getattr(gc, "mem_free", int)())
+        clippy.step()
 
+    down = True
+    while True:
+        M5.update()
+        tick()
         was_down, down = down, M5.Touch.getCount() > 0
         tap = (M5.Touch.getX(), M5.Touch.getY()) if down and not was_down else None
         inside = monitor.hit(*tap) if tap else None
@@ -105,11 +112,13 @@ def run():
             elif apps[target] is MONITOR:
                 monitor.open = True
             else:
-                launcher.run_app(d, apps[target]["id"], apps[target]["name"], senses)
+                if apps[target].get("beside", False):  # Fenster links, die Klammer lebt rechts weiter
+                    monitor.open = False
+                    clippy.window(True)
+                launcher.run_app(d, apps[target], senses, tick)
+                clippy.window(False)
             draw(d, apps, senses)  # alles neu zeichnen: nach App oder Menü, oder das Fenster ist auf oder zu
             clippy.refresh()
             monitor.draw()
-            shown = status(senses)
-
-        clippy.step()
+            state["shown"] = status(senses)
         time.sleep_ms(60)

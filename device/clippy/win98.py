@@ -12,6 +12,7 @@ BLUE = 0x0000AA  # Bluescreen
 
 W, H = 320, 240
 TITLE_H = 22     # Titelleiste eines Fensters
+PANEL_TITLE_H = 20  # Titelleiste eines kleinen Fensters (panel)
 BG_PATH = "/flash/bg.jpg"
 FONT = "/flash/res/font12.vlw"
 FONT_BOLD = "/flash/res/font12b.vlw"
@@ -118,6 +119,17 @@ def window(g, title):
     g.drawLine(W - 10, 7, W - 16, 13, DARK)
     g.drawLine(W - 9, 7, W - 15, 13, DARK)
     g.fillRect(0, TITLE_H, W, H - TITLE_H, FACE)
+
+
+def panel(g, x, y, w, h, title):
+    # kleines Fenster am Desktop: Rahmen, blaue Titelleiste mit X; der Inhalt beginnt PANEL_TITLE_H + 1 tiefer
+    bevel(g, x, y, w, h)
+    g.fillRect(x + 2, y + 2, w - 4, PANEL_TITLE_H - 2, NAVY)
+    text(g, title, x + 7, y + 4, LIGHT, NAVY, bold=True)
+    bevel(g, x + w - 21, y + 4, 17, 15)
+    for dx in (0, 1):
+        g.drawLine(x + w - 16 + dx, y + 8, x + w - 10 + dx, y + 14, DARK)
+        g.drawLine(x + w - 10 + dx, y + 8, x + w - 16 + dx, y + 14, DARK)
 
 
 def bluescreen(g, app_name, error_text):
