@@ -256,6 +256,8 @@ def main():
     os.stat = lambda p, *a, **k: real_stat(pc_path(p), *a, **k)
     real_listdir = os.listdir
     os.listdir = lambda p=".": real_listdir(pc_path(p))
+    real_remove = os.remove
+    os.remove = lambda p: real_remove(pc_path(p))
 
     sys.path.insert(0, os.path.join(ROOT, "device"))
     sys.path.insert(0, os.path.dirname(os.path.abspath(script)))
