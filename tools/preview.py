@@ -25,7 +25,7 @@ BUILTIN_TTF = "C:/Windows/Fonts/verdana.ttf"  # Ersatz für die eingebauten Firm
 
 def pc_path(p):
     """Pfad am Gerät -> Datei am PC: /flash/... entspricht dem Ordner device/."""
-    if isinstance(p, str) and p.startswith("/flash/apps/"):  # abgerufene Apps und Sprüche
+    if isinstance(p, str) and p.startswith("/flash/apps/"):  # Apps und Sprüche
         return os.path.join(ROOT, "apps", p[12:])
     if isinstance(p, str) and p.startswith("/flash/"):
         return LOCAL_ONLY.get(p, os.path.join(ROOT, "device", p[7:]))

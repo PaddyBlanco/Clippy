@@ -52,7 +52,7 @@ dokumentiert sind; lies die genannte Datei oder frag nach.
 
 | Ordner | Inhalt |
 |---|---|
-| `apps/` | `manifest.json` (App-Liste), `phrases.json` (Sprüche der Klammer) und je App ein Ordner mit `app.py`; den automatischen Abruf gibt es noch nicht |
+| `apps/` | `manifest.json` (App-Liste), `phrases.json` (Sprüche der Klammer) und je App ein Ordner mit `app.py`; kommt mit `tools/install.ps1` aufs Gerät, einen Abruf aus dem Netz gibt es bewusst nicht |
 | `device/` | Abbild des Geräts: `main.py`, Paket `clippy/` (Desktop, Startmenü, App-Starter, Windows-98-Bausteine, Klammer), `res/` |
 | `tools/` | Skripte für den PC: aufs Gerät installieren, Vorschau ohne Gerät, Hintergrundbild und Schrift erzeugen |
 | `checks/` | Prüfskripte, die einzeln am Gerät laufen |

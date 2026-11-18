@@ -7,8 +7,8 @@ Sie erscheint als Symbol am Desktop und läuft in einem Fenster mit Titelleiste 
 
 1. Ordner `apps/<id>/` anlegen und `apps/hello/app.py` als Vorlage hineinkopieren.
 2. In `apps/manifest.json` einen Eintrag ergänzen (siehe unten).
-3. Am PC ansehen: `python tools/preview.py apps/<id>/app.py local/preview.png`. Dann aufs Gerät bringen
-   (bis der automatische Abruf fertig ist: `.\tools\install.ps1`, siehe [device.md](device.md)).
+3. Am PC ansehen: `python tools/preview.py apps/<id>/app.py local/preview.png`. Dann aufs Gerät bringen mit
+   `.\tools\install.ps1` (siehe [device.md](device.md)). Apps kommen nur so aufs Gerät, nie aus dem Netz.
 
 ## Der Vertrag
 
@@ -56,7 +56,7 @@ braucht, und wird dann hier eingetragen. Nichts verwenden, was hier nicht steht.
 `apps/manifest.json` ist eine Liste. Die Reihenfolge ist die Reihenfolge der Symbole; es passen vier.
 
 ```json
-{"id": "hello", "name": "Hallo", "icon": "Hi", "color": "#3050B0", "version": 1}
+{"id": "hello", "name": "Hallo", "icon": "Hi", "color": "#3050B0"}
 ```
 
 | Feld | Bedeutung |
@@ -65,7 +65,6 @@ braucht, und wird dann hier eingetragen. Nichts verwenden, was hier nicht steht.
 | `name` | Text unter dem Symbol und in der Titelleiste, höchstens etwa 9 Zeichen |
 | `icon` | zwei Zeichen im Symbol |
 | `color` | Farbe des Symbols als `#RRGGBB` |
-| `version` | ganze Zahl, bei jeder Änderung der App erhöhen |
 
 ## Während eine App läuft
 

@@ -1,4 +1,4 @@
 [
-  {"id": "hello", "name": "Hallo", "icon": "Hi", "color": "#3050B0", "version": 1},
-  {"id": "crash", "name": "Absturz", "icon": "!!", "color": "#B03030", "version": 1}
+  {"id": "hello", "name": "Hallo", "icon": "Hi", "color": "#3050B0"},
+  {"id": "crash", "name": "Absturz", "icon": "!!", "color": "#B03030"}
 ]

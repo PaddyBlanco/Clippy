@@ -3,7 +3,7 @@
 # Adresse des Handbuchs; das Startmenü zeigt sie als QR-Code.
 MANUAL_URL = "https://paddyblanco.github.io/Clippy/"  # Handbuch-Webseite aus manual/, siehe docs/manual.md
 
-# Wo abgerufene Apps und Sprüche am Gerät liegen
+# Wo Apps und Sprüche am Gerät liegen (kopiert tools/install.ps1 aus apps/)
 APPS_DIR = "/flash/apps"
 
 # WLAN-Zugang {"ssid": ..., "password": ...}; kommt aus local/wifi.json, liegt nie im Repo

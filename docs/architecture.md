@@ -1,6 +1,7 @@
 # Aufbau
 
-Stand: Desktop, Klammer, Startmenü, Apps im Fenster und Agent-Anbindung laufen. Der Abruf von Apps folgt.
+Stand: Desktop, Klammer, Startmenü, Apps im Fenster und Agent-Anbindung laufen. Apps und Sprüche kommen mit
+`tools/install.ps1` fest aufs Gerät; einen Abruf oder Updates aus dem Netz gibt es bewusst nicht.
 
 ## Dateien
 
