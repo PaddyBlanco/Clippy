@@ -26,7 +26,9 @@ from PIL import Image, ImageDraw, ImageFont
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 LOCAL_ONLY = {"/flash/bg.jpg": os.path.join(ROOT, "local", "bg", "bg.jpg")}  # liegt nicht im Repo
 SD = [None]  # Ordner am PC, der als microSD-Karte gilt (--sd)
-BUILTIN_TTF = "C:/Windows/Fonts/verdana.ttf"  # Ersatz für die eingebauten Firmware-Schriften
+# Ersatz für die eingebauten Firmware-Schriften: Verdana unter Windows, DejaVu in GitHub Actions (Linux)
+BUILTIN_TTF = next((f for f in ("C:/Windows/Fonts/verdana.ttf", "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf")
+                    if os.path.exists(f)), "DejaVuSans.ttf")
 
 
 def pc_path(p):

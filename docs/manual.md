@@ -40,40 +40,43 @@ Jede Seite hat dieselbe Navigationsleiste oben; wer eine Seite dazunimmt, trägt
 Einmalig im Repo auf GitHub: Settings → Pages → Source: „GitHub Actions“. Danach veröffentlicht jeder Push auf `main`
 die Seite neu. Ansehen ohne Veröffentlichen: `manual/index.html` im Browser öffnen.
 
-## Screenshots (offen, ganz zum Schluss mit der fertigen Version)
+## Bilder vom Gerät
 
-Auf den Seiten stehen bis dahin Platzhalter mit der Nummer aus dieser Liste (`[Bild S1]`).
+Die Bilder entstehen erst beim Veröffentlichen: `.github/workflows/manual.yml` ruft `tools/screenshots.py` auf, das
+mit `tools/preview.py` Szenen zeichnet (Desktop, Haltungen der Klammer, Menüs, Apps) und sie als `manual/img/s<Nr>.png`
+ablegt. Im Repo liegen sie nie (AGENTS.md, Regel 4; `manual/img/` steht in `.gitignore`), ohne Hintergrundfoto aus
+`local/bg/`. Ansehen am PC: `python tools/screenshots.py`, dann `manual/index.html` öffnen. Eine neue Szene ist ein
+Eintrag in `SCENES` in `tools/screenshots.py`; auf der Seite `<img class="pic" src="img/s<Nr>.png" ...>`.
 
-**Vorher klären:** Bilder sind Binärdateien, und die sind im Repo verboten (AGENTS.md, Regel 4). Entweder eine
-Ausnahme für `manual/img/` beschließen, oder die Bilder erst beim Veröffentlichen in GitHub Actions mit
-`tools/preview.py` erzeugen (dann ohne das Hintergrundfoto aus `local/bg/`). Echte Fotos vom Gerät gehen nur mit
-der Ausnahme.
+Was die Vorschau nicht kann (echtes Foto, Handy, echte WLAN-Liste, QR-Codes: die Vorschau malt dafür nur ein
+Kästchen), bleibt Platzhalter mit der Nummer (`[Bild S2]`). Echte Fotos vom Gerät bräuchten eine Ausnahme von
+Regel 4 für `manual/img/`.
 
-| Nr. | Seite | Was zu sehen sein soll | Woher |
-|---|---|---|---|
-| S1 | index | Desktop mit Klammer und Begrüßungs-Sprechblase | Gerät oder Vorschau |
-| S2 | index | Foto des Geräts auf dem Schreibtisch | Foto |
-| S3 | klammer | Bizepscurls mit Hantel | Vorschau |
-| S4 | klammer | Schlagzeug | Vorschau |
-| S5 | klammer | Kopfrolle (steht am Kopf) | Vorschau |
-| S6 | klammer | Pogo auf dem Drahtende | Vorschau |
-| S7 | klammer | rot und grantig (dreimal angetippt) | Vorschau |
-| S8 | klammer | gestreichelt, Augen zu | Vorschau |
-| S9 | klammer | schlafend mit Zs und Rotzblase, Display gedimmt | Vorschau |
-| S10 | klammer | umgefallen, liegt | Vorschau |
-| S11 | klammer | Gerät auf dem Kopf: Klammer rollt an ihren Platz | Gerät (Foto/Video-Standbild) |
-| S12 | agents | Taskleiste mit drei Agent-Kästchen (gelb, rot, grün) | Vorschau |
-| S13 | agents | Klammer ruft „… braucht di!“ mit Sprechblase | Vorschau |
-| S14 | hilfe | Startmenü offen | Vorschau |
-| S15 | hilfe | Handbuch-Fenster mit QR-Code | Vorschau |
-| S16 | hilfe | App „Radio“ im Fenster, ein Sender spielt | Vorschau |
-| S18 | hilfe | „Sie können Clippy jetzt ignorieren.“ | Vorschau |
-| S19 | hilfe | WLAN einrichten: Liste der Netze | Gerät (echte Netze) |
-| S20 | hilfe | WLAN einrichten: Tastatur mit halb eingetipptem Passwort | Vorschau |
-| S21 | hilfe | WLAN mit Handy: Clippy zeigt den QR-Code | Gerät (echter QR-Code) |
-| S22 | hilfe | WLAN mit Handy: Einrichtungsseite am Handy | Handy-Screenshot |
-| S23 | agents | Fenster „Agent-Nutzung“ links, Klammer rechts daneben | Gerät (echte Werte) |
-| S24 | hilfe | App „Wetter“ links, Klammer rechts daneben | Gerät (echte Werte) oder Vorschau mit `--online` |
-| S25 | hilfe | App „Diashow“ mit einem Foto | Vorschau mit `--sd` |
-| S26 | hilfe | Diashow: QR-Code „Fotos vom Handy“, Scho do: 3 | Gerät (echter QR-Code) |
-| S27 | hilfe | Handy: Seite „Fotos an Clippy“ mit Liste | Handy-Screenshot |
+| Nr. | Seite | Was zu sehen sein soll | Woher | Stand |
+|---|---|---|---|---|
+| S1 | index | Desktop mit Klammer und Begrüßungs-Sprechblase | Gerät oder Vorschau | erzeugt |
+| S2 | index | Foto des Geräts auf dem Schreibtisch | Foto | Platzhalter |
+| S3 | klammer | Bizepscurls mit Hantel | Vorschau | erzeugt |
+| S4 | klammer | Schlagzeug | Vorschau | erzeugt |
+| S5 | klammer | Kopfrolle (steht am Kopf) | Vorschau | erzeugt |
+| S6 | klammer | Pogo auf dem Drahtende | Vorschau | erzeugt |
+| S7 | klammer | rot und grantig (dreimal angetippt) | Vorschau | erzeugt |
+| S8 | klammer | gestreichelt, Augen zu | Vorschau | erzeugt |
+| S9 | klammer | schlafend mit Zs und Rotzblase, Display gedimmt | Vorschau | erzeugt |
+| S10 | klammer | umgefallen, liegt | Vorschau | erzeugt |
+| S11 | klammer | Gerät auf dem Kopf: Klammer rollt an ihren Platz | Gerät (Foto/Video-Standbild) | Platzhalter |
+| S12 | agents | Taskleiste mit drei Agent-Kästchen (gelb, rot, grün) | Vorschau | erzeugt |
+| S13 | agents | Klammer ruft „… braucht di!“ mit Sprechblase | Vorschau | erzeugt |
+| S14 | hilfe | Startmenü offen | Vorschau | erzeugt |
+| S15 | hilfe | Handbuch-Fenster mit QR-Code | Vorschau | Platzhalter |
+| S16 | hilfe | App „Radio“ im Fenster, ein Sender spielt | Vorschau | erzeugt |
+| S18 | hilfe | „Sie können Clippy jetzt ignorieren.“ | Vorschau | erzeugt |
+| S19 | hilfe | WLAN einrichten: Liste der Netze | Gerät (echte Netze) | Platzhalter |
+| S20 | hilfe | WLAN einrichten: Tastatur mit halb eingetipptem Passwort | Vorschau | Platzhalter |
+| S21 | hilfe | WLAN mit Handy: Clippy zeigt den QR-Code | Gerät (echter QR-Code) | Platzhalter |
+| S22 | hilfe | WLAN mit Handy: Einrichtungsseite am Handy | Handy-Screenshot | Platzhalter |
+| S23 | agents | Fenster „Agent-Nutzung“ links, Klammer rechts daneben | Gerät (echte Werte) | Platzhalter |
+| S24 | hilfe | App „Wetter“ links, Klammer rechts daneben | Gerät (echte Werte) oder Vorschau mit `--online` | erzeugt |
+| S25 | hilfe | App „Diashow“ mit einem Foto | Vorschau mit `--sd` | erzeugt |
+| S26 | hilfe | Diashow: QR-Code „Fotos vom Handy“, Scho do: 3 | Gerät (echter QR-Code) | Platzhalter |
+| S27 | hilfe | Handy: Seite „Fotos an Clippy“ mit Liste | Handy-Screenshot | Platzhalter |

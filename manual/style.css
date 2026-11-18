@@ -126,3 +126,9 @@ table.box td, table.box th { overflow-wrap: break-word; hyphens: auto; }
 .tool ul { background: #ffffff; border: 2px inset #c0c0c0; padding: 6px 6px 6px 28px; max-height: 260px;
   overflow-y: auto; font-family: Tahoma, sans-serif; font-size: 14px; }
 .tool .bad, .bad { color: #a00000; }
+/* Bilder vom Gerät, erzeugt mit tools/screenshots.py (docs/manual.md) */
+img.pic { display: block; margin: 10px auto; max-width: 100%; height: auto; border: 2px inset #c0c0c0; }
+.gallery { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin: 10px 0; }
+.gallery figure { margin: 0; width: 240px; max-width: calc(50% - 6px); text-align: center; font-size: 14px;
+  font-family: Tahoma, sans-serif; }
+.gallery img.pic { width: 100%; margin: 0 0 3px; }
