@@ -1,13 +1,16 @@
-# Was eine App vom Gerät bekommt: Zeichenfläche, Tipper, Ton, WLAN-Stand und Radio. Der Vertrag steht in
-# docs/build-an-app.md; der Starter (launcher.py) legt je App ein Ctx an und räumt es wieder weg.
+# Was eine App vom Gerät bekommt: Zeichenfläche, Tipper, Ton, WLAN-Stand, Radio, Netz und Wetter für die Klammer.
+# Der Vertrag steht in docs/build-an-app.md; der Starter (launcher.py) legt je App ein Ctx an und räumt es weg.
 import time
 
 import M5
 
 from clippy import wifi, win98
+from clippy.pet import umbrella
 from clippy.player import Player
 from clippy.win98 import H, PANEL_TITLE_H, TITLE_H, W
 
+WET = ("rain", "drizzle", "snow", "storm")  # bei diesem Wetter spannt die Klammer den Schirm auf
+TIMEOUT_S = 8              # so lange wartet get_json höchstens auf eine Antwort (erster https-Abruf: bis 7,5 s)
 BESIDE = (0, 0, 196, 212)  # Fenster neben der Klammer: x, y, Breite, Höhe samt Rahmen; rechts davon ihr Feld
 TICK_MS = 60               # so oft läuft daneben die Klammer mit, wie in der Hauptschleife des Desktops
 
@@ -68,6 +71,25 @@ class Ctx:
         """True, wenn das WLAN steht."""
         return wifi.connected()
 
+    def weather(self, kind):
+        """Sagt der Klammer, wie das Wetter ist; bei Nässe (WET) spannt sie den Schirm auf."""
+        umbrella.rain(kind in WET)
+
+    def get_json(self, url):
+        """JSON-Antwort aus dem Netz als dict; None ohne WLAN, bei einem Fehler oder einer kaputten Antwort."""
+        if not self.online():
+            return None
+        r = None
+        try:
+            import requests  # erst hier: am PC (Vorschau) gibt es das Modul der Firmware nicht
+            r = requests.get(url, timeout=TIMEOUT_S)  # ohne Zeitlimit hängt das Gerät, wenn keine Antwort kommt
+            return r.json() if r.status_code == 200 else None
+        except Exception:
+            return None
+        finally:
+            if r is not None:
+                r.close()
+
     def play(self, url):
         """Spielt einen MP3-Strom aus dem Netz (nur http://); wartet bis zu 3,5 s, bis er läuft.
         True, wenn die Firmware ihn annimmt."""
@@ -90,6 +112,7 @@ class Ctx:
             self._player.stop()
 
     def close(self):
+        umbrella.rain(False)
         if self._played:
             self._player.close()
         self.screen.delete()

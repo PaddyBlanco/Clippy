@@ -8,10 +8,11 @@ und spricht in Sprüchen aus `apps/phrases.json`.
 | Datei | Aufgabe |
 |---|---|
 | `draw.py` | Maße der Figur und `draw(g, pose)`: eine Haltung hinein, ein Bild heraus |
-| `extras.py` | Beiwerk zur Zeichnung: Hantel, Trommel, Schlägel, Blitze, Rotzblase, Zs |
+| `extras.py` | Beiwerk zur Zeichnung: Hantel, Trommel, Schlägel, Schirm, Blitze, Rotzblase, Zs |
 | `moves.py` | Bewegungen: Blinzeln, Umschauen, Sekundenschlaf, Curls, Trommelschlag, Schwindel, Schreck, ... |
 | `boredom.py` | Was sie aus Langeweile tut: Augen verdrehen, strecken, Schlagzeug-Solo, Hanteln, Kopfrolle, Pogo |
 | `dance.py` | Tanzen, solange das Radio spielt: drei Figuren (wippen und schwingen, hüpfen, lässig grooven) |
+| `umbrella.py` | Schirm bei Regen, solange die App Wetter es sagt (`ctx.weather`): merkt sich das und liefert die Bewegung dazu |
 | `sleep.py` | Müdigkeit: wann sie einnickt und einschläft, wie hell das Display ist, wie sie im Schlaf aussieht |
 | `bubble.py` | Sprechblase samt Zeilenumbruch |
 | `senses.py` | Sinne: liest Sensoren, meldet Ereignisse als Wörter |
@@ -47,6 +48,7 @@ Eine **Haltung** (`pose`) ist ein Dictionary; `draw.REST` ist die Ruhehaltung.
 | `weight` | Hantel in der Hand | False |
 | `stick` | Schlägel in der Hand | False |
 | `drum` | Trommel rechts unten | False |
+| `umbrella` | aufgespannter Schirm in der Hand, das Dach über dem Kopf; dazu `arm` nahe 0 | False |
 | `spark` | Blitze rund um die Figur („unter Strom“) | False |
 | `zzz` | Schlaf-Zs: 0 = keine, sonst ein Zähler; mit jedem Schritt steigen die drei Zs weiter auf und treiben davon | 0 |
 | `snot` | Radius der Rotzblase in Pixeln, 0 = keine | 0 |
@@ -170,6 +172,10 @@ keine Sprechblasen (auch keine wichtigen; die Kästchen in der Taskleiste zeigen
 dem Schließen (`refresh`). Zur Sicherheit zeichnet `stage.py` dann nie auf die breite Bühne.
 Solange Musik fließt (`player.active()`), tanzt sie (`dance.py`): eine Figur nach der anderen, jede gut drei
 Sekunden. Sie schläft dabei nicht ein; antippen oder schütteln unterbricht kurz, dann tanzt sie weiter.
+Meldet eine App Regen, Niesel, Schnee oder Gewitter (`ctx.weather`, gemerkt in `umbrella.py`), hält sie einen
+aufgespannten Schirm über den Kopf (`umbrella.hold()`): steht darunter, schaut ab und zu hinauf, wippt leicht.
+Auch dabei schläft sie nicht ein; Musik hat Vorrang. Mit dem Fenster geht der Schirm wieder zu. Arbeitet ein Agent,
+liegt seine Konsole über dem Schirmdach.
 
 ## Auf dem Kopf
 

@@ -1,3 +1,4 @@
 [
-  {"id": "radio", "name": "Radio", "icon": "FM", "color": "#A03020", "beside": true}
+  {"id": "radio", "name": "Radio", "icon": "FM", "color": "#A03020", "beside": true},
+  {"id": "weather", "name": "Wetter", "icon": "°C", "color": "#2060B0", "beside": true}
 ]

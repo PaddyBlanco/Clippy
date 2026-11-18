@@ -38,7 +38,8 @@ HULL = [(cx + r * math.cos(math.radians(a)), cy + r * math.sin(math.radians(a)))
         for cx, cy, r, a0, a1 in ARCS for a in range(a0, a1 + 1, 15)] + [p for s in STICKS for p in (s[:2], s[2:])]
 
 REST = {"look": (0, 0), "lid": 0.0, "brow": 0, "frown": False, "bob": 0, "dx": 0, "stretch": 0, "lean": 0, "roll": 0,
-        "arm": 0, "pogo": 0, "red": False, "weight": False, "stick": False, "drum": False, "spark": False, "zzz": 0, "snot": 0}
+        "arm": 0, "pogo": 0, "red": False, "weight": False, "stick": False, "drum": False, "spark": False, "zzz": 0,
+        "snot": 0, "umbrella": False}
 
 
 def _arc(g, x, y, r0, r1, a0, a1, c):

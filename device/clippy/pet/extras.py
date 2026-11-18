@@ -36,6 +36,28 @@ def in_hand(g, pose, at, hand):
     if pose["stick"]:  # Schlägel, im Handgelenk nach unten abgewinkelt
         w = a + math.radians(70)
         stick(g, hx, hy, hx + 16 * math.sin(w), hy - 16 * math.cos(w), 2, 0x8B5A2B)
+    if pose["umbrella"]:
+        umbrella(g, at, hand)
+
+
+UMBRELLA_RX, UMBRELLA_RY, UMBRELLA_Y = 40, 22, 1  # Schirmdach: halbe Breite, Höhe, Unterkante (Figur-Punkte)
+UMBRELLA_IN = 18   # so weit liegt die Mitte des Dachs links von der Hand: über dem Kopf, nicht über dem Arm
+RED, DARK_RED, HANDLE = 0xD03030, 0x801818, 0x404040
+
+
+def umbrella(g, at, hand):
+    """Aufgespannter Schirm: Stock schräg von der Hand hinauf, rotes Dach über dem Kopf."""
+    x = hand[0] - UMBRELLA_IN
+    stick(g, *at(hand[0], hand[1] + 4), *at(x, UMBRELLA_Y), 2, HANDLE)  # über dem Draht, aber unter Augen und Brauen
+    rim = [at(x + UMBRELLA_RX * math.cos(math.radians(d)), UMBRELLA_Y + UMBRELLA_RY * math.sin(math.radians(d)))
+           for d in range(180, 361, 15)]                             # Bogen von links über oben nach rechts
+    cx, cy = at(x, UMBRELLA_Y)
+    for p, q in zip(rim, rim[1:]):
+        g.fillTriangle(cx, cy, p[0], p[1], q[0], q[1], RED)
+    for p in rim[::3]:                                               # Speichen
+        g.drawLine(cx, cy, p[0], p[1], DARK_RED)
+    tx, ty = at(x, UMBRELLA_Y - UMBRELLA_RY - 3)
+    g.fillCircle(tx, ty, 2, HANDLE)                                  # Spitze
 
 
 CONSOLE_H = 58                       # Höhe der Konsole oben im Feld; darunter beginnt der Kopf

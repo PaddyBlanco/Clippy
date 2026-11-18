@@ -38,8 +38,10 @@ def run(ctx):
 | `ctx.playing()` | `True`, sobald Daten fließen |
 | `ctx.volume(pct=None)` | Lautstärke 0 bis 100 lesen, mit `pct` stellen (100 = voll, je Punkt darunter −0,5 dB, 0 = stumm; Start 40); bleibt bis zum Neustart des Geräts |
 | `ctx.stop()` | Musik aus; beim Schließen des Fensters passiert das von selbst |
+| `ctx.weather(kind)` | sagt der Klammer, wie das Wetter ist: `"rain"`, `"drizzle"`, `"snow"` oder `"storm"` → sie spannt einen Schirm auf (nur im Fenster neben ihr zu sehen); alles andere, auch `None` → Schirm zu. Beim Schließen des Fensters von selbst vorbei |
+| `ctx.get_json(url)` | holt eine JSON-Antwort aus dem Netz (http oder https) als Dictionary; `None` ohne WLAN, bei einem Fehler oder einer kaputten Antwort. Wartet, bis die Antwort da ist (einige Zehntelsekunden, der erste https-Abruf bis zu 8 s), alles andere steht solange still; also vorher anzeigen, dass etwas passiert |
 
-Mehr bietet `ctx` noch nicht. Was fehlt (Sensoren, Internet, Speichern), kommt dazu, sobald eine App es
+Mehr bietet `ctx` noch nicht. Was fehlt (Sensoren, Speichern), kommt dazu, sobald eine App es
 braucht, und wird dann hier eingetragen. Nichts verwenden, was hier nicht steht.
 
 ## Regeln

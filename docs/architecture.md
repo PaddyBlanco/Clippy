@@ -14,7 +14,7 @@ Der Ordner `device/` ist ein Abbild dessen, was am Gerät unter `/flash/` liegt.
 | `device/clippy/shell.py` | Taskleiste, Symbole und Startmenü zeichnen; sagt, was unter dem Finger liegt |
 | `device/clippy/logos.py` | Zeichen von Claude (Stern) und Codex (Knoten) für das Desktop-Symbol „Agent“ |
 | `device/clippy/launcher.py` | Startet eine App im Fenster, fängt Fehler ab (Bluescreen); Verbinden-, Handbuch- und Abschiedsbild |
-| `device/clippy/app_context.py` | `Ctx`: was eine App bekommt (Zeichenfläche, Tipper, Ton, WLAN-Stand, Radio), Vertrag in [build-an-app.md](build-an-app.md) |
+| `device/clippy/app_context.py` | `Ctx`: was eine App bekommt (Zeichenfläche, Tipper, Ton, WLAN-Stand, Radio, JSON aus dem Netz, Wetter für den Schirm der Klammer), Vertrag in [build-an-app.md](build-an-app.md) |
 | `device/clippy/player.py` | Internetradio über den Player der Firmware; nur http-MP3, siehe [device.md](device.md) |
 | `device/clippy/win98.py` | Farben, Schrift und Grundformen: Text, Knopf, 3D-Kante, Fenster, Bluescreen, Empfangsbalken, Schloss |
 | `device/clippy/config.py` | Einstellungen an einer Stelle: Adresse des Handbuchs, Ablageort der Apps, WLAN-Datei, Port für Agents |
@@ -140,7 +140,11 @@ mit: `device/res/font12.vlw` (normal) und `font12b.vlw` (fett), beide DejaVu San
 ```
 python -m pip install pillow
 python tools/preview.py device/main.py local/preview.png
+python tools/preview.py apps/weather/app.py local/preview.png --online tests/weather_sample.json
 ```
+
+Eine App, die etwas aus dem Netz holt, sieht am PC sonst nur „Ka WLAN“: Mit `--online <datei.json>` gilt sie als im
+WLAN, und jedes `ctx.get_json()` liefert diese Datei.
 
 Die Vorschau ist eine Näherung: Schrift und Kantenglättung weichen vom Gerät ab, Positionen und Farben stimmen.
 Sie kennt nur die Zeichenfunktionen, die das Projekt benutzt; fehlt eine, bricht sie mit einer klaren Meldung ab.

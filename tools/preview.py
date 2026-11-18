@@ -2,6 +2,8 @@
 
     python tools/preview.py device/main.py local/preview.png [durchlaeufe]
     python tools/preview.py apps/radio/app.py local/preview.png      (eine App in ihrem Fenster)
+    python tools/preview.py apps/weather/app.py local/preview.png --online tests/weather_sample.json
+        (die App ist im WLAN, und ctx.get_json() liefert immer diese Datei)
 
 Ersetzt das Modul M5 durch eine Nachbildung mit Pillow. Text in den Projekt-Schriften (device/res/*.vlw) wird
 aus denselben Dateien gezeichnet wie am Gerät; nur die eingebauten Firmware-Schriften sind eine Näherung.
@@ -196,8 +198,16 @@ class Quiet:
 
 
 def main():
-    script, out = sys.argv[1], sys.argv[2]
-    runs = [int(sys.argv[3]) if len(sys.argv) > 3 else 3]
+    args = sys.argv[1:]
+    answer = None  # --online <datei>: Antwort für ctx.get_json()
+    if "--online" in args:
+        i = args.index("--online")
+        if i + 1 >= len(args):
+            raise SystemExit("--online braucht eine JSON-Datei")
+        answer = args[i + 1]
+        del args[i:i + 2]
+    script, out = args[0], args[1]
+    runs = [int(args[2]) if len(args) > 2 else 3]
     display = Surface(320, 240)
 
     def update():
@@ -242,6 +252,11 @@ def main():
                 display.fillScreen(0x008080)
             ctx = launcher.Ctx(display, app.get("name", app_id), app.get("beside", False))
             ctx._down = False
+            if answer:
+                ctx.online = lambda: True
+                with real_open(answer, encoding="utf-8") as f:
+                    canned = json.load(f)
+                ctx.get_json = lambda url: canned
             scope["run"](ctx)
     except SystemExit:
         pass

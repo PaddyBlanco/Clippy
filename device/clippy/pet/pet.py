@@ -3,7 +3,7 @@ import random
 import time
 
 from clippy import player
-from clippy.pet import moves, phrases, sleep
+from clippy.pet import moves, phrases, sleep, umbrella
 from clippy.pet.boredom import bored
 from clippy.pet.bubble import Bubble
 from clippy.pet.dance import dance
@@ -57,6 +57,8 @@ class Pet:
         self.beside = self.stage.narrow = open
         if open:
             self.bubble.box = None  # liegt unter dem Fenster; wegräumen würde Desktop ins Fenster malen
+        else:
+            self.move, self.pose = None, self._rest_pose()  # Tanz oder Schirm enden mit dem Fenster
 
     def play(self, move):
         """Startet eine Bewegung sofort, z. B. clippy.play(moves.curl)."""
@@ -120,10 +122,11 @@ class Pet:
             self._every_second(now)
         self._light()
 
-        if player.active():  # das Radio spielt: sie tanzt und schläft nicht ein
+        music = player.active()
+        if music or umbrella.raining():  # Radio: sie tanzt; Regen: Schirm auf. Dabei schläft sie nicht ein
             self.awake_since, self.asleep = now, False
             if self.move is None:
-                self.move = dance()
+                self.move = dance() if music else umbrella.hold()
         busy = self._ongoing("beat", now) or self._ongoing("pet", now)
         if self.move is None and not self.asleep and not busy:
             idle = self.tired if self.senses.dark else self.idle

@@ -71,3 +71,4 @@ der Ausnahme.
 | S21 | hilfe | WLAN mit Handy: Clippy zeigt den QR-Code | Gerät (echter QR-Code) |
 | S22 | hilfe | WLAN mit Handy: Einrichtungsseite am Handy | Handy-Screenshot |
 | S23 | agents | Fenster „Agent-Nutzung“ links, Klammer rechts daneben | Gerät (echte Werte) |
+| S24 | hilfe | App „Wetter“ links, Klammer rechts daneben | Gerät (echte Werte) oder Vorschau mit `--online` |

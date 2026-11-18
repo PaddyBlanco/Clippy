@@ -29,6 +29,7 @@ Spalte „Getestet“: ✅ = am Gerät gesehen, ⬜ = noch offen. Stand: 15.11.2
 | 32 | ⬜ | Symbol „Agent“ wechselt zum Knoten von Codex; Fenster „Agent-Nutzung“ zeigt „Codex arbeitet grad an …“ und dass er keine Limits herausgibt | nach Claude auch Codex etwas fragen |
 | 33 | ⬜ | Tanzen: wippt und schwingt, hüpft mit geschlossenen Augen, groovt lässig; wechselt alle gut drei Sekunden; links das Fenster Radio, nichts wird darübergemalt | App Radio öffnen, einen Sender antippen; Gegenprobe „Aus“: sie hört auf |
 | 34 | ⬜ | Neben dem Radio: antippen, streicheln, schütteln wirken; keine Sprechblase, kein Umfallen; auf den Kopf stellen dreht das Display erst nach dem Schließen | bei offenem Radio ausprobieren, danach X |
+| 35 | ✅ | Schirm: hält einen roten Schirm über den Kopf, schaut ab und zu hinauf, wippt leicht; geht mit dem Fenster zu | App Wetter öffnen, wenn es regnet, nieselt, schneit oder gewittert (jetzt oder heute); Gegenprobe: X schließt, der Schirm ist sofort weg |
 | 12 | ✅ | Aufwachen | irgendetwas aus 2 bis 10 tun, während sie schläft |
 
 ## Von selbst
