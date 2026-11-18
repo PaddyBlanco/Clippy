@@ -2,7 +2,8 @@
 
 Claude Code, Codex und GitHub Copilot melden über **Hooks**, was sie gerade tun. Jeder Hook schickt sein
 JSON unverändert mit `curl` an Clippy; Clippy wertet es selbst aus. Am PC braucht es dafür nichts außer `curl`
-(in Windows 10/11, macOS und Linux eingebaut): kein Python, kein Repo, kein Skript.
+(in Windows 10/11 eingebaut): kein Python, kein Repo, kein Skript. **Am PC wird nur Windows unterstützt**;
+macOS und Linux sind bewusst nicht dabei, weil sie niemand testen kann.
 
 ```
 Agent-Hook ──JSON auf stdin──▶ curl ──HTTP POST──▶ clippy.local:4711/<agent> ──▶ agent_hooks/ ──▶ pet/agents.py
@@ -47,8 +48,7 @@ Druckmodus und schickt dessen Ausgabe an `POST /claude/usage`. Den Pfad zum Prog
 `--setting-sources project` lädt die Benutzereinstellungen nicht, also auch nicht die Clippy-Hooks (sonst ruft sich
 das im Kreis); `--no-session-persistence` legt keine Sitzung an. Dauer am PC: 2,4 s für `/usage`, knapp 6 s für den
 ganzen Hook über PowerShell, im Hintergrund (`async`); am PC so aufgerufen wie Claude Code es tut (Liste von
-Argumenten, ohne Shell) und am Gerät angekommen. Die Variante für macOS/Linux in `manual/verbinden.txt` ist
-ungetestet. Die genauen Einträge stehen dort.
+Argumenten, ohne Shell) und am Gerät angekommen. Die genauen Einträge stehen dort.
 Die Ausgabe ist Text, ausgewertet von `Claude.usage_text`:
 `Current session: 9% used · resets Nov 16, 11:49pm (Europe/Vienna)` (5-Stunden-Fenster) und
 `Current week (all models): 8% used · resets Nov 21, 9:59pm (Europe/Vienna)`. Clippy zeigt die Zeit als
@@ -61,9 +61,8 @@ Pro/Max und erst nach der ersten Antwort), `cost.total_cost_usd`,
 `cost.total_lines_added`/`removed`, `model.display_name`, `workspace.project_dir`
 (https://code.claude.com/docs/en/statusline.md). Die Statuszeile ist ein einzelner Befehl:
 
-- Windows (läuft in Git Bash oder PowerShell, `'@-'` in Anführungszeichen für PowerShell):
-  `"statusLine": {"type": "command", "command": "curl.exe -s -m 1 --data-binary '@-' http://clippy.local:4711/claude/status"}`
-- macOS/Linux: `"command": "curl -s -m 1 --data-binary @- http://clippy.local:4711/claude/status"`
+`"statusLine": {"type": "command", "command": "curl.exe -s -m 1 --data-binary '@-' http://clippy.local:4711/claude/status"}`
+(läuft in Git Bash oder PowerShell, `'@-'` in Anführungszeichen für PowerShell).
 
 Clippy merkt sich die Werte und **antwortet mit der Zeile**, die Claude Code unten anzeigt, z. B.
 `Clippy · 5h 42% · Woche 18%`. Ist Clippy aus, bleibt die Zeile leer. Den Kontext (wie voll Claudes Gedächtnis
@@ -115,13 +114,12 @@ Meldung größer, sucht es die nötigen Felder (`hook_event_name`, `notification
 mit 0, auch wenn Clippy aus ist. Gemessen am PC: unbekannter Name nach 1,5 s, Clippy an ohne Webserver nach 2 s;
 Weitergabe von stdin geprüft über `cmd.exe`, PowerShell direkt und PowerShell → `cmd.exe`.
 
-- **Claude Code**, `~/.claude/settings.json`, je Hook `"async": true` (Claude wartet nicht). Windows:
+- **Claude Code**, `%USERPROFILE%\.claude\settings.json`, je Hook `"async": true` (Claude wartet nicht):
   `{"type": "command", "command": "cmd.exe", "args": ["/c", "curl.exe -s -m 2 --data-binary @- http://clippy.local:4711/claude & exit /b 0"], "async": true}`.
-  macOS/Linux: `{"type": "command", "command": "curl -s -m 2 --data-binary @- http://clippy.local:4711/claude || true", "async": true}`.
   Kein HTTP-Hook (`"type": "http"`): der meldet bei ausgeschaltetem Clippy jedes Mal einen Fehler im Chat.
   Nicht in die Projektdatei `.claude/settings.json`: Copilot liest die mit und würde sich als Claude melden.
-- **Codex**, `~/.codex/config.toml`, `async = true`, Windows-Befehl in `command_windows`.
-- **Copilot**, `~/.copilot/hooks/clippy.json` (Kommandozeile und VS Code), Felder `bash` und `powershell`,
+- **Codex**, `%USERPROFILE%\.codex\config.toml`, `async = true`, Windows-Befehl in `command_windows`.
+- **Copilot**, `%USERPROFILE%\.copilot\hooks\clippy.json` (Kommandozeile und VS Code), Felder `bash` und `powershell`,
   `timeoutSec`; kennt kein `async`.
 
 Die vollständigen Einträge stehen in [manual/verbinden.txt](../manual/verbinden.txt).

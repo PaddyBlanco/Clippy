@@ -5,7 +5,8 @@ Windows 98; am Desktop sitzt eine Büroklammer, die auf Sensoren und auf Coding-
 
 **Ziel: ein Geschenk.** Clippy wird verschenkt. Wer es bekommt, soll so wenig wie möglich einrichten müssen;
 was doch nötig ist, muss ohne Technikwissen in wenigen Schritten gehen (am Gerät antippen, QR-Code scannen,
-einen Satz kopieren). Nichts darf voraussetzen, dass am PC Python, dieses Repo oder Entwicklerwerkzeuge da sind.
+einen Satz kopieren). Nichts darf voraussetzen, dass am PC Python, dieses Repo oder Entwicklerwerkzeuge da sind. Am PC wird nur
+Windows unterstützt.
 
 **Stand: im Aufbau.** Einträge mit „folgt“ gibt es noch nicht. Erfinde keine Schnittstellen, die hier nicht
 dokumentiert sind; lies die genannte Datei oder frag nach.

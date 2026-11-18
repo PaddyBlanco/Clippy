@@ -9,12 +9,12 @@ deiner Hooks sein JSON mit curl an Clippy. Mehr braucht es nicht: kein Skript, k
 So gehst du vor:
 
 1. Prüfe, ob Clippy erreichbar ist:
-     Windows:        curl.exe -s -m 3 http://clippy.local:4711/
-     macOS/Linux:    curl -s -m 3 http://clippy.local:4711/
+     curl.exe -s -m 3 http://clippy.local:4711/
    Erwartet: eine Antwort, die "Clippy" enthält. Kommt nichts, sag deinem Menschen: "Clippy ist nicht im WLAN
    oder nicht im selben Netz. Am Gerät: Startmenü -> WLAN einrichten." und hör hier auf.
 
-2. Stell fest, welcher Agent du bist und welches Betriebssystem läuft. Nimm unten NUR den Abschnitt für dich.
+2. Stell fest, welcher Agent du bist. Nimm unten NUR den Abschnitt für dich. Clippy unterstützt am PC nur
+   Windows; läuft etwas anderes, sag das deinem Menschen und hör hier auf.
 
 3. Trag die Hooks in deine BENUTZER-Einstellungen ein (gelten für alle Projekte). Wichtig:
    - Bestehende Einstellungen und Hooks bleiben erhalten. Nur ergänzen, nichts löschen oder ersetzen.
@@ -22,8 +22,7 @@ So gehst du vor:
    - Zeig deinem Menschen vor dem Speichern kurz, was du einträgst, und frag nach.
 
 4. Probe: Schick eine Test-Meldung. Clippy springt dann vor Freude und unten erscheint ein grünes Kästchen.
-     Windows:        curl.exe -s -m 3 http://clippy.local:4711/<agent>/probe
-     macOS/Linux:    curl -s -m 3 http://clippy.local:4711/<agent>/probe
+     curl.exe -s -m 3 http://clippy.local:4711/<agent>/probe
    <agent> ist claude, codex oder copilot. Sag deinem Menschen, er soll auf Clippy schauen.
 
 5. Sag zum Schluss: "Fertig. Damit die Hooks gelten, starte mich bitte einmal neu."
@@ -34,18 +33,15 @@ neuen Einträge; schon vorhandene Clippy-Einträge werden dabei ersetzt, nicht v
 
 ABSCHNITT A: CLAUDE CODE
 ------------------------
-Datei: ~/.claude/settings.json  (Windows: %USERPROFILE%\.claude\settings.json)
+Datei: %USERPROFILE%\.claude\settings.json
 NICHT in eine Projektdatei .claude/settings.json eintragen.
 In das Objekt "hooks" (anlegen, falls es fehlt) für JEDES dieser Ereignisse einen Eintrag ergänzen:
 UserPromptSubmit, PostToolUse, PermissionRequest, Notification, Stop, StopFailure, SessionEnd
 
-Windows, je Ereignis:
+Je Ereignis:
   {"hooks": [{"type": "command", "command": "cmd.exe", "args": ["/c", "curl.exe -s -m 2 --data-binary @- http://clippy.local:4711/claude & exit /b 0"], "async": true}]}
 
-macOS/Linux, je Ereignis:
-  {"hooks": [{"type": "command", "command": "curl -s -m 2 --data-binary @- http://clippy.local:4711/claude || true", "async": true}]}
-
-Beispiel Windows für ein Ereignis (die anderen genauso):
+Beispiel für ein Ereignis (die anderen genauso):
   "hooks": {
     "Stop": [{"hooks": [{"type": "command", "command": "cmd.exe", "args": ["/c", "curl.exe -s -m 2 --data-binary @- http://clippy.local:4711/claude & exit /b 0"], "async": true}]}]
   }
@@ -54,22 +50,18 @@ Zusätzlich für Nutzung und Limits (5-Stunden- und Wochenlimit; geht auch in de
 Ereignissen UserPromptSubmit UND Stop je einen ZWEITEN Eintrag in dieselbe "hooks"-Liste, also z. B.
 "Stop": [{"hooks": [ <Eintrag von oben>, <dieser Eintrag> ]}]. Er fragt Clippy, ob es neue Zahlen braucht
 (höchstens jede Minute), und lässt dann Claude Code selbst "/usage" ausgeben; CLAUDE_PID setzt Claude Code.
-  Windows:
-    {"type": "command", "command": "powershell.exe", "args": ["-NoProfile", "-NonInteractive", "-Command", "if ((curl.exe -s -m 2 http://clippy.local:4711/claude/usage) -eq 'bitte') { & (Get-Process -Id $env:CLAUDE_PID).Path -p /usage --no-session-persistence --setting-sources project 2>$null | curl.exe -s -m 5 --data-binary '@-' http://clippy.local:4711/claude/usage | Out-Null }; exit 0"], "async": true}
-  macOS/Linux:
-    {"type": "command", "command": "[ \"$(curl -s -m 2 http://clippy.local:4711/claude/usage)\" = bitte ] && \"$(readlink /proc/$CLAUDE_PID/exe 2>/dev/null || ps -o comm= -p $CLAUDE_PID)\" -p /usage --no-session-persistence --setting-sources project 2>/dev/null | curl -s -m 5 --data-binary @- http://clippy.local:4711/claude/usage; true", "async": true}
+  {"type": "command", "command": "powershell.exe", "args": ["-NoProfile", "-NonInteractive", "-Command", "if ((curl.exe -s -m 2 http://clippy.local:4711/claude/usage) -eq 'bitte') { & (Get-Process -Id $env:CLAUDE_PID).Path -p /usage --no-session-persistence --setting-sources project 2>$null | curl.exe -s -m 5 --data-binary '@-' http://clippy.local:4711/claude/usage | Out-Null }; exit 0"], "async": true}
 
 Und die Statuszeile (nur wenn Claude Code im Terminal läuft; liefert dazu Modell und Kosten und antwortet
 mit einer fertigen Zeile für unten im Fenster). Auf oberster Ebene der settings.json:
-  Windows:        "statusLine": {"type": "command", "command": "curl.exe -s -m 1 --data-binary '@-' http://clippy.local:4711/claude/status"}
-  macOS/Linux:    "statusLine": {"type": "command", "command": "curl -s -m 1 --data-binary @- http://clippy.local:4711/claude/status"}
+  "statusLine": {"type": "command", "command": "curl.exe -s -m 1 --data-binary '@-' http://clippy.local:4711/claude/status"}
 Gibt es schon eine statusLine, die NICHT an clippy.local schickt: deinen Menschen fragen, ob sie ersetzt werden
 soll. Sagt er nein, die Statuszeile weglassen (die Hooks trotzdem eintragen).
 
 
 ABSCHNITT B: CODEX
 ------------------
-Datei: ~/.codex/config.toml  (Windows: %USERPROFILE%\.codex\config.toml)
+Datei: %USERPROFILE%\.codex\config.toml
 Für JEDES dieser Ereignisse einen Block ergänzen: UserPromptSubmit, PostToolUse, PermissionRequest, Stop, Interrupt
 Beispiel für Stop (die anderen genauso, nur der Name ändert sich):
 
@@ -86,7 +78,7 @@ Falls in [features] "hooks = false" steht: deinem Menschen sagen, dass Hooks aus
 
 ABSCHNITT C: GITHUB COPILOT (Kommandozeile und VS Code)
 -------------------------------------------------------
-Datei: ~/.copilot/hooks/clippy.json  (Windows: %USERPROFILE%\.copilot\hooks\clippy.json; Ordner anlegen)
+Datei: %USERPROFILE%\.copilot\hooks\clippy.json  (Ordner anlegen)
 Ist COPILOT_HOME gesetzt, stattdessen $COPILOT_HOME/hooks/clippy.json.
 Die Datei gehört Clippy allein; ganz so anlegen (Ereignisnamen genau so schreiben, sonst fehlt das Feld
 hook_event_name):
