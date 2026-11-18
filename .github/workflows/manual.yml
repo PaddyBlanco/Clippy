@@ -1,11 +1,12 @@
 # Veröffentlicht das Handbuch (manual/) auf GitHub Pages, siehe docs/manual.md.
-# Die Bilder vom Gerät (manual/img/) entstehen dabei mit tools/screenshots.py; sie liegen nie im Repo.
+# Die Bilder (manual/img/) entstehen dabei mit tools/screenshots.py (Vorschau, Chrome für die Handy-Seiten);
+# sie liegen nie im Repo.
 name: Handbuch veröffentlichen
 
 on:
   push:
     branches: [main]
-    paths: ["manual/**", "device/**", "apps/**", "tools/preview.py", "tools/screenshots.py",
+    paths: ["manual/**", "device/**", "apps/**", "tools/preview.py", "tools/screenshot*.py",
             "tests/weather_sample.json", ".github/workflows/manual.yml"]
   workflow_dispatch:
 
@@ -32,7 +33,7 @@ jobs:
       - name: Bilder vom Gerät zeichnen
         run: |
           sudo apt-get install -y fonts-dejavu-core
-          python -m pip install pillow
+          python -m pip install pillow qrcode
           python tools/screenshots.py manual/img
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3

@@ -69,16 +69,6 @@ table.box th { background: #000080; color: #ffffff; font-family: Arial, sans-ser
 table.box th, table.box td { border: 2px inset #c0c0c0; padding: 5px 7px; vertical-align: top; text-align: left; }
 table.box tr:nth-child(even) td { background: #ffffe1; }
 .wrap { overflow-x: auto; }
-.shot {
-  border: 2px dashed #808080;
-  background: #c0c0c0;
-  color: #404040;
-  text-align: center;
-  font-family: "Courier New", monospace;
-  padding: 26px 8px;
-  margin: 10px auto;
-  max-width: 340px;
-}
 .say {
   background: #ffffe1;
   border: 1px solid #000000;

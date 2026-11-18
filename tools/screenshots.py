@@ -1,10 +1,11 @@
-"""Bilder fürs Handbuch: zeichnet Szenen mit tools/preview.py nach manual/img/s<Nr>.png.
+"""Bilder fürs Handbuch: zeichnet alle Bilder nach manual/img/s<Nr>.png.
 
     python tools/screenshots.py [zielordner]      (Standard: manual/img)
 
 Läuft beim Veröffentlichen in GitHub Actions (.github/workflows/manual.yml); die Bilder liegen nie im Repo
-(AGENTS.md, Regel 4). Welche Nummer was zeigt, steht in docs/manual.md. Bilder, die nur das echte Gerät oder ein
-Handy liefern kann (Foto, echte WLAN-Liste, QR-Codes), bleiben auf den Seiten Platzhalter.
+(AGENTS.md, Regel 4). Welche Nummer was zeigt und woher sie kommt, steht in docs/manual.md.
+Die meisten zeichnet tools/preview.py aus den Szenen in tools/screenshot_scenes.py; QR-Codes sind dabei echt, wenn das
+Paket qrcode da ist. Gerät (S2) und Handy-Seiten (S22, S27) macht tools/screenshot_extras.py.
 """
 import os
 import subprocess
@@ -13,84 +14,11 @@ import tempfile
 
 from PIL import Image, ImageDraw
 
+import screenshot_extras
+from screenshot_scenes import HEAD, SCENES
+
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 PREVIEW = os.path.join(ROOT, "tools", "preview.py")
-
-# Vorspann jeder Szene: Desktop zeichnen wie am Gerät; danach zeigt stage.show(pose) die Klammer.
-HEAD = """
-import json
-import M5
-from clippy import desktop, launcher, shell, win98
-from clippy.app_context import Ctx
-from clippy.pet import boredom, moves, sleep, umbrella
-from clippy.pet.bubble import Bubble
-from clippy.pet.draw import REST
-from clippy.pet.senses import Senses
-from clippy.pet.stage import Stage
-
-d = M5.Display
-apps = desktop.load_apps()
-senses = Senses()
-desktop.draw(d, apps, senses)
-stage = Stage(d, lambda g: desktop.draw(g, apps, senses), senses.agents)
-
-
-def first(gen, test):
-    return next(p for p in gen if test(p))
-
-
-def nth(gen, n):
-    for i, p in enumerate(gen):
-        if i == n:
-            return p
-
-
-def app(name, title, beside, taps=(), **patch):
-    # App starten wie der Launcher; taps: Tipper der Reihe nach, je Durchlauf einer. Die Vorschau beendet die App
-    # nach ein paar Durchläufen.
-    import sys
-    sys.path.insert(0, ROOT + "/apps/" + name)  # wie launcher.run_app: Hilfsdateien der App finden
-    scope = {"__name__": "app"}
-    exec(open(ROOT + "/apps/" + name + "/app.py", encoding="utf-8").read(), scope)
-    ctx = Ctx(d, title, beside)
-    ctx._down = False
-    for key, value in patch.items():
-        setattr(ctx, key, value)
-    queue, update = list(taps), ctx.update
-
-    def tapping():
-        going = update()
-        ctx.tap = queue.pop(0) if queue else None
-        return going
-    ctx.update = tapping
-    scope["run"](ctx)
-"""
-
-SCENES = {
-    "s1": None,  # der Desktop mit Begrüßung: device/main.py selbst
-    "s3": "stage.show(nth(moves.curl(), 10))",
-    "s4": "stage.show(nth(boredom.drum_solo(), 8))",
-    "s5": "stage.show(first(boredom.headstand(), lambda p: p['roll'] >= 180))",
-    "s6": "stage.show(first(boredom.pogo(), lambda p: p['pogo'] == 20 and p['bob'] <= -27))",
-    "s7": "stage.show(nth(moves.threaten(), 2))",
-    "s8": "stage.show(nth(moves.enjoy(), 2))",
-    "s9": "stage.show(sleep.pose(14, True))",
-    "s10": "stage.show(first(moves.fall(), lambda p: p['lean'] == 88 and p['lid'] == 1.0))",
-    "s12": "stage.show(dict(REST, look=(4, 3), brow=2))\n"
-           "shell.taskbar(d, '14:24', 80, False, True, (('Cl', 'working'), ('Co', 'done'), ('Cx', 'waiting')))",
-    "s13": "stage.show(nth(moves.cheer(), 3))\n"
-           "Bubble(d).say('Claude braucht di!')\n"
-           "shell.taskbar(d, '14:24', 80, False, True, (('Cl', 'waiting'),))",
-    "s14": "stage.show(REST)\nshell.menu(d, desktop.MENU)",
-    "s16": "from clippy.pet import dance\nstage.narrow = True\nstage.show(nth(dance.sway(), 4))\n"
-           "app('radio', 'Radio', True, taps=[(140, 40)], online=lambda: True, play=lambda url: True,\n"
-           "    playing=lambda: True)",  # Ö3 angetippt, der Sender spielt, die Klammer tanzt
-    "s18": "launcher.show_goodbye(d, 100)",
-    "s24": "umbrella.rain(True)\nstage.narrow = True\nstage.show(nth(umbrella.hold(), 20))\n"
-           "sample = json.load(open(ROOT + '/tests/weather_sample.json', encoding='utf-8'))\n"
-           "app('weather', 'Wetter', True, online=lambda: True, get_json=lambda url: sample)",
-    "s25": None,  # die Diashow mit einem Probefoto: apps/slideshow/app.py mit --sd
-}
 
 
 def probe_photo(folder):
@@ -131,6 +59,7 @@ def main():
     with tempfile.TemporaryDirectory() as tmp:
         for name in SCENES:
             render(name, out, tmp)
+        screenshot_extras.render(out, tmp)  # braucht S1 schon fertig
 
 
 if __name__ == "__main__":

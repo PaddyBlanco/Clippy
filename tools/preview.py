@@ -191,9 +191,24 @@ class Surface:
     def setBrightness(self, value):
         pass
 
-    def drawQR(self, text, x, y, size, version=1):  # nur ein Platzhalter in passender Größe
-        self.dr.rectangle([x, y, x + size - 1, y + size - 1], fill=(0, 0, 0))
-        self.dr.text((x + 6, y + size // 2 - 6), "QR-Code", font=self._ttf(), fill=(255, 255, 255))
+    def drawQR(self, text, x, y, size, version=1):
+        # echter QR-Code mit dem Paket qrcode (pip install qrcode), sonst ein Platzhalter in passender Größe
+        try:
+            import qrcode
+        except ImportError:
+            self.dr.rectangle([x, y, x + size - 1, y + size - 1], fill=(0, 0, 0))
+            self.dr.text((x + 6, y + size // 2 - 6), "QR-Code", font=self._ttf(), fill=(255, 255, 255))
+            return
+        code = qrcode.QRCode(border=0)
+        code.add_data(text)
+        rows = code.get_matrix()
+        cell = size / len(rows)
+        self.dr.rectangle([x, y, x + size - 1, y + size - 1], fill=(255, 255, 255))
+        for r, row in enumerate(rows):
+            for c, dark in enumerate(row):
+                if dark:
+                    self.dr.rectangle([x + int(c * cell), y + int(r * cell),
+                                       x + int((c + 1) * cell) - 1, y + int((r + 1) * cell) - 1], fill=(0, 0, 0))
 
     def __getattr__(self, name):
         raise AttributeError("Die Vorschau kennt '%s' nicht. In tools/preview.py ergänzen." % name)

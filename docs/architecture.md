@@ -33,6 +33,8 @@ Der Ordner `device/` ist ein Abbild dessen, was am Gerät unter `/flash/` liegt.
 | `device/res/` | Schriften |
 | `tools/preview.py` | Zeichnet ein Geräte-Skript am PC in ein PNG, ohne Gerät |
 | `tools/screenshots.py` | Bilder fürs Handbuch (`manual/img/`) mit der Vorschau; läuft beim Veröffentlichen, siehe [manual.md](manual.md) |
+| `tools/screenshot_scenes.py` | die Szenen dazu: je Bild ein Stück Python für die Vorschau |
+| `tools/screenshot_extras.py` | Bilder ohne Vorschau: das gezeichnete Gerät (S2) und die Handy-Seiten über Headless Chrome |
 | `checks/` | Prüfskripte, die einzeln am Gerät laufen (Sensoren, Netz, Zeichentempo) |
 | `tests/` | Selbsttests am PC: `python tests/test_<name>.py` |
 

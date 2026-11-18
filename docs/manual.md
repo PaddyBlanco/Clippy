@@ -42,41 +42,47 @@ die Seite neu. Ansehen ohne Veröffentlichen: `manual/index.html` im Browser öf
 
 ## Bilder vom Gerät
 
-Die Bilder entstehen erst beim Veröffentlichen: `.github/workflows/manual.yml` ruft `tools/screenshots.py` auf, das
-mit `tools/preview.py` Szenen zeichnet (Desktop, Haltungen der Klammer, Menüs, Apps) und sie als `manual/img/s<Nr>.png`
-ablegt. Im Repo liegen sie nie (AGENTS.md, Regel 4; `manual/img/` steht in `.gitignore`), ohne Hintergrundfoto aus
-`local/bg/`. Ansehen am PC: `python tools/screenshots.py`, dann `manual/index.html` öffnen. Eine neue Szene ist ein
-Eintrag in `SCENES` in `tools/screenshots.py`; auf der Seite `<img class="pic" src="img/s<Nr>.png" ...>`.
+Die Bilder entstehen erst beim Veröffentlichen: `.github/workflows/manual.yml` ruft `tools/screenshots.py` auf und
+legt sie als `manual/img/s<Nr>.png` ab. Im Repo liegen sie nie (AGENTS.md, Regel 4; `manual/img/` steht in
+`.gitignore`), ohne Hintergrundfoto aus `local/bg/`. Ansehen am PC: `python tools/screenshots.py`, dann
+`manual/index.html` öffnen. Auf der Seite: `<img class="pic" src="img/s<Nr>.png" ...>`, mehrere nebeneinander in
+`<div class="gallery">` mit `<figure>`.
 
-Was die Vorschau nicht kann (echtes Foto, Handy, echte WLAN-Liste, QR-Codes: die Vorschau malt dafür nur ein
-Kästchen), bleibt Platzhalter mit der Nummer (`[Bild S2]`). Echte Fotos vom Gerät bräuchten eine Ausnahme von
-Regel 4 für `manual/img/`.
+Drei Wege, je nach Bild:
 
-| Nr. | Seite | Was zu sehen sein soll | Woher | Stand |
-|---|---|---|---|---|
-| S1 | index | Desktop mit Klammer und Begrüßungs-Sprechblase | Gerät oder Vorschau | erzeugt |
-| S2 | index | Foto des Geräts auf dem Schreibtisch | Foto | Platzhalter |
-| S3 | klammer | Bizepscurls mit Hantel | Vorschau | erzeugt |
-| S4 | klammer | Schlagzeug | Vorschau | erzeugt |
-| S5 | klammer | Kopfrolle (steht am Kopf) | Vorschau | erzeugt |
-| S6 | klammer | Pogo auf dem Drahtende | Vorschau | erzeugt |
-| S7 | klammer | rot und grantig (dreimal angetippt) | Vorschau | erzeugt |
-| S8 | klammer | gestreichelt, Augen zu | Vorschau | erzeugt |
-| S9 | klammer | schlafend mit Zs und Rotzblase, Display gedimmt | Vorschau | erzeugt |
-| S10 | klammer | umgefallen, liegt | Vorschau | erzeugt |
-| S11 | klammer | Gerät auf dem Kopf: Klammer rollt an ihren Platz | Gerät (Foto/Video-Standbild) | Platzhalter |
-| S12 | agents | Taskleiste mit drei Agent-Kästchen (gelb, rot, grün) | Vorschau | erzeugt |
-| S13 | agents | Klammer ruft „… braucht di!“ mit Sprechblase | Vorschau | erzeugt |
-| S14 | hilfe | Startmenü offen | Vorschau | erzeugt |
-| S15 | hilfe | Handbuch-Fenster mit QR-Code | Vorschau | Platzhalter |
-| S16 | hilfe | App „Radio“ im Fenster, ein Sender spielt | Vorschau | erzeugt |
-| S18 | hilfe | „Sie können Clippy jetzt ignorieren.“ | Vorschau | erzeugt |
-| S19 | hilfe | WLAN einrichten: Liste der Netze | Gerät (echte Netze) | Platzhalter |
-| S20 | hilfe | WLAN einrichten: Tastatur mit halb eingetipptem Passwort | Vorschau | Platzhalter |
-| S21 | hilfe | WLAN mit Handy: Clippy zeigt den QR-Code | Gerät (echter QR-Code) | Platzhalter |
-| S22 | hilfe | WLAN mit Handy: Einrichtungsseite am Handy | Handy-Screenshot | Platzhalter |
-| S23 | agents | Fenster „Agent-Nutzung“ links, Klammer rechts daneben | Gerät (echte Werte) | Platzhalter |
-| S24 | hilfe | App „Wetter“ links, Klammer rechts daneben | Gerät (echte Werte) oder Vorschau mit `--online` | erzeugt |
-| S25 | hilfe | App „Diashow“ mit einem Foto | Vorschau mit `--sd` | erzeugt |
-| S26 | hilfe | Diashow: QR-Code „Fotos vom Handy“, Scho do: 3 | Gerät (echter QR-Code) | Platzhalter |
-| S27 | hilfe | Handy: Seite „Fotos an Clippy“ mit Liste | Handy-Screenshot | Platzhalter |
+- **Vorschau** (`tools/preview.py`): Desktop, Klammer, Menüs, Apps. Eine Szene ist ein Eintrag in `SCENES` in
+  `tools/screenshot_scenes.py`. QR-Codes sind echt, wenn das Paket `qrcode` da ist (in Actions immer). Was nur das
+  Gerät weiß (WLAN-Liste, Nutzungszahlen, Adresse im WLAN), ist in der Szene erfunden, sieht aber genauso aus.
+- **Handy-Seiten**: Headless Chrome fotografiert die Seiten aus `portal_page.py` und `photo_page.py` in Handy-Größe
+  (`tools/screenshot_extras.py`). In Actions ist Chrome dabei; fehlt er am PC, fehlen nur diese Bilder.
+- **Gerät** (S2): Pillow zeichnet ein CoreS3-Gehäuse und setzt S1 als Bildschirm hinein. Ein echtes Foto bräuchte
+  eine Ausnahme von Regel 4.
+
+| Nr. | Seite | Was zu sehen ist | Woher |
+|---|---|---|---|
+| S1 | (Grundlage für S2) | Desktop mit Klammer und Begrüßungs-Sprechblase | Vorschau: `device/main.py` |
+| S2 | index | Das Gerät mit dem Desktop | gezeichnet |
+| S3 | klammer | Bizepscurls mit Hantel | Vorschau |
+| S4 | klammer | Schlagzeug | Vorschau |
+| S5 | klammer | Kopfrolle (steht am Kopf) | Vorschau |
+| S6 | klammer | Pogo auf dem Drahtende | Vorschau |
+| S7 | klammer | rot und grantig (dreimal angetippt) | Vorschau |
+| S8 | klammer | gestreichelt, Augen zu | Vorschau |
+| S9 | klammer | schlafend mit Zs und Rotzblase, Display gedimmt | Vorschau |
+| S10 | klammer | umgefallen, liegt | Vorschau |
+| S11 | klammer | Gerät auf dem Kopf: Klammer hängt verkehrt, gleich fällt sie | Vorschau |
+| S12 | agents | Taskleiste mit drei Agent-Kästchen (gelb, rot, grün) | Vorschau |
+| S13 | agents | Klammer ruft „… braucht di!“ mit Sprechblase | Vorschau |
+| S14 | hilfe | Startmenü offen | Vorschau |
+| S15 | hilfe | Handbuch-Fenster mit QR-Code | Vorschau |
+| S16 | hilfe | App „Radio“ im Fenster, ein Sender spielt | Vorschau |
+| S18 | hilfe | „Sie können Clippy jetzt ignorieren.“ | Vorschau |
+| S19 | hilfe | WLAN einrichten: Liste der Netze | Vorschau, Netze erfunden |
+| S20 | hilfe | WLAN einrichten: Tastatur mit halb eingetipptem Passwort | Vorschau |
+| S21 | hilfe | WLAN mit Handy: Clippy zeigt den QR-Code | Vorschau |
+| S22 | hilfe | WLAN mit Handy: Einrichtungsseite am Handy | Chrome |
+| S23 | agents | Fenster „Agent-Nutzung“ links, Klammer rechts daneben | Vorschau, Zahlen erfunden |
+| S24 | hilfe | App „Wetter“ links, Klammer mit Schirm rechts daneben | Vorschau mit `tests/weather_sample.json` |
+| S25 | hilfe | App „Diashow“ mit einem Foto | Vorschau mit `--sd` |
+| S26 | hilfe | Diashow: QR-Code „Fotos vom Handy“, Scho do: 3 | Vorschau |
+| S27 | hilfe | Handy: Seite „Fotos an Clippy“ mit drei geschickten Fotos | Chrome |
