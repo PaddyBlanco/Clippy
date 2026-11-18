@@ -9,7 +9,7 @@ import M5
 
 try:
     import audio
-    from machine import I2C, Pin
+    from machine import I2C, Pin, mem32
 except ImportError:
     audio = None
 
@@ -24,6 +24,14 @@ MUTE = 0xC0
 _volume = [40]      # zuletzt gestellte Lautstärke 0 bis 100, bleibt bis zum Neustart des Geräts
 _firmware = [None]  # der Player der Firmware: einmal angelegt, bleibt er; jeder neue kostet rund 10 KB für immer
 _bus = [None]       # interner Bus: Kanal 1 wie Firmware und Player. Kanal 0 nimmt ihnen die Pins weg (Touch!)
+# Ton-Anschlüsse MCLK, Daten, Wortleitung, Takt: Register in der GPIO-Matrix, das sie mit dem Player verbindet.
+# M5.Mic verdrahtet G33 und G34 auf sich um und gibt sie nicht zurück; dann bleibt das Radio stumm (docs/device.md)
+SOUND_PINS = (0, 13, 33, 34)
+_wiring = [None]    # [(Register, Wert), ...], gemerkt gleich nach dem Anlegen des Players
+
+
+def _out_sel(pin):
+    return 0x60004554 + 4 * pin  # GPIO_FUNCn_OUT_SEL_CFG_REG im ESP32-S3
 
 
 def _write(addr, reg, value):
@@ -84,8 +92,11 @@ class Player:
                 _bus[0] = I2C(1, scl=Pin(11), sda=Pin(12), freq=400000)
             if _firmware[0] is None:
                 _firmware[0] = audio.Player(lambda *a: None)  # ein Rückruf ist Pflicht, auch ein leerer
+                _wiring[0] = [(_out_sel(p), mem32[_out_sel(p)]) for p in SOUND_PINS]
             else:
                 _firmware[0].stop()
+                for reg, value in _wiring[0]:  # was das Mikrofon inzwischen umverdrahtet hat, zurück zum Player
+                    mem32[reg] = value
             amp_reset_off()
             self.error = _firmware[0].play(url, volume=0, sync=False) or 0  # leise starten, amp_check stellt ein
             if self.error == 0:
