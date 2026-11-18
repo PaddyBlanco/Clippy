@@ -4,6 +4,8 @@
     python tools/preview.py apps/radio/app.py local/preview.png      (eine App in ihrem Fenster)
     python tools/preview.py apps/weather/app.py local/preview.png --online tests/weather_sample.json
         (die App ist im WLAN, und ctx.get_json() liefert immer diese Datei)
+    python tools/preview.py apps/slideshow/app.py local/preview.png 5 --sd local/sd
+        (der Ordner gilt als microSD-Karte: ctx.sd() liefert "/sd", und /sd/... liegt dort)
 
 Ersetzt das Modul M5 durch eine Nachbildung mit Pillow. Text in den Projekt-Schriften (device/res/*.vlw) wird
 aus denselben Dateien gezeichnet wie am Gerät; nur die eingebauten Firmware-Schriften sind eine Näherung.
@@ -23,6 +25,7 @@ from PIL import Image, ImageDraw, ImageFont
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 LOCAL_ONLY = {"/flash/bg.jpg": os.path.join(ROOT, "local", "bg", "bg.jpg")}  # liegt nicht im Repo
+SD = [None]  # Ordner am PC, der als microSD-Karte gilt (--sd)
 BUILTIN_TTF = "C:/Windows/Fonts/verdana.ttf"  # Ersatz für die eingebauten Firmware-Schriften
 
 
@@ -32,6 +35,8 @@ def pc_path(p):
         return os.path.join(ROOT, "apps", p[12:])
     if isinstance(p, str) and p.startswith("/flash/"):
         return LOCAL_ONLY.get(p, os.path.join(ROOT, "device", p[7:]))
+    if SD[0] and isinstance(p, str) and (p == "/sd" or p.startswith("/sd/")):
+        return os.path.join(SD[0], p[4:])
     return p
 
 
@@ -160,12 +165,17 @@ class Surface:
     def drawRightString(self, s, x, y):
         self.drawString(s, x - self.textWidth(s), y)
 
-    def drawJpg(self, src, x=0, y=0, maxW=0, maxH=0, offX=0, offY=0):
+    def drawJpg(self, src, x=0, y=0, maxW=0, maxH=0, offX=0, offY=0, scaleX=1.0, scaleY=None):
         if isinstance(src, str):
             src = open(pc_path(src), "rb").read()
         pic = Image.open(io.BytesIO(src)).convert("RGB")
+        scaleY = scaleX if scaleY is None else scaleY
+        if (scaleX, scaleY) != (1.0, 1.0):
+            pic = pic.resize((max(1, round(pic.width * scaleX)), max(1, round(pic.height * scaleY))))
         pic = pic.crop((offX, offY, offX + maxW if maxW else pic.width, offY + maxH if maxH else pic.height))
         self.img.paste(pic, (x, y))
+
+    drawPng = drawJpg  # Pillow liest beides; Durchsichtiges wird hier schwarz statt durchsichtig
 
     def newCanvas(self, w, h, bpp=16, psram=True):
         return Surface(w, h, parent=self)
@@ -206,6 +216,10 @@ def main():
             raise SystemExit("--online braucht eine JSON-Datei")
         answer = args[i + 1]
         del args[i:i + 2]
+    if "--sd" in args:
+        i = args.index("--sd")
+        SD[0] = os.path.abspath(args[i + 1])
+        del args[i:i + 2]
     script, out = args[0], args[1]
     runs = [int(args[2]) if len(args) > 2 else 3]
     display = Surface(320, 240)
@@ -238,6 +252,8 @@ def main():
     real_open, real_stat = builtins.open, os.stat
     builtins.open = lambda p, *a, **k: real_open(pc_path(p), *a, **k)
     os.stat = lambda p, *a, **k: real_stat(pc_path(p), *a, **k)
+    real_listdir = os.listdir
+    os.listdir = lambda p=".": real_listdir(pc_path(p))
 
     sys.path.insert(0, os.path.join(ROOT, "device"))
     sys.path.insert(0, os.path.dirname(os.path.abspath(script)))
@@ -252,6 +268,8 @@ def main():
                 display.fillScreen(0x008080)
             ctx = launcher.Ctx(display, app.get("name", app_id), app.get("beside", False))
             ctx._down = False
+            if SD[0]:
+                ctx.sd = lambda: "/sd"
             if answer:
                 ctx.online = lambda: True
                 with real_open(answer, encoding="utf-8") as f:

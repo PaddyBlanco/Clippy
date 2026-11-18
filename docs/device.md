@@ -17,6 +17,8 @@ Alles hier wurde am echten Gerät geprüft, außer wo „ungetestet“ steht.
 | Licht | `M5.Als.getLightSensorData()` | liefert bei Abendlicht nur 0–5; bei Tageslicht ungetestet |
 | Akku, Strom | `M5.Power` (`getBatteryLevel`, `getBatteryVoltage`, `isCharging`, `lightSleep`, ...) | geprüft; direkt nach dem Flashen kamen falsche Werte (0 %), nach Ab- und Anstecken des Kabels stimmten sie |
 | Kamera | Modul `camera` | ungetestet |
+| microSD | Die Firmware bindet die Karte nicht selbst ein. `machine.SDCard(slot=2, width=1, sck=36, miso=35, mosi=37, cs=4, freq=20000000)`, dann `os.mount(sd, "/sd")` (so in `clippy/sdcard.py`). **Teilt sich die Leitungen mit dem Display:** Das Display hängt an einer anderen SPI-Einheit. Das Einbinden verdrahtet G36 (Takt) und G37 (Daten) in der GPIO-Matrix auf die Karte um (`GPIO_FUNCn_OUT_SEL_CFG`: Display 0x65/0x67, Karte 0x42/0x44) und schaltet den Ausgang an G35 ab (Display: DC, Karte: MISO); danach nimmt das Display nichts mehr an und bleibt beim letzten Bild. Das Display holt sich vor dem Zeichnen nur G35 zurück. `sdcard.py` merkt sich darum beide Verdrahtungen und schaltet um: `with sdcard.access():` (für Apps `with ctx.card():`) verbindet die Karte, danach wieder das Display. Darin nur lesen und schreiben, nicht zeichnen; Bilder also erst in den Speicher lesen, dann aus dem Speicher zeichnen. Vor einem neuen `SDCard` das alte mit `deinit()` lösen, sonst `EIO`. **Nur FAT16/FAT32:** exFAT (ab Werk bei Karten ab 64 GB) endet beim Einbinden in `ENODEV`; am PC `format X: /FS:FAT32 /Q` (Windows 11 kann das auch über 32 GB). Lesen schafft rund 200 KB/s, ab 10 MHz nicht schneller. Vom PC aus mit `mpremote ... cp :/sd/...` geht es mit rund 11 KB/s; Dateien bis 420 KB kamen an, eine mit 2,4 MB brach jedes Mal mit abgerissener USB-Verbindung ab | geprüft mit 64-GB-Karte |
+| Bilder zeichnen | `drawJpg(daten, x, y, maxW, maxH, offX, offY, scaleX, scaleY)` und `drawPng(...)` gleich, auch auf einer Zeichenfläche; statt Daten geht auch ein Pfad, aber nicht auf der Karte (siehe microSD). **Progressive JPEGs** (WhatsApp, Google Fotos, viele Downloads) zeichnet sie nicht, ohne Fehler. Zeiten in eine Zeichenfläche 320×218: JPEG oder PNG in dieser Größe 60 ms, JPEG 2000×1500 verkleinert 1,7 s, 6387×4258 13,4 s. Selbst verkleinert speichern geht nicht: `jpg.decode` entpackt nur in voller Größe (12 MP = 24 MB), `image.Image` lässt sich nicht anlegen, Zeichenfläche und Display lassen sich nicht auslesen (`read` liefert 0 Bytes). Darum gibt es `manual/bilder.html` | geprüft |
 | WLAN | Modul `network`, nur 2,4 GHz | Scan geprüft |
 | Uhr | `machine.RTC()` oder `time.localtime()`; nicht als `M5.Rtc` vorhanden | läuft, steht nach dem Einschalten auf 1.1.1970 (Unix-Zeit ab 1970), bis sie gestellt wird; Clippy stellt sie per NTP, sobald das WLAN steht |
 
@@ -56,7 +58,8 @@ python -m mpremote connect COM6 resume run checks/hello.py
 Prüfskripte: `checks/hello.py` (Text am Display), `checks/inventory.py` (listet Module und fragt Sensoren ab),
 `checks/radio.py` (spielt leise zweimal je 5 s Ö3 wie die App Radio, dazwischen lauscht das Mikrofon wie am
 Desktop; liest jedes Mal den Verstärker aus und prüft, ob Mikrofon, Sensoren und Touch danach wieder gehen; direkt
-nach einem Neustart laufen lassen).
+nach einem Neustart laufen lassen), `checks/sdcard.py` (bindet die microSD-Karte ein und prüft an den Registern,
+ob das Display danach seine Leitungen zurückbekommt; liest ein Bild, schreibt nichts).
 
 ## Netz (gemessen mit `checks/nettest.py`)
 

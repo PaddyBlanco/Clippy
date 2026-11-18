@@ -15,6 +15,10 @@ Der Ordner `device/` ist ein Abbild dessen, was am Gerät unter `/flash/` liegt.
 | `device/clippy/logos.py` | Zeichen von Claude (Stern) und Codex (Knoten) für das Desktop-Symbol „Agent“ |
 | `device/clippy/launcher.py` | Startet eine App im Fenster, fängt Fehler ab (Bluescreen); Verbinden-, Handbuch- und Abschiedsbild |
 | `device/clippy/app_context.py` | `Ctx`: was eine App bekommt (Zeichenfläche, Tipper, Ton, WLAN-Stand, Radio, JSON aus dem Netz, Wetter für den Schirm der Klammer), Vertrag in [build-an-app.md](build-an-app.md) |
+| `device/clippy/photo_drop.py` | Fotos vom Handy empfangen (`ctx.photos_from_phone`): QR-Code, kleiner Webserver auf `config.PHOTO_PORT`, schreibt auf die Karte; nur mit der Geheimzahl aus dem QR-Code |
+| `device/clippy/request.py` | Teile einer Web-Anfrage lesen: Adresse mit `?a=1`, sicherer Dateiname fürs Foto |
+| `device/clippy/photo_page.py` | Die Seite fürs Handy (HTML mit JavaScript): Fotos auswählen, im Handy verkleinern, einzeln schicken |
+| `device/clippy/sdcard.py` | microSD-Karte einbinden, wenn eine App sie braucht (`ctx.sd()`), siehe [device.md](device.md) |
 | `device/clippy/player.py` | Internetradio über den Player der Firmware; nur http-MP3, siehe [device.md](device.md) |
 | `device/clippy/win98.py` | Farben, Schrift und Grundformen: Text, Knopf, 3D-Kante, Fenster, Bluescreen, Empfangsbalken, Schloss |
 | `device/clippy/config.py` | Einstellungen an einer Stelle: Adresse des Handbuchs, Ablageort der Apps, WLAN-Datei, Port für Agents |

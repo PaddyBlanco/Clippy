@@ -1,4 +1,5 @@
 # Die Einrichtungsseite, die das Handy bei „WLAN einrichten → Mit Handy“ sieht, und das Auslesen des Formulars.
+from clippy.request import unquote
 
 STYLE = ("body{background:#008080;font-family:Tahoma,Verdana,sans-serif;margin:0;padding:10px}"
          ".w{background:#c0c0c0;border:2px outset #fff;max-width:420px;margin:0 auto}"
@@ -45,29 +46,12 @@ def done(name):
             % (STYLE, _escape(name))).encode()
 
 
-def _unquote(s):
-    # Formular-Kodierung zurück in Text: + ist ein Leerzeichen, %XX ein Byte
-    s = s.replace("+", " ")
-    out, i = bytearray(), 0
-    while i < len(s):
-        if s[i] == "%" and len(s) - i >= 3:
-            try:
-                out.append(int(s[i + 1:i + 3], 16))
-                i += 3
-                continue
-            except ValueError:
-                pass
-        out += s[i].encode()
-        i += 1
-    return out.decode()
-
-
 def credentials(body):
     """Formular (application/x-www-form-urlencoded, Bytes) → (Netzname, Passwort) oder None, wenn kein Name."""
     fields = {}
     for part in body.decode().split("&"):
         if "=" in part:
             key, value = part.split("=", 1)
-            fields[key] = _unquote(value)
+            fields[key] = unquote(value)
     name = fields.get("net") or fields.get("other", "").strip()
     return (name, fields.get("pw", "")) if name else None

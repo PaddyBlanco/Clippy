@@ -110,3 +110,19 @@ table.box td, table.box th { overflow-wrap: break-word; hyphens: auto; }
   .hello svg { width: 80px; }
 }
 .chip { display: inline-block; min-width: 26px; text-align: center; border: 2px inset #c0c0c0; font-family: Tahoma, sans-serif; }
+/* Werkzeug auf bilder.html: Kasten und Knöpfe im Windows-98-Grau */
+.tool { background: #c0c0c0; border: 2px outset #ffffff; padding: 4px 12px; margin: 12px 0; }
+.tool button {
+  font-family: Tahoma, Verdana, sans-serif;
+  font-size: 15px;
+  min-height: 40px;
+  margin: 4px 6px 4px 0;
+  padding: 4px 14px;
+  background: #c0c0c0;
+  border: 2px outset #ffffff;
+}
+.tool button:active { border-style: inset; }
+.tool button:disabled { color: #808080; }
+.tool ul { background: #ffffff; border: 2px inset #c0c0c0; padding: 6px 6px 6px 28px; max-height: 260px;
+  overflow-y: auto; font-family: Tahoma, sans-serif; font-size: 14px; }
+.tool .bad, .bad { color: #a00000; }

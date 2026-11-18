@@ -1,10 +1,10 @@
-# Was eine App vom Gerät bekommt: Zeichenfläche, Tipper, Ton, WLAN-Stand, Radio, Netz und Wetter für die Klammer.
+# Was eine App vom Gerät bekommt: Zeichenfläche, Tipper, Ton, WLAN-Stand, Radio, Netz, microSD und Wetter.
 # Der Vertrag steht in docs/build-an-app.md; der Starter (launcher.py) legt je App ein Ctx an und räumt es weg.
 import time
 
 import M5
 
-from clippy import wifi, win98
+from clippy import sdcard, wifi, win98
 from clippy.pet import umbrella
 from clippy.player import Player
 from clippy.win98 import H, PANEL_TITLE_H, TITLE_H, W
@@ -36,9 +36,13 @@ class Ctx:
         self._tick, self._ticked = tick, time.ticks_ms()
         self._player = Player()  # legt noch nichts an; erst play() startet den Player der Firmware
         self._played = False     # nach play() gehört der Ton-Ausgang dem Player, tone() schweigt
+        self._closed = False     # das X wurde getippt
 
     def update(self):
-        """Einmal je Schleifendurchlauf aufrufen. Liefert False, sobald das Fenster geschlossen wurde."""
+        """Einmal je Schleifendurchlauf aufrufen. Liefert False, sobald das Fenster geschlossen wurde, und danach
+        immer wieder False (auch wenn eine eingebaute Schleife wie photos_from_phone das X schon gesehen hat)."""
+        if self._closed:
+            return False
         time.sleep_ms(20)
         M5.update()
         now = time.ticks_ms()
@@ -51,6 +55,7 @@ class Ctx:
             x, y = M5.Touch.getX(), M5.Touch.getY()
             x0, x1, y1 = self._close
             if x0 <= x < x1 and y < y1:
+                self._closed = True
                 return False
             ox, oy = self._origin
             if ox <= x < ox + self.W and oy <= y < oy + self.H:  # daneben: gehört der Klammer
@@ -74,6 +79,19 @@ class Ctx:
     def weather(self, kind):
         """Sagt der Klammer, wie das Wetter ist; bei Nässe (WET) spannt sie den Schirm auf."""
         umbrella.rain(kind in WET)
+
+    def sd(self):
+        """Ordner der microSD-Karte ("/sd"), oder None ohne Karte oder mit falschem Format."""
+        return sdcard.mount()
+
+    def card(self):
+        """with ctx.card(): jeder Kartenzugriff gehört hier hinein; darin nicht zeichnen (geteilte Leitungen)."""
+        return sdcard.access()
+
+    def photos_from_phone(self, folder):
+        """Fotos vom Handy nach folder empfangen (QR-Code, bis „Fertig“). Liefert die Anzahl."""
+        from clippy import photo_drop  # erst hier: braucht nur die Diashow
+        return photo_drop.run(self, folder)
 
     def get_json(self, url):
         """JSON-Antwort aus dem Netz als dict; None ohne WLAN, bei einem Fehler oder einer kaputten Antwort."""

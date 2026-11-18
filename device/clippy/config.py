@@ -12,5 +12,7 @@ HOSTNAME = "clippy"  # vom PC aus erreichbar als clippy.local
 
 # Port, auf dem die Hook-Meldungen der Coding-Agents ankommen (siehe docs/agent-hooks.md)
 AGENT_PORT = 4711
+# Port für Fotos vom Handy (App Diashow); offen nur, solange der QR-Code zu sehen ist
+PHOTO_PORT = 8080
 # Diesen Satz tippt man in Claude Code, Codex oder Copilot; die Anleitung für den Agent liegt in manual/verbinden.txt
 CONNECT_SENTENCE = "Richte Clippy ein: paddyblanco.github.io/Clippy/verbinden.txt"

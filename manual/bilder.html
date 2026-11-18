@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Clippy - Bilder für die Diashow</title>
+<link rel="stylesheet" href="style.css">
+<script src="bilder.js"></script>
+</head>
+<body>
+<div class="page">
+<div class="titlebar">Clippy - Bilder für die Diashow</div>
+<div class="content">
+
+<div class="nav">
+  <a href="index.html">Startseite</a>
+  <a href="klammer.html">Die Klammer</a>
+  <a href="agents.html">Coding-Agents</a>
+  <a href="hilfe.html">Bedienung &amp; Hilfe</a>
+  <a class="here" href="bilder.html">Bilder</a>
+  <a href="ideen.html">App-Ideen</a>
+</div>
+
+<h1>Bilder für die Diashow</h1>
+<p><b>Am einfachsten geht es direkt vom Handy:</b> In der Diashow in die Mitte tippen und den QR-Code scannen
+(<a href="hilfe.html">so geht's</a>). Diese Seite hier ist für den Weg über einen Kartenleser am PC.</p>
+<p>Die App <b>Diashow</b> zeigt Fotos von der microSD-Karte im Clippy. Große Fotos vom Handy braucht Clippy
+viele Sekunden, und manche (etwa aus WhatsApp oder Google Fotos) kann es gar nicht zeigen. Diese Seite macht
+aus jedem Foto ein kleines, das Clippy sofort zeigt. Das passiert hier im Browser: <b>Deine Fotos werden nirgends
+hochgeladen.</b> Videos bleiben weg, die kann Clippy nicht abspielen.</p>
+
+<h2>So geht's</h2>
+<ol>
+  <li>Karte aus dem Clippy nehmen (vorher ausschalten) und in den PC stecken.</li>
+  <li>Unten <b>Fotos auswählen</b>, gern viele auf einmal. Die Liste zeigt, was fertig ist.</li>
+  <li><b>Auf die Karte speichern</b> und im Fenster die Karte wählen (gibt es nur in Chrome und Edge).
+    Sonst <b>Als ZIP herunterladen</b>, die ZIP-Datei öffnen und den Inhalt auf die Karte ziehen.</li>
+  <li>Karte zurück in den Clippy, einschalten, <b>Diashow</b> antippen.</li>
+</ol>
+
+<div class="tool">
+  <p><label for="photos"><b>Fotos auswählen:</b></label><br>
+    <input type="file" id="photos" accept="image/*" multiple></p>
+  <p><button id="tocard" disabled>Auf die Karte speichern</button>
+    <button id="tozip" disabled>Als ZIP herunterladen</button></p>
+  <ul id="list"></ul>
+  <noscript><p class="bad">Diese Seite braucht JavaScript.</p></noscript>
+</div>
+
+<h2>Gut zu wissen</h2>
+<ul>
+  <li>Die Diashow sucht auf der ganzen Karte, auch in Unterordnern. Diese Seite legt den Ordner
+    <b>Clippy-Bilder</b> an.</li>
+  <li>Die Karte muss <b>FAT32</b> formatiert sein. Neue Karten ab 64 GB sind meist exFAT; dann zeigt Clippy
+    „Ka Kartn drin“. Formatieren löscht alles auf der Karte, frag im Zweifel die Person, die dir Clippy
+    geschenkt hat.</li>
+  <li>In der Diashow: rechts tippen zeigt das nächste Bild, links tippen das vorige. Von selbst wechselt sie alle
+    6 Sekunden. Das X schließt sie.</li>
+</ul>
+
+<hr>
+<div class="footer">
+  Zuletzt aktualisiert: 18.11.2026 &middot; <a href="index.html">Zurück zur Startseite</a>
+</div>
+</div>
+</div>
+</body>
+</html>

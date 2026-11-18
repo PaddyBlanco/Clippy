@@ -17,6 +17,7 @@ und Eintrag unter „Was ist neu“ auf der Startseite.
 | `manual/agents.html` | Claude Code, Codex, Copilot: was die Klammer anzeigt, kurz wie man es einrichtet |
 | `manual/hilfe.html` | Bedienung: Tasten, Desktop, Startmenü, Apps; wenn etwas hängt |
 | `manual/ideen.html` | App-Ideen für später: Photovoltaik und Wallbox, Units zum Anstecken (nur solche, für die die Firmware Treiber hat), Ideen ohne Zusatzteile |
+| `manual/bilder.html` | Werkzeug für den Weg über den Kartenleser (der einfache Weg ist Fotos vom Handy in der Diashow): Fotos im Browser auf Clippy-Größe bringen (320 × 218, normales JPEG) und auf die Karte speichern oder als ZIP herunterladen; für die App Diashow |
 | `manual/verbinden.html` | Coding-Agents verbinden, für Menschen: der eine Satz, was dabei passiert, wieder entfernen |
 | `manual/verbinden.txt` | Anleitung **für den Coding-Agent**, die er auf den Satz hin liest (siehe [agent-hooks.md](agent-hooks.md)) |
 | `manual/style.css` | Gemeinsames Aussehen |
@@ -29,7 +30,8 @@ Jede Seite hat dieselbe Navigationsleiste oben; wer eine Seite dazunimmt, trägt
 - Wie eine private Homepage von 1998: Tabellen-Layout, Serifenschrift, Lauftext (`marquee`), blinkende Hinweise,
   „Optimiert für Netscape Navigator 4.0 bei 800×600“, Trennlinien, Knöpfe im Windows-98-Grau.
 - Muss trotzdem am Handy lesbar sein (der QR-Code führt dorthin): Breite höchstens 760 Pixel, darunter fließend.
-- Nur eigene Dateien, keine fremden Skripte, Schriften oder Bilder aus dem Netz. Kein JavaScript nötig.
+- Nur eigene Dateien, keine fremden Skripte, Schriften oder Bilder aus dem Netz. Kein JavaScript nötig, außer auf
+  `bilder.html`: Das Verkleinern läuft im Browser, die Fotos verlassen dabei den Rechner nicht.
 - Sprache: Deutsch, verständlich für Leute ohne Technikwissen. Sprüche der Klammer dürfen oberösterreichisch sein.
 - Was eingerichtet werden muss (WLAN, Agents), nur kurz beschreiben und auf die Doku im Repo verlinken.
 
@@ -72,3 +74,6 @@ der Ausnahme.
 | S22 | hilfe | WLAN mit Handy: Einrichtungsseite am Handy | Handy-Screenshot |
 | S23 | agents | Fenster „Agent-Nutzung“ links, Klammer rechts daneben | Gerät (echte Werte) |
 | S24 | hilfe | App „Wetter“ links, Klammer rechts daneben | Gerät (echte Werte) oder Vorschau mit `--online` |
+| S25 | hilfe | App „Diashow“ mit einem Foto | Vorschau mit `--sd` |
+| S26 | hilfe | Diashow: QR-Code „Fotos vom Handy“, Scho do: 3 | Gerät (echter QR-Code) |
+| S27 | hilfe | Handy: Seite „Fotos an Clippy“ mit Liste | Handy-Screenshot |
